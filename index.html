@@ -102,13 +102,17 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
 .item-result-id{font-family:'Space Mono',monospace;font-size:11px;color:var(--txt3);margin-top:2px}
 .info-chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .stock-big{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--lime);letter-spacing:-1px}
-.log-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
-.log-item:last-child{border-bottom:none}
-.log-icon{width:38px;height:38px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.log-name{font-size:13px;font-weight:500}
-.log-meta{font-size:11px;color:var(--txt2);margin-top:1px}
-.log-qty{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--txt);text-align:right}
-.log-unit{font-size:10px;color:var(--txt3)}
+.log-item{display:flex;align-items:flex-start;gap:10px;padding:14px 0;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none;padding-bottom:0}
+.log-icon{width:40px;height:40px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;margin-top:2px}
+.log-name{font-size:14px;font-weight:700;color:var(--txt);letter-spacing:-0.2px}
+.log-who{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);margin-top:3px}
+.log-who-icon{font-size:12px;opacity:0.6}
+.log-meta{font-size:10px;color:var(--txt3);margin-top:3px;font-family:'Space Mono',monospace}
+.log-qty-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-top:2px}
+.log-qty{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--lime);letter-spacing:-0.5px;line-height:1}
+.log-unit{font-size:10px;color:var(--txt3);text-align:right}
+.log-note{font-size:10px;color:var(--txt3);margin-top:4px;padding:3px 8px;background:var(--bg3);border-radius:6px;max-width:120px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 .admin-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);margin-bottom:8px}
 .admin-icon{width:40px;height:40px;border-radius:12px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .setup-step{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
@@ -229,7 +233,7 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
 
   <!-- LOG PAGE -->
   <div class="page" id="page-log">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;margin-bottom:10px">
       <select id="log-fw" onchange="renderLog()" style="padding:10px 12px;font-size:13px">
         <option value="all">ทุกช่วงเวลา</option>
         <option value="today">วันนี้</option>
@@ -238,8 +242,16 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
       </select>
       <button class="btn btn-ghost btn-sm" onclick="syncData()" style="border-radius:var(--r)"><i class="ti ti-refresh" style="font-size:16px;vertical-align:-2px"></i> รีเฟรชข้อมูล</button>
     </div>
-    <input id="log-search" placeholder="ค้นหาชื่อ หรืออุปกรณ์..." oninput="renderLog()" style="margin-bottom:14px">
-    <div class="card" id="log-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
+    <input id="log-search" placeholder="ค้นหาชื่อ หรืออุปกรณ์..." oninput="renderLog()" style="margin-bottom:10px">
+    <!-- Summary bar -->
+    <div id="log-summary" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
+    <!-- Column header -->
+    <div style="display:flex;align-items:center;gap:10px;padding:0 0 6px;border-bottom:1px solid var(--border)">
+      <div style="width:40px;flex-shrink:0"></div>
+      <div style="flex:1;font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase">อุปกรณ์ / ผู้เบิก</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase;text-align:right;flex-shrink:0">จำนวน</div>
+    </div>
+    <div class="card" style="padding:0 16px" id="log-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
   </div>
 
   <!-- ADMIN PAGE -->
@@ -1057,21 +1069,41 @@ function renderLog() {
     return true;
   });
 
+  // Summary pills
+  const sumEl = document.getElementById('log-summary');
+  if (sumEl && fl.length) {
+    const totalQty = fl.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
+    const uniqueEmp = new Set(fl.map(l => l.employee).filter(Boolean)).size;
+    const uniqueItem = new Set(fl.map(l => l.item_name).filter(Boolean)).size;
+    sumEl.innerHTML = `
+      <span class="pill pill-lime"><i class="ti ti-list-check" style="font-size:12px"></i> ${fl.length} รายการ</span>
+      <span class="pill pill-purple"><i class="ti ti-box" style="font-size:12px"></i> ${uniqueItem} ชนิด</span>
+      <span class="pill" style="background:var(--cyanDim);color:var(--cyan);border:1px solid rgba(0,229,255,0.25)"><i class="ti ti-users" style="font-size:12px"></i> ${uniqueEmp} คน</span>
+      <span class="pill pill-warn"><i class="ti ti-stack-2" style="font-size:12px"></i> รวม ${totalQty} ชิ้น</span>`;
+  } else if (sumEl) {
+    sumEl.innerHTML = '';
+  }
+
   const el = document.getElementById('log-list');
   el.innerHTML = fl.length
-    ? fl.map(l => `
+    ? fl.map(l => {
+        const icon = items.find(x => x.id === l.qr_id)?.icon || '📦';
+        const noteHtml = l.note ? `<div class="log-note" title="${l.note}">📝 ${l.note}</div>` : '';
+        return `
       <div class="log-item">
-        <div class="log-icon">${items.find(x => x.id === l.qr_id)?.icon || '📦'}</div>
+        <div class="log-icon">${icon}</div>
         <div style="flex:1;min-width:0">
           <div class="log-name">${l.item_name}</div>
-          <div class="log-meta">${l.employee} · <span class="mono" style="font-size:10px;color:var(--txt3)">${l.qr_id}</span></div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:1px">${displayTs(l.timestamp)}</div>
+          <div class="log-who"><span class="log-who-icon">👤</span><span>${l.employee}</span></div>
+          <div class="log-meta">${displayTs(l.timestamp)}</div>
+          ${noteHtml}
         </div>
-        <div style="text-align:right;flex-shrink:0">
+        <div class="log-qty-wrap">
           <div class="log-qty">${l.quantity}</div>
           <div class="log-unit">${l.unit || ''}</div>
         </div>
-      </div>`).join('')
+      </div>`;
+      }).join('')
     : '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">ไม่มีรายการ</div>';
 }
 
