@@ -157,7 +157,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
     </div>
   </div>
 
-  <!-- HOME PAGE -->
   <div class="page active" id="page-home">
     <div class="section-eyebrow">สัปดาห์นี้</div>
     <div style="display:flex;align-items:baseline;gap:12px">
@@ -181,7 +180,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
     <div class="card" id="d-low-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">สต๊อกปกติทั้งหมด ✓</div></div>
   </div>
 
-  <!-- SCAN PAGE -->
   <div class="page" id="page-scan">
     <div id="scan-start">
       <div class="scan-hero" onclick="openCamera()">
@@ -231,7 +229,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
     </div>
   </div>
 
-  <!-- LOG PAGE -->
   <div class="page" id="page-log">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;margin-bottom:10px">
       <select id="log-fw" onchange="renderLog()" style="padding:10px 12px;font-size:13px">
@@ -243,18 +240,19 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
       <button class="btn btn-ghost btn-sm" onclick="syncData()" style="border-radius:var(--r)"><i class="ti ti-refresh" style="font-size:16px;vertical-align:-2px"></i> รีเฟรชข้อมูล</button>
     </div>
     <input id="log-search" placeholder="ค้นหาชื่อ หรืออุปกรณ์..." oninput="renderLog()" style="margin-bottom:10px">
-    <!-- Summary bar -->
     <div id="log-summary" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
-    <!-- Column header -->
     <div style="display:flex;align-items:center;gap:10px;padding:0 0 6px;border-bottom:1px solid var(--border)">
       <div style="width:40px;flex-shrink:0"></div>
       <div style="flex:1;font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase">อุปกรณ์ / ผู้เบิก</div>
       <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase;text-align:right;flex-shrink:0">จำนวน</div>
     </div>
     <div class="card" style="padding:0 16px" id="log-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
+    <div style="margin-top:12px">
+      <button onclick="showRawDebug()" class="btn btn-ghost" style="border-radius:var(--r);font-size:12px;padding:10px">🔍 ดู Raw Data (Debug)</button>
+      <pre id="debug-out" style="display:none;margin-top:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto"></pre>
+    </div>
   </div>
 
-  <!-- ADMIN PAGE -->
   <div class="page" id="page-admin">
     <div class="card" style="margin-top:14px">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.3px;color:var(--lime);margin-bottom:14px">+ เพิ่มอุปกรณ์</div>
@@ -280,7 +278,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
     <div id="admin-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
   </div>
 
-  <!-- SETUP PAGE -->
   <div class="page" id="page-setup">
     <div class="card" style="margin-top:14px">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.3px;color:var(--purple);margin-bottom:14px">ตั้งค่าเชื่อมต่อ Google Sheet</div>
@@ -312,7 +309,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <button class="nav-item active" onclick="goPage('home',this)" aria-label="ภาพรวม">
     <i class="ti ti-layout-dashboard"></i><span>ภาพรวม</span>
@@ -331,7 +327,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
   </button>
 </div>
 
-<!-- CAMERA OVERLAY -->
 <div id="camera-overlay">
   <video id="cam-video" autoplay playsinline muted></video>
   <canvas id="cam-canvas"></canvas>
@@ -348,7 +343,6 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
   <button class="cam-manual-btn" onclick="closeCamera();setTimeout(()=>document.getElementById('manual-input').focus(),200)">⌨ พิมพ์รหัสแทน</button>
 </div>
 
-<!-- PIN MODAL -->
 <div id="pin-modal">
   <div class="pin-sheet">
     <div class="pin-handle"></div>
@@ -391,7 +385,7 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
 // ============================================================
 const SECURE_PIN = "240739"; // เปลี่ยน PIN ตรงนี้
 
-// GAS Code ที่จะ Copy ให้ผู้ดูแล deploy
+// GAS Code ที่จะ Copy ให้ผู้ดูแล deploy (อัปเดตเวอร์ชันแก้ไขบั๊กดักจับประเภทตัวเลขแล้ว)
 const GAS_CODE = `function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let itemSh = ss.getSheetByName("Items");
@@ -438,19 +432,31 @@ function doPost(e) {
 function getItems(sheet) {
   const rows = sheet.getDataRange().getValues();
   if (rows.length < 2) return [];
+  const h = rows[0].map(c => String(c).trim().toLowerCase());
+  const col = k => h.indexOf(k);
   return rows.slice(1).map(r => ({
-    id: String(r[0]), name: String(r[1]), cat: String(r[2]),
-    stock: Number(r[3]), unit: String(r[4]), min: Number(r[5]), icon: String(r[6])
-  }));
+    id:    String(r[col('id')]    || ''),
+    name:  String(r[col('name')] || ''),
+    cat:   String(r[col('category')] || r[col('cat')] || ''),
+    stock: Number(r[col('stock')])  || 0,
+    unit:  String(r[col('unit')]  || 'อัน'),
+    min:   Number(r[col('min')])   || 0,
+    icon:  String(r[col('icon')]  || '📦'),
+  })).filter(it => it.id);
 }
+
 function getLogs(sheet) {
   const rows = sheet.getDataRange().getValues();
   if (rows.length < 2) return [];
-  return rows.slice(1).reverse().slice(0,100).map(r => ({
-    timestamp: String(r[0]), qr_id: String(r[1]), item_name: String(r[2]),
-    cat: String(r[3]), quantity: Number(r[4]), unit: String(r[5]),
-    employee: String(r[6]), note: String(r[7])
-  }));
+  return rows.slice(1).reverse().slice(0,100).map(r => {
+    let qty = parseInt(r[4]);
+    if (isNaN(qty)) { qty = 0; } 
+    return {
+      timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''),
+      category: String(r[3]||''), quantity: qty, unit: String(r[5]||''),
+      employee: String(r[6]||''), note: String(r[7]||'')
+    };
+  });
 }`;
 
 // ============================================================
@@ -463,15 +469,32 @@ let curItem = null;
 let setupUnlocked = false;
 let isSyncing = false;
 
-// ======= DEFAULT GAS URL (ฝังตายตัว — พนักงานไม่ต้องตั้งค่าเอง) =======
 const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyOqsDZbO6E8W0Ka0EF8jv-BalyMtSiYorH8Vc4lZy3H_fIkeVfaMdldrkvAMBeyFOo/exec";
 
-// โหลด cache จาก localStorage
 try { items = JSON.parse(localStorage.getItem('ss2_items') || '[]'); } catch(e) { items = []; }
 try { logs  = JSON.parse(localStorage.getItem('ss2_logs')  || '[]'); } catch(e) { logs  = []; }
 try { cfg   = JSON.parse(localStorage.getItem('ss2_cfg')   || '{}'); } catch(e) { cfg   = {}; }
 
-// ถ้ายังไม่เคยตั้งค่า URL ให้ใช้ default อัตโนมัติ
+items = items.map(it => ({
+  id:    String(it.id    || '').trim(),
+  name:  String(it.name  || '').trim(),
+  cat:   String(it.cat   || it.category || '').trim(),
+  stock: Number(it.stock ?? 0),
+  unit:  String(it.unit  || 'อัน').trim(),
+  min:   Number(it.min   ?? 0),
+  icon:  String(it.icon  || '📦').trim(),
+}));
+logs = logs.map(l => ({
+  timestamp: String(l.timestamp || '').trim(),
+  qr_id:     String(l.qr_id     || '').trim(),
+  item_name: String(l.item_name || l.name || '').trim(),
+  cat:       String(l.cat       || l.category || '').trim(),
+  quantity:  Number(l.quantity  || 0),
+  unit:      String(l.unit      || '').trim(),
+  employee:  String(l.employee  || '').trim(),
+  note:      String(l.note      || '').trim(),
+}));
+
 if (!cfg.url) {
   cfg.url = DEFAULT_GAS_URL;
   localStorage.setItem('ss2_cfg', JSON.stringify(cfg));
@@ -482,14 +505,13 @@ function saveLocal() {
   localStorage.setItem('ss2_logs',  JSON.stringify(logs));
 }
 
-// สร้าง QR ID แบบ timestamp-based เพื่อไม่ให้ชน
 function uid() {
   return 'QR-' + Date.now().toString(36).toUpperCase().slice(-4) +
          Math.random().toString(36).substr(2, 3).toUpperCase();
 }
 
 // ============================================================
-// TIMESTAMP HELPERS — เก็บเป็น ISO เพื่อ parse ได้ถูก
+// TIMESTAMP HELPERS
 // ============================================================
 function nowISO() { return new Date().toISOString(); }
 
@@ -509,9 +531,7 @@ function parseTs(isoStr) {
 
 // ============================================================
 // CLOUD SYNC
-// Strategy: fetch (redirect:follow) → JSONP fallback
 // ============================================================
-
 function fetchViaJsonp(url) {
   return new Promise((resolve, reject) => {
     const cbName = '_gs_' + Date.now() + '_' + Math.floor(Math.random() * 99999);
@@ -544,7 +564,6 @@ async function fetchViaFetch(url) {
   const text = await res.text();
   const clean = text.trim();
   if (clean.startsWith('{') || clean.startsWith('[')) return JSON.parse(clean);
-  // strip JSONP wrapper ถ้า GAS ตอบมาแบบนั้น
   const m = clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
   if (m) return JSON.parse(m[1]);
   throw new Error('Unexpected response format');
@@ -554,7 +573,6 @@ async function gasPost(url, body) {
   const res = await fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),
-    // ไม่ set Content-Type → ไม่ trigger preflight CORS
   });
   try { return JSON.parse(await res.text()); }
   catch(e) { return { status: 'ok' }; }
@@ -562,24 +580,26 @@ async function gasPost(url, body) {
 
 function applyResponseData(data) {
   if (!data || !Array.isArray(data.items)) throw new Error('No items array in response');
+
   items = data.items.map(it => ({
-    id:    String(it.id    || ''),
-    name:  String(it.name  || ''),
-    cat:   String(it.cat   || ''),
-    stock: Number(it.stock ?? 0),
-    unit:  String(it.unit  || 'อัน'),
-    min:   Number(it.min   ?? 0),
-    icon:  String(it.icon  || '📦'),
+    id:    String(it.id    || it.ID    || '').trim(),
+    name:  String(it.name  || it.Name  || '').trim(),
+    cat:   String(it.cat   || it.Category || it.category || '').trim(),
+    stock: Number(String(it.stock ?? it.Stock ?? 0).replace(/[^0-9.]/g, '')) || 0,
+    unit:  String(it.unit  || it.Unit  || 'อัน').trim(),
+    min:   Number(String(it.min   ?? it.Min   ?? 0).replace(/[^0-9.]/g, '')) || 0,
+    icon:  String(it.icon  || it.Icon  || '📦').trim(),
   }));
+  
   logs = (data.logs || []).map(l => ({
-    timestamp: String(l.timestamp || ''),
-    qr_id:     String(l.qr_id     || ''),
-    item_name: String(l.item_name || ''),
-    cat:       String(l.cat       || ''),
-    quantity:  Number(l.quantity  || 0),
-    unit:      String(l.unit      || ''),
-    employee:  String(l.employee  || ''),
-    note:      String(l.note      || ''),
+    timestamp: String(l.timestamp || '').trim(),
+    qr_id:     String(l.qr_id     || '').trim(),
+    item_name: String(l.item_name || l.Item_Name || l.name || '').trim(),
+    cat:       String(l.cat       || l.category  || '').trim(),
+    quantity:  Number(l.quantity ?? l.Quantity ?? 0), // แก้ไขให้รับค่าตัวเลขตรงๆ ไม่โดนแปลงเป็น 0
+    unit:      String(l.unit      || l.Unit      || '').trim(),
+    employee:  String(l.employee  || l.Employee  || '').trim(),
+    note:      String(l.note      || l.Note      || '').trim(),
   }));
   saveLocal();
   renderAll();
@@ -606,8 +626,6 @@ async function syncData() {
   setSyncStatus('syncing');
 
   let ok = false;
-
-  // วิธีที่ 1: fetch ปกติ — ทำงานได้บน Netlify/browser จริง
   try {
     const data = await fetchViaFetch(cfg.url);
     applyResponseData(data);
@@ -615,8 +633,6 @@ async function syncData() {
     ok = true;
   } catch(e1) {
     console.warn('[Sync] fetch failed:', e1.message, '— trying JSONP...');
-
-    // วิธีที่ 2: JSONP — fallback สำหรับบาง environment ที่บล็อก redirect
     try {
       const data = await fetchViaJsonp(cfg.url);
       applyResponseData(data);
@@ -632,7 +648,6 @@ async function syncData() {
     renderAll();
     toast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต', '#FF4D4D');
   }
-
   isSyncing = false;
 }
 
@@ -666,7 +681,6 @@ function requestSetupAccess(el) {
 function lockSetup() {
   setupUnlocked = false;
   toast('🔒 ล็อค Setup แล้ว');
-  // กลับไปหน้า home
   goPage('home', document.querySelector('.nav-item'));
   document.querySelectorAll('.nav-item').forEach((x,i) => x.classList.toggle('active', i===0));
 }
@@ -724,7 +738,7 @@ function checkPin() {
     pinBuffer = '';
     const dots = document.querySelector('.pin-dots');
     dots.style.animation = 'none';
-    dots.offsetHeight; // reflow
+    dots.offsetHeight;
     dots.style.animation = 'shake .3s ease';
     setTimeout(() => dots.style.animation = '', 400);
     updatePinDots();
@@ -835,12 +849,11 @@ async function addItem() {
   }
 
   toast(`กำลังบันทึก "${n}" ${cnt} ชิ้น ☁...`);
-
   try {
     await gasPost(cfg.url, { action: 'add_items', items: newItems });
     toast(`บันทึก "${n}" สำเร็จ ✓ กำลังซิงค์...`);
     document.getElementById('a-name').value = '';
-    await syncData(); // ดึงข้อมูลล่าสุดจาก Sheet (ไม่ต้องเพิ่ม local เอง หลีกเลี่ยงซ้ำ)
+    await syncData();
   } catch(e) {
     toast('มีปัญหาการส่งไป Sheet กรุณาตรวจเน็ต', '#FF4D4D');
   }
@@ -976,7 +989,6 @@ function scanItem(code) {
   document.getElementById('scan-start').style.display  = 'none';
   document.getElementById('scan-result').style.display = 'block';
 
-  // ถ้ายังไม่อยู่หน้า scan ให้เปลี่ยนหน้า
   if (!document.getElementById('page-scan').classList.contains('active')) {
     document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
@@ -1001,7 +1013,6 @@ async function confirmWithdraw() {
   if (qty < 1)          { toast('จำนวนต้องมากกว่า 0', '#FFB700'); return; }
   if (qty > curItem.stock) { toast('จำนวนเกินสต๊อก ❌', '#FF4D4D'); return; }
 
-  // snapshot ชื่อ/หน่วยก่อน cancelScan() เพื่อใช้ใน toast ข้างล่าง
   const snapName = curItem.name;
   const snapUnit = curItem.unit;
   const snapId   = curItem.id;
@@ -1009,7 +1020,7 @@ async function confirmWithdraw() {
 
   const entry = {
     action:     'withdraw',
-    timestamp:  nowISO(),            // ✅ เก็บเป็น ISO — parse ได้แน่นอน
+    timestamp:  nowISO(),
     qr_id:      snapId,
     item_name:  snapName,
     category:   snapCat,
@@ -1019,30 +1030,31 @@ async function confirmWithdraw() {
     note:       document.getElementById('r-note').value || '',
   };
 
-  // อัพเดท local cache ทันที
   curItem.stock -= qty;
-  logs.unshift({
+
+  const logEntry = {
     timestamp: entry.timestamp,
-    qr_id:     snapId,
-    item_name: snapName,
-    cat:       snapCat,
-    quantity:  qty,
-    unit:      snapUnit,
-    employee:  user,
-    note:      entry.note,
-  });
+    qr_id:     snapId     || '',
+    item_name: snapName   || '',
+    cat:       snapCat    || '',
+    quantity:  qty, // เก็บค่าเป็นตัวเลขจริงลงตัวแปรแอปพลิเคชัน
+    unit:      snapUnit   || '',
+    employee:  user       || '',
+    note:      entry.note || '',
+  };
+  
+  logs.unshift(logEntry);
   saveLocal();
-  renderLog(); // แสดงผลทันทีไม่รอ sync
+  renderLog();
 
-  cancelScan(); // curItem = null ตรงนี้ — toast ใช้ snapshot แทน ✅
-
+  cancelScan();
   toast(`กำลังบันทึกการเบิก "${snapName}" ☁...`);
 
   if (cfg.url) {
     try {
       await gasPost(cfg.url, entry);
       toast(`เบิก "${snapName}" ${qty} ${snapUnit} สำเร็จ ✓`);
-      setTimeout(syncData, 1000); // sync หลัง 1 วิ ให้ GAS บันทึกเสร็จก่อน
+      setTimeout(syncData, 1000);
     } catch(e) {
       toast('บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)', '#FFB700');
     }
@@ -1054,6 +1066,20 @@ async function confirmWithdraw() {
 // ============================================================
 // LOG
 // ============================================================
+function showRawDebug() {
+  const el = document.getElementById('debug-out');
+  if (el.style.display !== 'none') { el.style.display = 'none'; return; }
+  const sample = logs.slice(0, 3).map(l => ({
+    item_name: l.item_name,
+    quantity: l.quantity,
+    quantity_type: typeof l.quantity,
+    employee: l.employee,
+    unit: l.unit,
+  }));
+  el.textContent = JSON.stringify(sample, null, 2);
+  el.style.display = 'block';
+}
+
 function renderLog() {
   const q  = (document.getElementById('log-search').value || '').toLowerCase();
   const fw = document.getElementById('log-fw').value;
@@ -1061,7 +1087,6 @@ function renderLog() {
   const ws  = new Date(now); ws.setDate(now.getDate() - now.getDay()); ws.setHours(0,0,0,0);
 
   const fl = logs.filter(l => {
-    // ค้นหา
     const searchOk = (
       (l.item_name || '').toLowerCase().includes(q) ||
       (l.employee  || '').toLowerCase().includes(q) ||
@@ -1069,9 +1094,8 @@ function renderLog() {
     );
     if (!searchOk) return false;
 
-    // filter ช่วงเวลา
     if (fw === 'all') return true;
-    const d = parseTs(l.timestamp); // ✅ parse ISO ได้ถูก
+    const d = parseTs(l.timestamp);
     if (!d) return false;
     if (fw === 'today') return d.toDateString() === now.toDateString();
     if (fw === 'week')  return d >= ws;
@@ -1079,7 +1103,6 @@ function renderLog() {
     return true;
   });
 
-  // Summary pills
   const sumEl = document.getElementById('log-summary');
   if (sumEl && fl.length) {
     const totalQty    = fl.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
@@ -1153,13 +1176,11 @@ function updateDash() {
   document.getElementById('d-qr').textContent    = items.length;
   document.getElementById('d-low').textContent   = lo.length;
 
-  // เวลาล่าสุดที่เบิก
   const lastTs = logs.length ? parseTs(logs[0].timestamp) : null;
   document.getElementById('d-lasttime').textContent = lastTs
     ? lastTs.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
     : '—';
 
-  // รายการเบิกล่าสุด
   const re = document.getElementById('d-recent-list');
   const rec = logs.slice(0, 4);
   re.innerHTML = rec.length
@@ -1177,7 +1198,6 @@ function updateDash() {
       </div>`).join('')
     : '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">ยังไม่มีรายการ</div>';
 
-  // สต๊อกใกล้หมด
   const loe = document.getElementById('d-low-list');
   loe.innerHTML = lo.length
     ? lo.map(it => `
@@ -1195,8 +1215,8 @@ function updateDash() {
 // ============================================================
 // INIT
 // ============================================================
-updateDash(); // render cache ทันที
-syncData();   // แล้วค่อย sync จาก cloud
+updateDash();
+syncData();
 </script>
 </body>
 </html>
