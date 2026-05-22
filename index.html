@@ -1021,8 +1021,18 @@ async function confirmWithdraw() {
 
   // อัพเดท local cache ทันที
   curItem.stock -= qty;
-  logs.unshift({ ...entry, qr_id: snapId, item_name: snapName });
+  logs.unshift({
+    timestamp: entry.timestamp,
+    qr_id:     snapId,
+    item_name: snapName,
+    cat:       snapCat,
+    quantity:  qty,
+    unit:      snapUnit,
+    employee:  user,
+    note:      entry.note,
+  });
   saveLocal();
+  renderLog(); // แสดงผลทันทีไม่รอ sync
 
   cancelScan(); // curItem = null ตรงนี้ — toast ใช้ snapshot แทน ✅
 
@@ -1072,9 +1082,9 @@ function renderLog() {
   // Summary pills
   const sumEl = document.getElementById('log-summary');
   if (sumEl && fl.length) {
-    const totalQty = fl.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
-    const uniqueEmp = new Set(fl.map(l => l.employee).filter(Boolean)).size;
-    const uniqueItem = new Set(fl.map(l => l.item_name).filter(Boolean)).size;
+    const totalQty    = fl.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
+    const uniqueEmp   = new Set(fl.map(l => l.employee).filter(Boolean)).size;
+    const uniqueItem  = new Set(fl.map(l => l.item_name || l.name).filter(Boolean)).size;
     sumEl.innerHTML = `
       <span class="pill pill-lime"><i class="ti ti-list-check" style="font-size:12px"></i> ${fl.length} รายการ</span>
       <span class="pill pill-purple"><i class="ti ti-box" style="font-size:12px"></i> ${uniqueItem} ชนิด</span>
@@ -1088,19 +1098,23 @@ function renderLog() {
   el.innerHTML = fl.length
     ? fl.map(l => {
         const icon = items.find(x => x.id === l.qr_id)?.icon || '📦';
+        const itemName = l.item_name || l.name || '(ไม่ระบุอุปกรณ์)';
+        const empName  = l.employee  || '(ไม่ระบุชื่อ)';
+        const qty      = Number(l.quantity) || 0;
+        const unit     = l.unit || 'ชิ้น';
         const noteHtml = l.note ? `<div class="log-note" title="${l.note}">📝 ${l.note}</div>` : '';
         return `
       <div class="log-item">
         <div class="log-icon">${icon}</div>
         <div style="flex:1;min-width:0">
-          <div class="log-name">${l.item_name}</div>
-          <div class="log-who"><span class="log-who-icon">👤</span><span>${l.employee}</span></div>
+          <div class="log-name">${itemName}</div>
+          <div class="log-who"><span class="log-who-icon">👤</span><span>${empName}</span></div>
           <div class="log-meta">${displayTs(l.timestamp)}</div>
           ${noteHtml}
         </div>
         <div class="log-qty-wrap">
-          <div class="log-qty">${l.quantity}</div>
-          <div class="log-unit">${l.unit || ''}</div>
+          <div class="log-qty">${qty}</div>
+          <div class="log-unit">${unit}</div>
         </div>
       </div>`;
       }).join('')
