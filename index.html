@@ -148,8 +148,8 @@ label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-to
 <div class="app">
   <div class="topbar">
     <div class="logo-wrap">
-      <div class="logo-pill">StockScan</div>
-      <span class="logo-sub">v2.1 (Cloud)</span>
+      <div class="logo-pill">Stock</div>
+      <span class="logo-sub">IDC3</span>
     </div>
     <div class="topbar-right" onclick="syncData()">
       <div class="dot-badge" id="sync-dot"></div>
@@ -489,7 +489,7 @@ logs = logs.map(l => ({
   qr_id:     String(l.qr_id     || '').trim(),
   item_name: String(l.item_name || l.name || '').trim(),
   cat:       String(l.cat       || l.category || '').trim(),
-  quantity:  Number(l.quantity  || 0),
+  quantity: parseInt(String(l.quantity ?? l.Quantity ?? l.qty ?? 0).trim()) || 0,
   unit:      String(l.unit      || '').trim(),
   employee:  String(l.employee  || '').trim(),
   note:      String(l.note      || '').trim(),
