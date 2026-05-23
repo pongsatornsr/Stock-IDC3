@@ -1,1222 +1,716 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>StockScan V2 (Cloud Sync)</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+Thai:wght@300;400;500;700&family=Space+Mono&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --lime:#C8FF00;--lime2:#a8d900;--limeDim:rgba(200,255,0,0.12);
-  --purple:#9B5FFF;--purpleDim:rgba(155,95,255,0.13);
-  --pink:#FF5FA0;--pinkDim:rgba(255,95,160,0.12);
-  --cyan:#00E5FF;--cyanDim:rgba(0,229,255,0.1);
-  --bg:#0C0C0F;--bg2:#141418;--bg3:#1C1C22;--bg4:#252530;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --txt:#F0F0F8;--txt2:#9090A8;--txt3:#555568;
-  --r:14px;--r2:20px;--r3:28px;
-}
-body{background:var(--bg);color:var(--txt);font-family:'Noto Sans Thai','Syne',sans-serif;font-size:14px;line-height:1.5;max-width:390px;margin:0 auto;min-height:100vh;overflow-x:hidden}
-.mono{font-family:'Space Mono',monospace}
-.syne{font-family:'Syne',sans-serif}
-.app{display:flex;flex-direction:column;min-height:100vh;padding-bottom:80px}
-.topbar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.logo-wrap{display:flex;align-items:center;gap:8px}
-.logo-pill{background:var(--lime);color:#0C0C0F;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;padding:4px 12px;border-radius:100px;letter-spacing:-0.2px}
-.logo-sub{font-size:11px;color:var(--txt3);font-family:'Space Mono',monospace}
-.topbar-right{display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 8px;border-radius:8px;background:var(--bg3)}
-.topbar-right:active{background:var(--bg4)}
-.dot-badge{width:8px;height:8px;border-radius:50%;background:var(--txt3);flex-shrink:0}
-.page{display:none;padding:0 14px;animation:fadeUp .22s ease}
-.page.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.section-eyebrow{font-family:'Space Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:1.8px;text-transform:uppercase;margin-bottom:8px;margin-top:20px}
-.hero-num{font-family:'Syne',sans-serif;font-size:52px;font-weight:800;line-height:1;letter-spacing:-2px;color:var(--lime);text-shadow:0 0 40px rgba(200,255,0,0.3)}
-.hero-label{font-size:12px;color:var(--txt2);margin-top:2px}
-.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
-.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px}
-.stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;letter-spacing:-1px}
-.stat-lbl{font-size:11px;color:var(--txt2);margin-top:3px}
-.stat-lime .stat-val{color:var(--lime)}
-.stat-purple .stat-val{color:var(--purple)}
-.stat-pink .stat-val{color:var(--pink)}
-.stat-cyan .stat-val{color:var(--cyan)}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
-.card+.card{margin-top:10px}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:500}
-.pill-lime{background:var(--limeDim);color:var(--lime);border:1px solid rgba(200,255,0,0.25)}
-.pill-purple{background:var(--purpleDim);color:var(--purple);border:1px solid rgba(155,95,255,0.3)}
-.pill-pink{background:var(--pinkDim);color:var(--pink);border:1px solid rgba(255,95,160,0.25)}
-.pill-warn{background:rgba(255,183,0,0.12);color:#FFB700;border:1px solid rgba(255,183,0,0.25)}
-.pill-red{background:rgba(255,77,77,0.12);color:#FF4D4D;border:1px solid rgba(255,77,77,0.25)}
-input,select,textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--txt);font-family:'Noto Sans Thai',sans-serif;font-size:14px;padding:13px 14px;width:100%;outline:none;transition:.15s;-webkit-appearance:none}
-input:focus,select:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,255,0,0.12)}
-label{font-size:12px;color:var(--txt2);display:block;margin-bottom:6px;margin-top:14px}
-.btn{width:100%;padding:15px;border-radius:var(--r2);border:none;font-family:'Noto Sans Thai','Syne',sans-serif;font-size:15px;cursor:pointer;font-weight:700;transition:.15s;letter-spacing:-0.2px}
-.btn:active{transform:scale(0.97)}
-.btn-lime{background:var(--lime);color:#0C0C0F}
-.btn-lime:hover{background:var(--lime2)}
-.btn-ghost{background:var(--bg3);color:var(--txt2);border:1px solid var(--border2)}
-.btn-ghost:hover{color:var(--txt)}
-.btn-sm{padding:10px 16px;font-size:13px;border-radius:var(--r);width:auto}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:rgba(12,12,15,0.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:50;padding:8px 4px 20px}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;cursor:pointer;border:none;background:transparent;color:var(--txt3);font-family:'Noto Sans Thai',sans-serif;font-size:10px;transition:.15s;border-radius:var(--r)}
-.nav-item.active{color:var(--lime)}
-.nav-item i{font-size:22px}
-.nav-item.active i{color:var(--lime)}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StockScan — IDC3</title>
+  <link rel="manifest" href="">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&family=Space+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #09D1C7; --teal-dim: #E4F7F6; --teal-border: #99DDD9;
+      --mint: #46DFB1; --mint-dim: #E5F7F0; --mint-border: #96DEC5;
+      --mid-teal: #15919B; --deep-teal: #0C6478; --navy: #213A58;
+      --bg: #EEF5F7; --surface: #FFFFFF; --surface2: #F5FAFB;
+      --txt: #213A58; --txt2: #4A6878; --txt3: #8AACB8;
+      --r: 14px; --r2: 20px; --r3: 28px;
+      --shadow-sm: 0 1px 4px rgba(33,58,88,0.06), 0 2px 8px rgba(33,58,88,0.04);
+      --shadow-md: 0 4px 16px rgba(33,58,88,0.08), 0 1px 4px rgba(33,58,88,0.05);
+    }
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); }
+    body { font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; line-height: 1.5; color: var(--txt); }
+    #root { max-width: 390px; margin: 0 auto; min-height: 100vh; }
+    input, select, button { font-family: inherit; }
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-/* ===== CAMERA SCAN UI ===== */
-.scan-hero{margin:20px 0 16px;text-align:center;padding:28px 20px;background:var(--bg2);border:2px dashed rgba(200,255,0,0.25);border-radius:var(--r3);cursor:pointer;transition:.2s}
-.scan-hero:hover{background:var(--limeDim);border-color:rgba(200,255,0,0.5)}
-.scan-icon-big{font-size:48px;margin-bottom:10px;line-height:1}
-.scan-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--lime);letter-spacing:-0.5px}
-.scan-hint{font-size:12px;color:var(--txt3);margin-top:4px}
-.sample-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.qr-chip{padding:6px 12px;border-radius:100px;background:var(--bg3);border:1px solid var(--border2);font-family:'Space Mono',monospace;font-size:11px;color:var(--cyan);cursor:pointer;transition:.15s}
-.qr-chip:hover{background:var(--cyanDim);border-color:var(--cyan)}
-#camera-overlay{display:none;position:fixed;inset:0;z-index:100;background:#000;flex-direction:column;align-items:center;justify-content:center}
-#camera-overlay.open{display:flex}
-#cam-video{width:100%;max-width:390px;height:100%;object-fit:cover;position:absolute;inset:0}
-#cam-canvas{display:none}
-.cam-frame-wrap{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
-.cam-frame{width:240px;height:240px;border-radius:20px;position:relative}
-.cam-frame::before,.cam-frame::after{content:'';position:absolute;width:44px;height:44px;border-color:var(--lime);border-style:solid}
-.cam-frame::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:10px 0 0 0}
-.cam-frame::after{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 10px 0}
-.cam-corner-tr,.cam-corner-bl{content:'';position:absolute;width:44px;height:44px;border-color:var(--lime);border-style:solid}
-.cam-corner-tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 10px 0 0}
-.cam-corner-bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 10px}
-.cam-scan-line{position:absolute;top:0;left:4px;right:4px;height:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);animation:scanLine 2s ease-in-out infinite;box-shadow:0 0 8px var(--lime)}
-@keyframes scanLine{0%,100%{top:8px;opacity:0}10%{opacity:1}90%{opacity:1}50%{top:calc(100% - 8px)}}
-.cam-hint{color:var(--txt2);font-size:13px;text-align:center;z-index:10}
-.cam-status{color:var(--lime);font-family:'Space Mono',monospace;font-size:11px;text-align:center;z-index:10;min-height:16px}
-.cam-close{position:absolute;top:48px;right:16px;z-index:20;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;backdrop-filter:blur(10px)}
-.cam-manual-btn{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);z-index:20;background:rgba(200,255,0,0.15);border:1px solid rgba(200,255,0,0.4);color:var(--lime);border-radius:100px;padding:10px 24px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;backdrop-filter:blur(10px);white-space:nowrap}
-
-.item-result{background:var(--bg2);border:1px solid rgba(200,255,0,0.3);border-radius:var(--r3);padding:20px;margin:14px 0}
-.item-icon-xl{font-size:40px;margin-bottom:8px}
-.item-result-name{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.5px;color:var(--txt)}
-.item-result-id{font-family:'Space Mono',monospace;font-size:11px;color:var(--txt3);margin-top:2px}
-.info-chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
-.stock-big{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--lime);letter-spacing:-1px}
-.log-item{display:flex;align-items:flex-start;gap:10px;padding:14px 0;border-bottom:1px solid var(--border)}
-.log-item:last-child{border-bottom:none;padding-bottom:0}
-.log-icon{width:40px;height:40px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;margin-top:2px}
-.log-name{font-size:14px;font-weight:700;color:var(--txt);letter-spacing:-0.2px}
-.log-who{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);margin-top:3px}
-.log-who-icon{font-size:12px;opacity:0.6}
-.log-meta{font-size:10px;color:var(--txt3);margin-top:3px;font-family:'Space Mono',monospace}
-.log-qty-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-top:2px}
-.log-qty{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--lime);letter-spacing:-0.5px;line-height:1}
-.log-unit{font-size:10px;color:var(--txt3);text-align:right}
-.log-note{font-size:10px;color:var(--txt3);margin-top:4px;padding:3px 8px;background:var(--bg3);border-radius:6px;max-width:120px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
-.admin-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);margin-bottom:8px}
-.admin-icon{width:40px;height:40px;border-radius:12px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.setup-step{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
-.setup-step:last-child{border-bottom:none}
-.step-num{width:28px;height:28px;border-radius:50%;background:var(--limeDim);border:1px solid rgba(200,255,0,0.3);color:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;flex-shrink:0;margin-top:2px}
-.step-body h4{font-size:13px;font-weight:700;margin-bottom:3px}
-.step-body p{font-size:12px;color:var(--txt2);line-height:1.6}
-.code-snip{background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);padding:10px 12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--lime);margin-top:8px;word-break:break-all}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:10px 20px;font-size:13px;display:none;z-index:300;white-space:nowrap;color:var(--txt);box-shadow:0 4px 24px rgba(0,0,0,0.5)}
-.toast.show{display:block;animation:fadeUp .2s ease}
-
-/* PIN Modal */
-#pin-modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:flex-end}
-#pin-modal.open{display:flex}
-.pin-sheet{background:var(--bg2);border-radius:var(--r3) var(--r3) 0 0;padding:28px 20px 40px;width:100%;max-width:390px;margin:0 auto;border-top:1px solid var(--border2)}
-.pin-handle{width:36px;height:4px;background:var(--border2);border-radius:100px;margin:0 auto 24px}
-.pin-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;text-align:center}
-.pin-sub{font-size:12px;color:var(--txt3);text-align:center;margin-bottom:20px}
-.pin-dots{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
-.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);transition:.2s}
-.pin-dot.filled{background:var(--lime);border-color:var(--lime);box-shadow:0 0 8px rgba(200,255,0,0.4)}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pin-key{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:18px;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--txt);cursor:pointer;transition:.1s;text-align:center;user-select:none}
-.pin-key:active{transform:scale(0.92);background:var(--bg4)}
-.pin-key.del{font-size:16px;color:var(--txt2)}
-.pin-key.zero{grid-column:2}
-.pin-error{text-align:center;color:#FF4D4D;font-size:12px;margin-top:10px;min-height:18px}
-
-@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-</style>
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
+    @keyframes toastPop { from { opacity:0; transform:translateX(-50%) translateY(8px) scale(0.92) } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1) } }
+    @keyframes scanLine { 0%,100% { top:8px; opacity:0 } 10% { opacity:1 } 90% { opacity:1 } 50% { top:calc(100% - 8px) } }
+    @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+  </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="logo-wrap">
-      <div class="logo-pill">Stock</div>
-      <span class="logo-sub">IDC3</span>
-    </div>
-    <div class="topbar-right" onclick="syncData()">
-      <div class="dot-badge" id="sync-dot"></div>
-      <span style="font-size:11px;color:var(--txt2)" class="mono" id="sheet-status-dot">กำลังซิงค์...</span>
-    </div>
-  </div>
+  <div id="root"></div>
 
-  <div class="page active" id="page-home">
-    <div class="section-eyebrow">สัปดาห์นี้</div>
-    <div style="display:flex;align-items:baseline;gap:12px">
-      <div class="hero-num" id="d-week">0</div>
-      <div>
-        <div style="font-size:13px;color:var(--txt2)">ครั้งที่เบิก</div>
-        <div class="mono" style="font-size:10px;color:var(--txt3)" id="d-lasttime">—</div>
-      </div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card stat-lime"><div class="stat-val" id="d-total">0</div><div class="stat-lbl">รายการอุปกรณ์</div></div>
-      <div class="stat-card stat-pink"><div class="stat-val" id="d-today">0</div><div class="stat-lbl">เบิกวันนี้</div></div>
-    </div>
-    <div class="stats-row" style="margin-top:0">
-      <div class="stat-card stat-purple"><div class="stat-val" id="d-qr">0</div><div class="stat-lbl">QR ที่ออกแล้ว</div></div>
-      <div class="stat-card stat-cyan"><div class="stat-val" id="d-low" style="color:var(--cyan)">0</div><div class="stat-lbl">สต๊อกใกล้หมด</div></div>
-    </div>
-    <div class="section-eyebrow" style="margin-top:20px">เบิกล่าสุด</div>
-    <div class="card" id="d-recent-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">ยังไม่มีรายการ</div></div>
-    <div class="section-eyebrow">สต๊อกใกล้หมด</div>
-    <div class="card" id="d-low-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">สต๊อกปกติทั้งหมด ✓</div></div>
-  </div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-  <div class="page" id="page-scan">
-    <div id="scan-start">
-      <div class="scan-hero" onclick="openCamera()">
-        <div class="scan-icon-big"><i class="ti ti-camera" style="font-size:52px;color:var(--lime)"></i></div>
-        <div class="scan-title">แตะเพื่อเปิดกล้อง</div>
-        <div class="scan-hint">สแกน QR Code ด้วยกล้องโทรศัพท์</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <span style="font-size:11px;color:var(--txt3)">หรือ</span>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>
-      <input id="manual-input" placeholder="พิมพ์รหัส QR เช่น QR-PAPER1" style="margin-bottom:10px">
-      <button class="btn btn-ghost" style="border-radius:var(--r2);font-weight:700" onclick="doManualScan()">ค้นหาอุปกรณ์</button>
-      <div style="margin-top:16px">
-        <div class="section-eyebrow">QR ตัวอย่าง (แตะทดสอบ)</div>
-        <div class="sample-chips" id="sample-chips"></div>
-      </div>
-    </div>
-    <div id="scan-result" style="display:none">
-      <div class="item-result">
-        <div class="item-icon-xl" id="r-icon">📦</div>
-        <div class="item-result-name" id="r-name">—</div>
-        <div class="item-result-id mono" id="r-id">—</div>
-        <div class="info-chips">
-          <span class="pill pill-purple" id="r-cat">—</span>
-          <span class="pill pill-lime" id="r-stock-pill">—</span>
-        </div>
-        <div style="display:flex;align-items:baseline;gap:8px;margin:8px 0 16px">
-          <div class="stock-big" id="r-stock-num">—</div>
-          <div style="font-size:13px;color:var(--txt2)" id="r-unit">—</div>
-          <div style="font-size:11px;color:var(--txt3)">คงเหลือ</div>
-        </div>
-        <div style="border-top:1px solid var(--border);padding-top:14px">
-          <label>ชื่อผู้เบิก</label>
-          <input id="r-user" placeholder="ชื่อ หรือรหัสพนักงาน">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div><label>จำนวนที่เบิก</label><input id="r-qty" type="number" min="1" value="1"></div>
-            <div><label>หน่วย</label><input id="r-unit2" readonly style="opacity:0.5"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef } = React;
+
+    /* ─── Helpers ─── */
+    function parseTs(s) { try { const d=new Date(s); return isNaN(d)?null:d; } catch(e){return null;} }
+    function displayTs(s) { try { return new Date(s).toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e){return s||'—';} }
+    function normalizeItems(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.map(it=>({ id:String(it.id||it.ID||'').trim(), name:String(it.name||it.Name||'').trim(), cat:String(it.cat||it.category||it.Category||'').trim(), stock:Number(String(it.stock??it.Stock??0).replace(/[^0-9.]/g,''))||0, unit:String(it.unit||it.Unit||'อัน').trim(), min:Number(String(it.min??it.Min??0).replace(/[^0-9.]/g,''))||0, icon:String(it.icon||it.Icon||'📦').trim() })).filter(it=>it.id);
+    }
+    function normalizeLogs(arr) {
+      if (!Array.isArray(arr)) return [];
+      return arr.map(l=>({ timestamp:String(l.timestamp||'').trim(), qr_id:String(l.qr_id||'').trim(), item_name:String(l.item_name||l.Item_Name||l.name||'').trim(), cat:String(l.cat||l.category||'').trim(), quantity:parseInt(String(l.quantity??l.Quantity??0))||0, unit:String(l.unit||l.Unit||'').trim(), employee:String(l.employee||l.Employee||'').trim(), note:String(l.note||l.Note||'').trim() }));
+    }
+    function uid() { return 'QR-'+Date.now().toString(36).toUpperCase().slice(-4)+Math.random().toString(36).substr(2,3).toUpperCase(); }
+    function nowISO() { return new Date().toISOString(); }
+    function loadLocal(key,fb) { try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;} }
+
+    /* ─── Constants ─── */
+    const SECURE_PIN = "240739";
+    const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyOqsDZbO6E8W0Ka0EF8jv-BalyMtSiYorH8Vc4lZy3H_fIkeVfaMdldrkvAMBeyFOo/exec";
+
+    /* ─── LogRow ─── */
+    function LogRow({ l, items, showTime, isLast }) {
+      const it = items.find(x=>x.id===l.qr_id);
+      const icon = it ? it.icon : '📦';
+      const qty = Number(l.quantity)||0;
+      return (
+        <div style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 0', borderBottom: isLast?'none':'1px solid var(--teal-border)' }}>
+          <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{icon}</div>
+          <div style={{ flex:1,minWidth:0 }}>
+            <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{l.item_name||l.qr_id}</div>
+            <div style={{ fontSize:'12px',color:'var(--txt2)' }}>{l.employee||'—'}</div>
+            {showTime && l.timestamp && <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',marginTop:'1px' }}>{displayTs(l.timestamp)}</div>}
+            {l.note && <div style={{ fontSize:'11px',color:'var(--txt3)',marginTop:'1px',fontStyle:'italic' }}>{l.note}</div>}
           </div>
-          <label>หมายเหตุ</label>
-          <input id="r-note" placeholder="แผนก / เหตุผล (ไม่บังคับ)">
+          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'24px',fontWeight:800,color:'var(--teal)',letterSpacing:'-1px',flexShrink:0,lineHeight:1 }}>{qty}<span style={{ fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'11px',color:'var(--txt3)',fontWeight:400,marginLeft:'3px' }}>{l.unit}</span></div>
         </div>
-      </div>
-      <button class="btn btn-lime" onclick="confirmWithdraw()"><i class="ti ti-check" style="font-size:18px;vertical-align:-3px"></i> ยืนยันการเบิก</button>
-      <button class="btn btn-ghost" onclick="cancelScan()" style="margin-top:8px;border-radius:var(--r2)">ยกเลิก</button>
-    </div>
-  </div>
+      );
+    }
 
-  <div class="page" id="page-log">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;margin-bottom:10px">
-      <select id="log-fw" onchange="renderLog()" style="padding:10px 12px;font-size:13px">
-        <option value="all">ทุกช่วงเวลา</option>
-        <option value="today">วันนี้</option>
-        <option value="week" selected>สัปดาห์นี้</option>
-        <option value="month">เดือนนี้</option>
-      </select>
-      <button class="btn btn-ghost btn-sm" onclick="syncData()" style="border-radius:var(--r)"><i class="ti ti-refresh" style="font-size:16px;vertical-align:-2px"></i> รีเฟรชข้อมูล</button>
-    </div>
-    <input id="log-search" placeholder="ค้นหาชื่อ หรืออุปกรณ์..." oninput="renderLog()" style="margin-bottom:10px">
-    <div id="log-summary" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
-    <div style="display:flex;align-items:center;gap:10px;padding:0 0 6px;border-bottom:1px solid var(--border)">
-      <div style="width:40px;flex-shrink:0"></div>
-      <div style="flex:1;font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase">อุปกรณ์ / ผู้เบิก</div>
-      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:1.2px;text-transform:uppercase;text-align:right;flex-shrink:0">จำนวน</div>
-    </div>
-    <div class="card" style="padding:0 16px" id="log-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
-    <div style="margin-top:12px">
-      <button onclick="showRawDebug()" class="btn btn-ghost" style="border-radius:var(--r);font-size:12px;padding:10px">🔍 ดู Raw Data (Debug)</button>
-      <pre id="debug-out" style="display:none;margin-top:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto"></pre>
-    </div>
-  </div>
-
-  <div class="page" id="page-admin">
-    <div class="card" style="margin-top:14px">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.3px;color:var(--lime);margin-bottom:14px">+ เพิ่มอุปกรณ์</div>
-      <label>ชื่ออุปกรณ์</label>
-      <input id="a-name" placeholder="เช่น กระดาษ A4">
-      <label>หมวดหมู่</label>
-      <select id="a-cat">
-        <option>เครื่องเขียน</option><option>อุปกรณ์สำนักงาน</option><option>วัสดุสิ้นเปลือง</option><option>อุปกรณ์ IT</option><option>อื่นๆ</option>
-      </select>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label>จำนวนคงเหลือ</label><input id="a-stock" type="number" value="100"></div>
-        <div><label>หน่วย</label><input id="a-unit" placeholder="อัน/แผ่น"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label>แจ้งเตือนเมื่อ ≤</label><input id="a-min" type="number" value="10"></div>
-        <div><label>Emoji icon</label><input id="a-icon" value="📦" maxlength="2"></div>
-      </div>
-      <label>ออก QR Code จำนวน (ชิ้น)</label>
-      <input id="a-qrn" type="number" min="1" max="99" value="1">
-      <button class="btn btn-lime" onclick="addItem()" style="margin-top:14px"><i class="ti ti-plus" style="font-size:18px;vertical-align:-3px"></i> บันทึกและสร้าง QR Code</button>
-    </div>
-    <div class="section-eyebrow">รายการอุปกรณ์ (ดึงจาก Sheet)</div>
-    <div id="admin-list"><div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">กำลังดึงข้อมูล...</div></div>
-  </div>
-
-  <div class="page" id="page-setup">
-    <div class="card" style="margin-top:14px">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.3px;color:var(--purple);margin-bottom:14px">ตั้งค่าเชื่อมต่อ Google Sheet</div>
-      <label>Google Apps Script URL</label>
-      <input id="s-url" placeholder="https://script.google.com/macros/s/..." oninput="saveSettings()">
-      <div class="btn-row">
-        <button class="btn btn-lime btn-sm" onclick="syncData()" style="border-radius:var(--r)">ทดสอบเชื่อมต่อ</button>
-        <button class="btn btn-ghost btn-sm" onclick="lockSetup()" style="border-radius:var(--r)"><i class="ti ti-lock" style="font-size:14px;vertical-align:-2px"></i> ล็อค Setup</button>
-      </div>
-    </div>
-    <div class="section-eyebrow">วิธีตั้งค่าสคริปต์</div>
-    <div class="card">
-      <div class="setup-step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h4>อัปเดต Apps Script</h4>
-          <p>เข้าไปที่ Google Sheet > Extensions > Apps Script<br><b>ลบโค้ดเก่าทิ้งทั้งหมด แล้ววางโค้ดใหม่ด้านล่างแทน</b></p>
-          <button class="btn btn-ghost btn-sm" onclick="copyGAS()" style="margin-top:8px;border-radius:var(--r)"><i class="ti ti-copy" style="font-size:14px;vertical-align:-2px"></i> Copy โค้ด GAS</button>
+    /* ─── TopBar ─── */
+    const STATUS_MAP = {
+      syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},
+      ok:{color:'var(--teal)',text:'ข้อมูลตรงกัน ✓'},
+      error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},
+      none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'},
+    };
+    function TopBar({ syncStatus, onSync }) {
+      const s = STATUS_MAP[syncStatus]||STATUS_MAP.none;
+      return (
+        <div style={{ padding:'20px 16px 0',display:'flex',alignItems:'center',justifyContent:'space-between' }}>
+          <div style={{ display:'flex',alignItems:'center',gap:'8px' }}>
+            <div style={{ background:'var(--navy)',color:'#fff',fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'13px',padding:'5px 14px',borderRadius:'100px',letterSpacing:'0.3px',boxShadow:'0 2px 8px rgba(33,58,88,0.18)' }}>Stock</div>
+            <span style={{ fontSize:'11px',color:'var(--txt3)',fontFamily:"'Space Mono',monospace",letterSpacing:'.5px' }}>IDC3</span>
+          </div>
+          <div onClick={onSync} style={{ display:'flex',alignItems:'center',gap:'6px',cursor:'pointer',padding:'6px 12px',borderRadius:'100px',background:'var(--surface)',border:'1px solid var(--teal-border)',boxShadow:'var(--shadow-sm)' }}>
+            <div style={{ width:'7px',height:'7px',borderRadius:'50%',background:s.color,flexShrink:0 }} />
+            <span style={{ fontSize:'11px',color:s.color,fontFamily:"'Space Mono',monospace" }}>{s.text}</span>
+          </div>
         </div>
-      </div>
-      <div class="setup-step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h4>Deploy เป็น Web App</h4>
-          <p>Deploy > New deployment > Web app<br>Execute as: <em>Me</em><br>Who has access: <em>Anyone</em><br>Copy URL มาใส่ช่องด้านบน</p>
+      );
+    }
+
+    /* ─── BottomNav ─── */
+    function NavBtn({ active, icon, label, onClick }) {
+      return (
+        <button onClick={onClick} style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'3px',padding:'8px 4px',cursor:'pointer',border:'none',background:'transparent',color:active?'var(--teal)':'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'10px',transition:'.2s',borderRadius:'8px',position:'relative' }}>
+          <i className={`ti ${icon}`} style={{ fontSize:'22px',transform:active?'translateY(-2px) scale(1.1)':'none',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)' }} />
+          <span>{label}</span>
+          {active && <div style={{ position:'absolute',bottom:0,width:'20px',height:'3px',background:'var(--teal)',borderRadius:'100px 100px 0 0' }} />}
+        </button>
+      );
+    }
+    function BottomNav({ activePage, onGoHome, onGoLog, onGoScan, onGoAdmin, onGoSetup }) {
+      return (
+        <div style={{ position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:'390px',background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)' }}>
+          <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome} />
+          <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog} />
+          <div style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative' }}>
+            <button onClick={onGoScan} style={{ position:'absolute',bottom:'8px',width:'52px',height:'52px',borderRadius:'50%',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35)',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
+              <i className="ti ti-scan" style={{ fontSize:'22px',color:'#fff' }} />
+            </button>
+          </div>
+          <NavBtn active={activePage==='admin'} icon="ti-package"  label="เพิ่มอุปกรณ์" onClick={onGoAdmin} />
+          <NavBtn active={activePage==='setup'} icon="ti-settings" label="ตั้งค่า"      onClick={onGoSetup} />
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+      );
+    }
 
-<div class="bottom-nav">
-  <button class="nav-item active" onclick="goPage('home',this)" aria-label="ภาพรวม">
-    <i class="ti ti-layout-dashboard"></i><span>ภาพรวม</span>
-  </button>
-  <button class="nav-item" onclick="goPage('scan',this)" aria-label="สแกน">
-    <i class="ti ti-qrcode"></i><span>สแกน</span>
-  </button>
-  <button class="nav-item" onclick="goPage('log',this)" aria-label="Log">
-    <i class="ti ti-list"></i><span>Log</span>
-  </button>
-  <button class="nav-item" onclick="goPage('admin',this)" aria-label="Admin">
-    <i class="ti ti-package"></i><span>Admin</span>
-  </button>
-  <button class="nav-item" id="nav-setup" onclick="requestSetupAccess(this)" aria-label="ตั้งค่า">
-    <i class="ti ti-settings"></i><span>ตั้งค่า</span>
-  </button>
-</div>
+    /* ─── PinModal ─── */
+    function PinModal({ target, correctPin, onSuccess, onClose }) {
+      const [buf,setBuf] = useState('');
+      const [error,setError] = useState('');
+      const [shake,setShake] = useState(false);
+      useEffect(()=>{setBuf('');setError('');},[target]);
+      const addKey = k => {
+        if (buf.length>=6) return;
+        const next = buf+k;
+        setBuf(next); setError('');
+        if (next.length===6) {
+          setTimeout(()=>{
+            if (next===correctPin) { onSuccess(); }
+            else { setError('❌ รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง'); setShake(true); setBuf(''); setTimeout(()=>setShake(false),400); }
+          },120);
+        }
+      };
+      const del = () => { setBuf(p=>p.slice(0,-1)); setError(''); };
+      const keys = ['1','2','3','4','5','6','7','8','9'];
+      return (
+        <div style={{ position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end' }} onClick={e=>e.target===e.currentTarget&&onClose()}>
+          <div style={{ background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:'390px',margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)' }}>
+            <div style={{ width:'36px',height:'4px',background:'var(--teal-border)',borderRadius:'100px',margin:'0 auto 24px' }} />
+            <div style={{ textAlign:'center',fontSize:'28px',marginBottom:'8px' }}>🔒</div>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,textAlign:'center',color:'var(--txt)',marginBottom:'4px' }}>Admin Mode</div>
+            <div style={{ fontSize:'12px',color:'var(--txt3)',textAlign:'center',marginBottom:'20px' }}>กรอกรหัส PIN เพื่อเข้าสู่โหมด Admin</div>
+            <div style={{ display:'flex',gap:'12px',justifyContent:'center',marginBottom:'20px',animation:shake?'shake .3s ease':'none' }}>
+              {Array.from({length:6},(_,i)=>(
+                <div key={i} style={{ width:'14px',height:'14px',borderRadius:'50%',border:`2px solid ${i<buf.length?'var(--teal)':'var(--teal-border)'}`,background:i<buf.length?'var(--teal)':'transparent',transition:'.2s',boxShadow:i<buf.length?'0 0 8px rgba(9,209,199,0.35)':'none' }} />
+              ))}
+            </div>
+            <div style={{ display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:'10px' }}>
+              {keys.map(k=>(
+                <button key={k} onClick={()=>addKey(k)} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--txt)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>{k}</button>
+              ))}
+              <div />
+              <button onClick={()=>addKey('0')} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--txt)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>0</button>
+              <button onClick={del} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontSize:'16px',color:'var(--txt2)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>⌫</button>
+            </div>
+            <div style={{ textAlign:'center',color:'#e03030',fontSize:'12px',marginTop:'12px',minHeight:'18px' }}>{error}</div>
+            <button onClick={onClose} style={{ width:'100%',padding:'13px',borderRadius:'20px',marginTop:'12px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer' }}>ยกเลิก</button>
+          </div>
+        </div>
+      );
+    }
 
-<div id="camera-overlay">
-  <video id="cam-video" autoplay playsinline muted></video>
-  <canvas id="cam-canvas"></canvas>
-  <button class="cam-close" onclick="closeCamera()"><i class="ti ti-x"></i></button>
-  <div class="cam-frame-wrap">
-    <div class="cam-frame">
-      <div class="cam-corner-tr"></div>
-      <div class="cam-corner-bl"></div>
-      <div class="cam-scan-line"></div>
-    </div>
-    <div class="cam-hint">วาง QR Code ให้อยู่ในกรอบ</div>
-    <div class="cam-status" id="cam-status">กำลังเปิดกล้อง...</div>
-  </div>
-  <button class="cam-manual-btn" onclick="closeCamera();setTimeout(()=>document.getElementById('manual-input').focus(),200)">⌨ พิมพ์รหัสแทน</button>
-</div>
+    /* ─── CameraOverlay ─── */
+    function CameraOverlay({ onScan, onClose }) {
+      const videoRef = useRef(null);
+      const canvasRef = useRef(null);
+      const streamRef = useRef(null);
+      const rafRef = useRef(null);
+      const [status,setStatus] = useState('กำลังเปิดกล้อง...');
+      useEffect(()=>{
+        let lastScan=0,active=true;
+        async function start() {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
+            if(!active){stream.getTracks().forEach(t=>t.stop());return;}
+            streamRef.current=stream; const video=videoRef.current; video.srcObject=stream; await video.play();
+            setStatus('พร้อมสแกน ✓'); scanLoop();
+          } catch(err){setStatus('❌ ไม่สามารถเปิดกล้องได้');setTimeout(()=>onClose(),2000);}
+        }
+        function scanLoop(){
+          const video=videoRef.current; const canvas=canvasRef.current;
+          if(!video||!canvas)return; const ctx=canvas.getContext('2d');
+          function tick(){
+            if(!active)return;
+            if(video.readyState===video.HAVE_ENOUGH_DATA){
+              canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+              ctx.drawImage(video,0,0,canvas.width,canvas.height);
+              const now=Date.now();
+              if(now-lastScan>300){lastScan=now;try{const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);const code=window.jsQR&&window.jsQR(imgData.data,imgData.width,imgData.height,{inversionAttempts:'dontInvert'});if(code&&code.data){active=false;onScan(code.data.trim());return;}}catch(e){}}
+            }
+            rafRef.current=requestAnimationFrame(tick);
+          }
+          rafRef.current=requestAnimationFrame(tick);
+        }
+        start();
+        return()=>{active=false;if(rafRef.current)cancelAnimationFrame(rafRef.current);if(streamRef.current)streamRef.current.getTracks().forEach(t=>t.stop());};
+      },[]);
+      return (
+        <div style={{ position:'fixed',inset:0,zIndex:100,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center' }}>
+          <video ref={videoRef} autoPlay playsInline muted style={{ width:'100%',maxWidth:'390px',height:'100%',objectFit:'cover',position:'absolute',inset:0 }} />
+          <canvas ref={canvasRef} style={{ display:'none' }} />
+          <button onClick={onClose} style={{ position:'absolute',top:'48px',right:'16px',zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'50%',width:'44px',height:'44px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px',cursor:'pointer',backdropFilter:'blur(10px)' }}>
+            <i className="ti ti-x" />
+          </button>
+          <div style={{ position:'relative',zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:'16px',width:'100%' }}>
+            <div style={{ width:'240px',height:'240px',borderRadius:'20px',position:'relative',boxShadow:'0 0 0 2000px rgba(33,58,88,0.6)' }}>
+              {[{top:0,left:0,borderWidth:'3px 0 0 3px',borderRadius:'10px 0 0 0'},{top:0,right:0,borderWidth:'3px 3px 0 0',borderRadius:'0 10px 0 0'},{bottom:0,left:0,borderWidth:'0 0 3px 3px',borderRadius:'0 0 0 10px'},{bottom:0,right:0,borderWidth:'0 3px 3px 0',borderRadius:'0 0 10px 0'}].map((s,i)=>(
+                <div key={i} style={{ position:'absolute',width:'44px',height:'44px',borderColor:'var(--teal)',borderStyle:'solid',...s }} />
+              ))}
+              <div style={{ position:'absolute',left:'4px',right:'4px',height:'2px',background:'linear-gradient(90deg, transparent, var(--teal), transparent)',animation:'scanLine 2s ease-in-out infinite' }} />
+            </div>
+            <div style={{ color:'rgba(255,255,255,0.7)',fontSize:'13px',textAlign:'center' }}>วาง QR Code ให้อยู่ในกรอบ</div>
+            <div style={{ color:'#fff',fontFamily:"'Space Mono',monospace",fontSize:'11px',textAlign:'center',minHeight:'16px' }}>{status}</div>
+          </div>
+          <button onClick={()=>{onClose();setTimeout(()=>document.getElementById('manual-input')?.focus(),200);}} style={{ position:'absolute',bottom:'100px',left:'50%',transform:'translateX(-50%)',zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'100px',padding:'10px 24px',fontSize:'13px',fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',backdropFilter:'blur(10px)',whiteSpace:'nowrap' }}>⌨ พิมพ์รหัสแทน</button>
+        </div>
+      );
+    }
 
-<div id="pin-modal">
-  <div class="pin-sheet">
-    <div class="pin-handle"></div>
-    <div style="font-size:28px;text-align:center;margin-bottom:8px">🔒</div>
-    <div class="pin-title">Admin เท่านั้น</div>
-    <div class="pin-sub">กรอกรหัส PIN เพื่อเข้าตั้งค่าระบบ</div>
-    <div class="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
-      <div class="pin-dot" id="pd4"></div>
-      <div class="pin-dot" id="pd5"></div>
-    </div>
-    <div class="pin-pad">
-      <div class="pin-key" onclick="pinKey('1')">1</div>
-      <div class="pin-key" onclick="pinKey('2')">2</div>
-      <div class="pin-key" onclick="pinKey('3')">3</div>
-      <div class="pin-key" onclick="pinKey('4')">4</div>
-      <div class="pin-key" onclick="pinKey('5')">5</div>
-      <div class="pin-key" onclick="pinKey('6')">6</div>
-      <div class="pin-key" onclick="pinKey('7')">7</div>
-      <div class="pin-key" onclick="pinKey('8')">8</div>
-      <div class="pin-key" onclick="pinKey('9')">9</div>
-      <div class="pin-key zero" onclick="pinKey('0')">0</div>
-      <div class="pin-key del" onclick="pinDel()">⌫</div>
-    </div>
-    <div class="pin-error" id="pin-error"></div>
-    <button class="btn btn-ghost" onclick="closePinModal()" style="margin-top:14px;border-radius:var(--r2)">ยกเลิก</button>
-  </div>
-</div>
+    /* ─── PageHome ─── */
+    function StatCard({ icon, value, label, accent, dimBg, borderColor }) {
+      return (
+        <div style={{ background:dimBg,border:`1.5px solid ${borderColor}`,borderRadius:'20px',padding:'18px 16px',boxShadow:'0 2px 8px rgba(33,58,88,0.06)' }}>
+          <i className={`ti ${icon}`} style={{ fontSize:'20px',color:accent,marginBottom:'8px',display:'block' }} />
+          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'32px',fontWeight:800,lineHeight:1,letterSpacing:'-1.5px',color:accent }}>{value}</div>
+          <div style={{ fontSize:'11px',marginTop:'5px',fontWeight:600,color:accent,opacity:0.8 }}>{label}</div>
+        </div>
+      );
+    }
+    function PageHome({ items, logs, onGoScan }) {
+      const now=new Date(), ws=new Date(now);
+      ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
+      const wl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d>=ws;});
+      const tl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d.toDateString()===now.toDateString();});
+      const lo=items.filter(x=>x.stock<=x.min);
+      const lastTs=logs.length?parseTs(logs[0].timestamp):null;
+      const recent=logs.slice(0,4);
+      const Card=({children})=>(<div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'4px 16px',boxShadow:'var(--shadow-sm)' }}>{children}</div>);
+      const Eyebrow=({children})=>(<div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px',marginTop:'20px' }}>{children}</div>);
+      return (
+        <div style={{ animation:'fadeUp .2s ease' }}>
+          <div style={{ background:'linear-gradient(135deg, #0C6478 0%, #213A58 100%)',borderRadius:'28px',padding:'22px',marginTop:'14px',marginBottom:'4px',position:'relative',overflow:'hidden',boxShadow:'0 8px 32px rgba(33,58,88,0.22)' }}>
+            <div style={{ position:'absolute',top:'-40px',right:'-40px',width:'160px',height:'160px',borderRadius:'50%',background:'rgba(255,255,255,0.04)' }} />
+            <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between' }}>
+              <div>
+                <div style={{ fontSize:'10px',color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace",letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'6px' }}>สัปดาห์นี้</div>
+                <div style={{ display:'flex',alignItems:'baseline',gap:'10px' }}>
+                  <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'58px',fontWeight:800,lineHeight:1,letterSpacing:'-3px',color:'#fff' }}>{wl.length}</div>
+                  <div>
+                    <div style={{ fontSize:'13px',color:'rgba(255,255,255,0.6)',fontWeight:600 }}>ครั้งที่เบิก</div>
+                    <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'rgba(255,255,255,0.3)' }}>{lastTs?lastTs.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'—'}</div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ width:'60px',height:'60px',borderRadius:'50%',flexShrink:0,background:'radial-gradient(circle at 35% 35%, rgba(9,209,199,0.35) 0%, rgba(9,209,199,0.04) 60%, transparent 80%)',border:'1px solid rgba(9,209,199,0.18)',boxShadow:'inset 0 4px 12px rgba(9,209,199,0.12), 0 6px 20px rgba(9,209,199,0.12)',position:'relative',overflow:'hidden' }} />
+            </div>
+            <button onClick={onGoScan} style={{ marginTop:'16px',width:'100%',padding:'11px',borderRadius:'14px',border:'1px solid rgba(255,255,255,0.15)',background:'rgba(255,255,255,0.09)',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px' }}>
+              <i className="ti ti-qrcode" style={{ fontSize:'15px' }} /> เบิกอุปกรณ์เลย
+            </button>
+          </div>
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginTop:'12px' }}>
+            <StatCard icon="ti-package" value={items.length} label="รายการอุปกรณ์" accent="var(--teal)" dimBg="var(--teal-dim)" borderColor="var(--teal-border)" />
+            <StatCard icon="ti-clipboard-list" value={tl.length} label="เบิกวันนี้" accent="var(--mint)" dimBg="var(--mint-dim)" borderColor="var(--mint-border)" />
+          </div>
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginTop:'10px' }}>
+            <StatCard icon="ti-qrcode" value={items.length} label="QR ที่ออกแล้ว" accent="var(--mid-teal)" dimBg="#E8F3F5" borderColor="#A0CDD5" />
+            <StatCard icon="ti-alert-triangle" value={lo.length} label="สต๊อกใกล้หมด" accent={lo.length>0?'#CC6A00':'var(--mid-teal)'} dimBg={lo.length>0?'#FFF4EC':'#E8F3F5'} borderColor={lo.length>0?'#FFC899':'#A0CDD5'} />
+          </div>
+          <Eyebrow>เบิกล่าสุด</Eyebrow>
+          <Card>{recent.length?recent.map((l,i)=><LogRow key={i} l={l} items={items} showTime={false} isLast={i===recent.length-1} />):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'16px' }}>ยังไม่มีรายการ</div>}</Card>
+          <Eyebrow>สต๊อกใกล้หมด</Eyebrow>
+          <Card>
+            {lo.length?lo.map((it,i)=>(
+              <div key={i} style={{ display:'flex',alignItems:'center',gap:'10px',padding:'10px 0',borderBottom:i<lo.length-1?'1px solid var(--teal-border)':'none' }}>
+                <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'#FFF4EC',border:'1px solid #FFC899',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:'14px',fontWeight:700,color:'var(--txt)' }}>{it.name}</div>
+                  <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)' }}>{it.cat}</div>
+                </div>
+                <span style={{ display:'inline-flex',alignItems:'center',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'#FFF4EC',color:'#CC6A00',border:'1px solid #FFC899' }}>{it.stock} {it.unit}</span>
+              </div>
+            )):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'16px' }}>สต๊อกปกติทั้งหมด ✓</div>}
+          </Card>
+        </div>
+      );
+    }
 
-<div class="toast" id="toast"></div>
+    /* ─── PageScan ─── */
+    function PageScan({ items, curItem, onScan, onConfirm, onCancel, onOpenCamera }) {
+      const [manualCode,setManualCode]=useState('');
+      const [user,setUser]=useState('');
+      const [qty,setQty]=useState(1);
+      const [note,setNote]=useState('');
+      const handleConfirm=()=>{onConfirm(user,Number(qty),note);setUser('');setQty(1);setNote('');};
+      const handleCancel=()=>{onCancel();setUser('');setQty(1);setNote('');};
+      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+      const LS={fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
+      const sampleChips=items.slice(0,6);
+      if(curItem){
+        const isLow=curItem.stock<=curItem.min;
+        return (
+          <div style={{ animation:'fadeUp .2s ease' }}>
+            <div style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'28px',padding:'20px',margin:'14px 0',boxShadow:'var(--shadow-md)' }}>
+              <div style={{ fontSize:'38px',marginBottom:'8px' }}>{curItem.icon}</div>
+              <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)' }}>{curItem.name}</div>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--txt3)',marginTop:'2px' }}>{curItem.id}</div>
+              <div style={{ display:'flex',gap:'6px',flexWrap:'wrap',margin:'10px 0' }}>
+                <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'rgba(9,209,199,0.15)',color:'var(--mid-teal)',border:'1px solid var(--teal-border)' }}>{curItem.cat}</span>
+                <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:isLow?'#FFF4EC':'var(--mint-dim)',color:isLow?'#CC6A00':'var(--mid-teal)',border:`1px solid ${isLow?'#FFC899':'var(--mint-border)'}` }}>{isLow?'สต๊อกใกล้หมด':'สต๊อกปกติ'}</span>
+              </div>
+              <div style={{ display:'flex',alignItems:'baseline',gap:'8px',margin:'4px 0 16px' }}>
+                <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'40px',fontWeight:800,color:isLow?'#CC6A00':'var(--teal)',letterSpacing:'-1.5px' }}>{curItem.stock}</div>
+                <div style={{ fontSize:'13px',color:'var(--txt2)' }}>{curItem.unit}</div>
+                <div style={{ fontSize:'11px',color:'var(--txt3)' }}>คงเหลือ</div>
+              </div>
+              <div style={{ borderTop:'1px solid var(--teal-border)',paddingTop:'14px' }}>
+                <label style={LS}>ชื่อผู้เบิก</label>
+                <input value={user} onChange={e=>setUser(e.target.value)} placeholder="ชื่อ หรือรหัสพนักงาน" style={IS} />
+                <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
+                  <div><label style={LS}>จำนวนที่เบิก</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS} /></div>
+                  <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{ ...IS,opacity:0.5 }} /></div>
+                </div>
+                <label style={LS}>หมายเหตุ</label>
+                <input value={note} onChange={e=>setNote(e.target.value)} placeholder="แผนก / เหตุผล (ไม่บังคับ)" style={IS} />
+              </div>
+            </div>
+            <button onClick={handleConfirm} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
+              <i className="ti ti-check" style={{ fontSize:'18px' }} /> ยืนยันการเบิก
+            </button>
+            <button onClick={handleCancel} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer',marginTop:'8px' }}>ยกเลิก</button>
+          </div>
+        );
+      }
+      return (
+        <div style={{ animation:'fadeUp .2s ease' }}>
+          <div onClick={onOpenCamera} style={{ margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:'28px',cursor:'pointer' }}>
+            <i className="ti ti-camera" style={{ fontSize:'48px',color:'var(--teal)',display:'block',marginBottom:'10px' }} />
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--navy)',letterSpacing:'-0.5px' }}>แตะเพื่อเปิดกล้อง</div>
+            <div style={{ fontSize:'12px',color:'var(--txt3)',marginTop:'4px' }}>สแกน QR Code ด้วยกล้องโทรศัพท์</div>
+          </div>
+          <div style={{ display:'flex',alignItems:'center',gap:'10px',margin:'14px 0' }}>
+            <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
+            <span style={{ fontSize:'11px',color:'var(--txt3)' }}>หรือ</span>
+            <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
+          </div>
+          <input id="manual-input" value={manualCode} onChange={e=>setManualCode(e.target.value)} onKeyDown={e=>e.key==='Enter'&&onScan(manualCode.trim())} placeholder="พิมพ์รหัส QR เช่น QR-PAPER1" style={{ ...IS,marginBottom:'10px' }} />
+          <button onClick={()=>{if(manualCode.trim())onScan(manualCode.trim());}} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer' }}>ค้นหาอุปกรณ์</button>
+          {sampleChips.length>0&&(
+            <div style={{ marginTop:'16px' }}>
+              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px' }}>QR ตัวอย่าง (แตะทดสอบ)</div>
+              <div style={{ display:'flex',gap:'6px',flexWrap:'wrap' }}>
+                {sampleChips.map(it=>(
+                  <div key={it.id} onClick={()=>onScan(it.id)} style={{ padding:'6px 12px',borderRadius:'100px',background:'var(--surface)',border:'1.5px solid var(--teal-border)',fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--teal)',cursor:'pointer',boxShadow:'var(--shadow-sm)' }}>{it.icon} {it.id}</div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script>
-// ============================================================
-// CONFIG
-// ============================================================
-const SECURE_PIN = "240739"; // เปลี่ยน PIN ตรงนี้
+    /* ─── PageLog ─── */
+    function PageLog({ logs, items, onSync }) {
+      const [search,setSearch]=useState('');
+      const [fw,setFw]=useState('week');
+      const [showDebug,setShowDebug]=useState(false);
+      const now=new Date(), ws=new Date(now);
+      ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
+      const filtered=logs.filter(l=>{
+        const q=search.toLowerCase();
+        const m=!q||(l.item_name||'').toLowerCase().includes(q)||(l.employee||'').toLowerCase().includes(q)||(l.qr_id||'').toLowerCase().includes(q);
+        if(!m)return false; if(fw==='all')return true;
+        const d=parseTs(l.timestamp); if(!d)return false;
+        if(fw==='today')return d.toDateString()===now.toDateString();
+        if(fw==='week')return d>=ws;
+        if(fw==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+        return true;
+      });
+      const totalQty=filtered.reduce((s,l)=>s+(Number(l.quantity)||0),0);
+      const uniqueEmp=new Set(filtered.map(l=>l.employee).filter(Boolean)).size;
+      const uniqueItem=new Set(filtered.map(l=>l.item_name).filter(Boolean)).size;
+      const SS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',padding:'10px 12px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',WebkitAppearance:'none'};
+      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',marginBottom:'10px'};
+      const Pill=({children,color,bg,border})=>(<span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:bg,color,border:`1px solid ${border}` }}>{children}</span>);
+      return (
+        <div style={{ animation:'fadeUp .2s ease' }}>
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'14px',marginBottom:'10px' }}>
+            <select value={fw} onChange={e=>setFw(e.target.value)} style={SS}>
+              <option value="all">ทุกช่วงเวลา</option><option value="today">วันนี้</option><option value="week">สัปดาห์นี้</option><option value="month">เดือนนี้</option>
+            </select>
+            <button onClick={onSync} style={{ padding:'10px 16px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px' }}>
+              <i className="ti ti-refresh" style={{ fontSize:'15px' }} /> รีเฟรช
+            </button>
+          </div>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ค้นหาชื่อ หรืออุปกรณ์..." style={IS} />
+          {filtered.length>0&&(
+            <div style={{ display:'flex',gap:'6px',marginBottom:'12px',flexWrap:'wrap' }}>
+              <Pill color="var(--mid-teal)" bg="var(--teal-dim)" border="var(--teal-border)"><i className="ti ti-list-check" style={{ fontSize:'11px' }} /> {filtered.length} รายการ</Pill>
+              <Pill color="var(--mid-teal)" bg="var(--mint-dim)" border="var(--mint-border)"><i className="ti ti-box" style={{ fontSize:'11px' }} /> {uniqueItem} ชนิด</Pill>
+              <Pill color="var(--mid-teal)" bg="#E8F3F5" border="#A0CDD5"><i className="ti ti-users" style={{ fontSize:'11px' }} /> {uniqueEmp} คน</Pill>
+              <Pill color="#CC6A00" bg="#FFF4EC" border="#FFC899"><i className="ti ti-stack-2" style={{ fontSize:'11px' }} /> รวม {totalQty} ชิ้น</Pill>
+            </div>
+          )}
+          <div style={{ display:'flex',alignItems:'center',gap:'10px',padding:'0 0 6px',borderBottom:'1px solid var(--teal-border)' }}>
+            <div style={{ width:'40px',flexShrink:0 }} />
+            <div style={{ flex:1,fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase' }}>อุปกรณ์ / ผู้เบิก</div>
+            <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase',textAlign:'right',flexShrink:0 }}>จำนวน</div>
+          </div>
+          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'0 16px',boxShadow:'var(--shadow-sm)',marginTop:'2px' }}>
+            {filtered.length?filtered.map((l,i)=><LogRow key={i} l={l} items={items} showTime isLast={i===filtered.length-1} />):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'20px' }}>ไม่มีรายการ</div>}
+          </div>
+          <div style={{ marginTop:'12px' }}>
+            <button onClick={()=>setShowDebug(v=>!v)} style={{ width:'100%',padding:'10px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',cursor:'pointer' }}>🔍 ดู Raw Data (Debug)</button>
+            {showDebug&&(<pre style={{ marginTop:'8px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:'14px',padding:'12px',fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--navy)',whiteSpace:'pre-wrap',wordBreak:'break-all',maxHeight:'200px',overflowY:'auto' }}>{JSON.stringify(logs.slice(0,3).map(l=>({item_name:l.item_name,quantity:l.quantity,employee:l.employee,unit:l.unit})),null,2)}</pre>)}
+          </div>
+        </div>
+      );
+    }
 
-// GAS Code ที่จะ Copy ให้ผู้ดูแล deploy (อัปเดตเวอร์ชันแก้ไขบั๊กดักจับประเภทตัวเลขแล้ว)
-const GAS_CODE = `function doGet(e) {
+    /* ─── PageAdmin ─── */
+    function AdminContent({ items, onAddItem, onDelItem, onLock }) {
+      const [form,setForm]=useState({name:'',cat:'เครื่องเขียน',stock:'100',unit:'',min:'10',icon:'📦',count:'1'});
+      const set=(k,v)=>setForm(p=>({...p,[k]:v}));
+      const handleAdd=async()=>{await onAddItem(form);setForm(p=>({...p,name:'',stock:'100',unit:'',count:'1'}));};
+      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+      const LS={fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
+      useEffect(()=>{
+        if(!window.QRCode)return;
+        const timer=setTimeout(()=>{
+          items.forEach(it=>{
+            const el=document.getElementById('qr-'+it.id); if(!el||el.dataset.generated)return;
+            el.innerHTML='';
+            try{new window.QRCode(el,{text:it.id,width:68,height:68,colorDark:'#213A58',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});el.dataset.generated='1';}catch(e){}
+          });
+        },300);
+        return()=>clearTimeout(timer);
+      },[items]);
+      const downloadQR=(id,name)=>{
+        const el=document.getElementById('qr-'+id); if(!el)return;
+        const canvas=el.querySelector('canvas'); const img=el.querySelector('img'); let dataUrl='';
+        if(canvas){const out=document.createElement('canvas');out.width=canvas.width+32;out.height=canvas.height+32;const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out.width,out.height);ctx.drawImage(canvas,16,16);dataUrl=out.toDataURL('image/png');}
+        else if(img){dataUrl=img.src;}
+        if(!dataUrl)return; const a=document.createElement('a');a.href=dataUrl;a.download=`QR-${name}-${id}.png`;a.click();
+      };
+      return (
+        <>
+          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'14px',boxShadow:'var(--shadow-sm)' }}>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'18px',letterSpacing:'-0.3px',color:'var(--teal)',marginBottom:'14px' }}>+ เพิ่มอุปกรณ์</div>
+            <label style={LS}>ชื่ออุปกรณ์</label>
+            <input value={form.name} onChange={e=>set('name',e.target.value)} placeholder="เช่น กระดาษ A4" style={IS} />
+            <label style={LS}>หมวดหมู่</label>
+            <select value={form.cat} onChange={e=>set('cat',e.target.value)} style={{ ...IS,WebkitAppearance:'none' }}>
+              <option>เครื่องเขียน</option><option>อุปกรณ์สำนักงาน</option><option>วัสดุสิ้นเปลือง</option><option>อุปกรณ์ IT</option><option>อื่นๆ</option>
+            </select>
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
+              <div><label style={LS}>จำนวนคงเหลือ</label><input type="number" value={form.stock} onChange={e=>set('stock',e.target.value)} style={IS} /></div>
+              <div><label style={LS}>หน่วย</label><input value={form.unit} onChange={e=>set('unit',e.target.value)} placeholder="อัน/แผ่น" style={IS} /></div>
+            </div>
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
+              <div><label style={LS}>แจ้งเตือนเมื่อ ≤</label><input type="number" value={form.min} onChange={e=>set('min',e.target.value)} style={IS} /></div>
+              <div><label style={LS}>Emoji icon</label><input value={form.icon} onChange={e=>set('icon',e.target.value)} maxLength={2} style={IS} /></div>
+            </div>
+            <label style={LS}>ออก QR Code จำนวน (ชิ้น)</label>
+            <input type="number" min="1" max="99" value={form.count} onChange={e=>set('count',e.target.value)} style={IS} />
+            <button onClick={handleAdd} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:'0 6px 20px rgba(9,209,199,0.28)',marginTop:'14px' }}>
+              <i className="ti ti-plus" style={{ fontSize:'18px' }} /> บันทึกและสร้าง QR Code
+            </button>
+          </div>
+          <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px',marginTop:'20px' }}>รายการอุปกรณ์</div>
+          {items.length?items.map(it=>(
+            <div key={it.id} style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'16px',padding:'16px',marginBottom:'8px',boxShadow:'var(--shadow-sm)' }}>
+              <div style={{ display:'flex',alignItems:'center',gap:'10px' }}>
+                <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
+                <div style={{ flex:1,minWidth:0 }}>
+                  <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)' }}>{it.name}</div>
+                  <div style={{ fontSize:'11px',color:'var(--txt2)',marginTop:'1px' }}>{it.cat} · {it.stock} {it.unit}</div>
+                  <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',marginTop:'1px' }}>{it.id}</div>
+                </div>
+                <div style={{ display:'flex',flexDirection:'column',gap:'4px',alignItems:'flex-end' }}>
+                  <span style={{ display:'inline-flex',padding:'3px 9px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}` }}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
+                  <button onClick={()=>onDelItem(it.id)} style={{ background:'none',border:'none',color:'var(--txt3)',fontSize:'14px',cursor:'pointer',padding:'2px 4px' }}><i className="ti ti-trash" /></button>
+                </div>
+              </div>
+              <div style={{ display:'flex',alignItems:'center',gap:'12px',background:'var(--teal-dim)',borderRadius:'12px',padding:'12px',border:'1px solid var(--teal-border)',marginTop:'12px' }}>
+                <div id={`qr-${it.id}`} style={{ background:'#fff',padding:'6px',borderRadius:'8px',flexShrink:0,width:'80px',height:'80px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'#999' }}>…</div>
+                <div style={{ flex:1 }}>
+                  <button onClick={()=>downloadQR(it.id,it.name)} style={{ display:'block',width:'100%',padding:'7px 14px',background:'rgba(9,209,199,0.12)',border:'1px solid var(--teal-border)',color:'var(--mid-teal)',borderRadius:'100px',fontSize:'12px',fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',fontWeight:600,marginBottom:'6px' }}>
+                    <i className="ti ti-download" style={{ verticalAlign:'-2px',fontSize:'13px',marginRight:'4px' }} /> บันทึก QR
+                  </button>
+                </div>
+              </div>
+            </div>
+          )):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'20px' }}>ยังไม่มีอุปกรณ์</div>}
+          <button onClick={onLock} style={{ width:'100%',padding:'12px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px',marginTop:'8px',marginBottom:'16px' }}>
+            <i className="ti ti-lock" style={{ fontSize:'14px' }} /> ล็อค Admin
+          </button>
+        </>
+      );
+    }
+    function PageAdmin({ items, setupUnlocked, onAddItem, onDelItem, onLock, onUnlock }) {
+      if(!setupUnlocked) return (
+        <div style={{ padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease' }}>
+          <div style={{ width:'72px',height:'72px',borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:'32px' }}>🔐</div>
+          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,color:'var(--txt)',marginBottom:'6px' }}>เพิ่มอุปกรณ์</div>
+          <div style={{ fontSize:'13px',color:'var(--txt3)',marginBottom:'24px' }}>ต้องกรอก PIN เพื่อเข้าถึง</div>
+          <button onClick={onUnlock} style={{ padding:'14px 32px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
+            <i className="ti ti-lock-open" style={{ fontSize:'16px',verticalAlign:'-3px',marginRight:'6px' }} /> กรอก PIN เพื่อเข้า
+          </button>
+        </div>
+      );
+      return <div style={{ animation:'fadeUp .2s ease' }}><AdminContent items={items} onAddItem={onAddItem} onDelItem={onDelItem} onLock={onLock} /></div>;
+    }
+
+    /* ─── PageSetup ─── */
+    function SetupContent({ cfg, onSave, onSync, onCopyGAS, onLock }) {
+      const [url,setUrl]=useState(cfg.url||'');
+      useEffect(()=>{setUrl(cfg.url||'');},[cfg.url]);
+      const handleInput=v=>{setUrl(v);if(v.includes('script.google.com'))onSave(v);};
+      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+      return (
+        <>
+          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'14px',boxShadow:'var(--shadow-sm)' }}>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'16px',color:'var(--txt)',marginBottom:'14px' }}>เชื่อมต่อ Google Sheet</div>
+            <label style={{ fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',fontWeight:500 }}>Google Apps Script URL</label>
+            <input value={url} onChange={e=>handleInput(e.target.value)} placeholder="https://script.google.com/macros/s/..." style={IS} />
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'14px' }}>
+              <button onClick={onSync} style={{ padding:'11px',borderRadius:'14px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:700,cursor:'pointer' }}>ทดสอบเชื่อมต่อ</button>
+              <button onClick={onLock} style={{ padding:'11px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'5px' }}>
+                <i className="ti ti-lock" style={{ fontSize:'14px' }} /> ล็อค
+              </button>
+            </div>
+          </div>
+          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'10px',boxShadow:'var(--shadow-sm)',marginBottom:'16px' }}>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:700,fontSize:'14px',color:'var(--txt)',marginBottom:'12px' }}>วิธีตั้งค่า Apps Script</div>
+            {[{num:'1',title:'อัปเดต Apps Script',desc:'เข้าไปที่ Google Sheet → Extensions → Apps Script ลบโค้ดเก่าทิ้งทั้งหมด แล้ววางโค้ดใหม่แทน',action:<button onClick={onCopyGAS} style={{ marginTop:'8px',padding:'8px 16px',borderRadius:'100px',border:'1.5px solid var(--teal-border)',background:'var(--teal-dim)',color:'var(--mid-teal)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',fontWeight:600,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:'5px' }}><i className="ti ti-copy" style={{ fontSize:'13px' }} /> Copy โค้ด GAS</button>},{num:'2',title:'Deploy เป็น Web App',desc:'Deploy → New deployment → Web app\nExecute as: Me · Who has access: Anyone\nCopy URL มาวางในช่องด้านบน'}].map((step,i)=>(
+              <div key={i} style={{ display:'flex',gap:'12px',padding:'14px 0',borderBottom:i<1?'1px solid var(--teal-border)':'none' }}>
+                <div style={{ width:'28px',height:'28px',borderRadius:'50%',background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',color:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Space Mono',monospace",fontSize:'12px',flexShrink:0,marginTop:'2px',fontWeight:700 }}>{step.num}</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:'13px',fontWeight:700,color:'var(--txt)',marginBottom:'3px' }}>{step.title}</div>
+                  <div style={{ fontSize:'12px',color:'var(--txt2)',lineHeight:1.6,whiteSpace:'pre-line' }}>{step.desc}</div>
+                  {step.action}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      );
+    }
+    function PageSetup({ cfg, setupUnlocked, syncStatus, onSave, onSync, onCopyGAS, onLock, onUnlock }) {
+      if(!setupUnlocked) return (
+        <div style={{ padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease' }}>
+          <div style={{ width:'72px',height:'72px',borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:'32px' }}>⚙️</div>
+          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,color:'var(--txt)',marginBottom:'6px' }}>ตั้งค่าระบบ</div>
+          <div style={{ fontSize:'13px',color:'var(--txt3)',marginBottom:'24px' }}>ต้องกรอก PIN เพื่อเข้าถึง</div>
+          <button onClick={onUnlock} style={{ padding:'14px 32px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
+            <i className="ti ti-lock-open" style={{ fontSize:'16px',verticalAlign:'-3px',marginRight:'6px' }} /> กรอก PIN เพื่อเข้า
+          </button>
+        </div>
+      );
+      return <div style={{ animation:'fadeUp .2s ease' }}><SetupContent cfg={cfg} onSave={onSave} onSync={onSync} onCopyGAS={onCopyGAS} onLock={onLock} /></div>;
+    }
+
+    /* ─── GAS Code string ─── */
+    const GAS_CODE = `function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let itemSh = ss.getSheetByName("Items");
   let logSh  = ss.getSheetByName("Logs");
   if (!itemSh) { itemSh = ss.insertSheet("Items"); itemSh.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); }
   if (!logSh)  { logSh  = ss.insertSheet("Logs");  logSh.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note"]); }
-
   const payload = JSON.stringify({ items: getItems(itemSh), logs: getLogs(logSh) });
   const cb = e && e.parameter && e.parameter.callback;
   if (cb) return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);
   return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);
 }
-
 function doPost(e) {
-  const ss     = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const itemSh = ss.getSheetByName("Items") || (() => { const s=ss.insertSheet("Items"); s.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); return s; })();
   const logSh  = ss.getSheetByName("Logs")  || (() => { const s=ss.insertSheet("Logs");  s.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note"]); return s; })();
-
   const data = JSON.parse(e.postData.contents);
-
-  if (data.action === "add_items") {
-    data.items.forEach(it => itemSh.appendRow([it.id, it.name, it.cat, it.stock, it.unit, it.min, it.icon]));
-  }
+  if (data.action === "add_items") { data.items.forEach(it => itemSh.appendRow([it.id, it.name, it.cat, it.stock, it.unit, it.min, it.icon])); }
   else if (data.action === "withdraw") {
     logSh.appendRow([data.timestamp, data.qr_id, data.item_name, data.category, data.quantity, data.unit, data.employee, data.note || ""]);
     const vals = itemSh.getDataRange().getValues();
     for (let i = 1; i < vals.length; i++) {
-      if (String(vals[i][0]) === String(data.qr_id)) {
-        const newStock = Number(vals[i][3]) - Number(data.quantity);
-        itemSh.getRange(i + 1, 4).setValue(newStock < 0 ? 0 : newStock);
-        break;
-      }
+      if (String(vals[i][0]) === String(data.qr_id)) { itemSh.getRange(i+1,4).setValue(Math.max(0, Number(vals[i][3]) - Number(data.quantity))); break; }
     }
   }
   else if (data.action === "delete_item") {
     const vals = itemSh.getDataRange().getValues();
-    for (let i = 1; i < vals.length; i++) {
-      if (String(vals[i][0]) === String(data.id)) { itemSh.deleteRow(i + 1); break; }
-    }
+    for (let i = 1; i < vals.length; i++) { if (String(vals[i][0]) === String(data.id)) { itemSh.deleteRow(i+1); break; } }
   }
   return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);
 }
-
 function getItems(sheet) {
-  const rows = sheet.getDataRange().getValues();
-  if (rows.length < 2) return [];
-  const h = rows[0].map(c => String(c).trim().toLowerCase());
-  const col = k => h.indexOf(k);
-  return rows.slice(1).map(r => ({
-    id:    String(r[col('id')]    || ''),
-    name:  String(r[col('name')] || ''),
-    cat:   String(r[col('category')] || r[col('cat')] || ''),
-    stock: Number(r[col('stock')])  || 0,
-    unit:  String(r[col('unit')]  || 'อัน'),
-    min:   Number(r[col('min')])   || 0,
-    icon:  String(r[col('icon')]  || '📦'),
-  })).filter(it => it.id);
+  const rows = sheet.getDataRange().getValues(); if (rows.length < 2) return [];
+  const h = rows[0].map(c => String(c).trim().toLowerCase()); const col = k => h.indexOf(k);
+  return rows.slice(1).map(r => ({ id: String(r[col('id')]||''), name: String(r[col('name')]||''), cat: String(r[col('category')]||r[col('cat')]||''), stock: Number(r[col('stock')])||0, unit: String(r[col('unit')]||'อัน'), min: Number(r[col('min')])||0, icon: String(r[col('icon')]||'📦') })).filter(it => it.id);
 }
-
 function getLogs(sheet) {
-  const rows = sheet.getDataRange().getValues();
-  if (rows.length < 2) return [];
-  return rows.slice(1).reverse().slice(0,100).map(r => {
-    let qty = parseInt(r[4]);
-    if (isNaN(qty)) { qty = 0; } 
-    return {
-      timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''),
-      category: String(r[3]||''), quantity: qty, unit: String(r[5]||''),
-      employee: String(r[6]||''), note: String(r[7]||'')
-    };
-  });
+  const rows = sheet.getDataRange().getValues(); if (rows.length < 2) return [];
+  return rows.slice(1).reverse().slice(0,100).map(r => { let qty = parseInt(r[4]); if (isNaN(qty)) qty = 0; return { timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''), category: String(r[3]||''), quantity: qty, unit: String(r[5]||''), employee: String(r[6]||''), note: String(r[7]||'') }; });
 }`;
 
-// ============================================================
-// STATE
-// ============================================================
-let items = [];
-let logs  = [];
-let cfg   = {};
-let curItem = null;
-let setupUnlocked = false;
-let isSyncing = false;
+    /* ─── Main App ─── */
+    function StockScan() {
+      const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
+      const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
+      const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
+      const [activePage,setActivePage]=useState('home');
+      const [curItem,setCurItem]=useState(null);
+      const [setupUnlocked,setSetupUnlocked]=useState(false);
+      const [isSyncing,setIsSyncing]=useState(false);
+      const [syncStatus,setSyncStatus]=useState('none');
+      const [pinTarget,setPinTarget]=useState(null);
+      const [showCamera,setShowCamera]=useState(false);
+      const [toast,setToast]=useState(null);
 
-const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycby7XbDYqj6sbV7RYmmSL_Et6hySFmn9AiNfteFl9MaSSGhG379XOos_V5J9txyex7Ev/exec";
+      useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
+      useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
+      useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
+      useEffect(()=>{syncData();},[]);
 
-try { items = JSON.parse(localStorage.getItem('ss2_items') || '[]'); } catch(e) { items = []; }
-try { logs  = JSON.parse(localStorage.getItem('ss2_logs')  || '[]'); } catch(e) { logs  = []; }
-try { cfg   = JSON.parse(localStorage.getItem('ss2_cfg')   || '{}'); } catch(e) { cfg   = {}; }
+      const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
 
-items = items.map(it => ({
-  id:    String(it.id    || '').trim(),
-  name:  String(it.name  || '').trim(),
-  cat:   String(it.cat   || it.category || '').trim(),
-  stock: Number(it.stock ?? 0),
-  unit:  String(it.unit  || 'อัน').trim(),
-  min:   Number(it.min   ?? 0),
-  icon:  String(it.icon  || '📦').trim(),
-}));
-logs = logs.map(l => ({
-  timestamp: String(l.timestamp || '').trim(),
-  qr_id:     String(l.qr_id     || '').trim(),
-  item_name: String(l.item_name || l.name || '').trim(),
-  cat:       String(l.cat       || l.category || '').trim(),
-  quantity: parseInt(String(l.quantity ?? l.Quantity ?? l.qty ?? 0).trim()) || 0,
-  unit:      String(l.unit      || '').trim(),
-  employee:  String(l.employee  || '').trim(),
-  note:      String(l.note      || '').trim(),
-}));
+      async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
+      function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
+      async function gasPost(url,body){const res=await fetch(url,{method:'POST',body:JSON.stringify(body)});try{return JSON.parse(await res.text());}catch(e){return{status:'ok'};}}
+      function applyResponseData(data){if(!data||!Array.isArray(data.items))throw new Error('No items');setItems(normalizeItems(data.items));setLogs(normalizeLogs(data.logs||[]));}
 
-if (!cfg.url) {
-  cfg.url = DEFAULT_GAS_URL;
-  localStorage.setItem('ss2_cfg', JSON.stringify(cfg));
-}
-
-function saveLocal() {
-  localStorage.setItem('ss2_items', JSON.stringify(items));
-  localStorage.setItem('ss2_logs',  JSON.stringify(logs));
-}
-
-function uid() {
-  return 'QR-' + Date.now().toString(36).toUpperCase().slice(-4) +
-         Math.random().toString(36).substr(2, 3).toUpperCase();
-}
-
-// ============================================================
-// TIMESTAMP HELPERS
-// ============================================================
-function nowISO() { return new Date().toISOString(); }
-
-function displayTs(isoStr) {
-  try {
-    return new Date(isoStr).toLocaleString('th-TH', {
-      year:'numeric', month:'short', day:'numeric',
-      hour:'2-digit', minute:'2-digit'
-    });
-  } catch(e) { return isoStr || '—'; }
-}
-
-function parseTs(isoStr) {
-  try { const d = new Date(isoStr); return isNaN(d) ? null : d; }
-  catch(e) { return null; }
-}
-
-// ============================================================
-// CLOUD SYNC
-// ============================================================
-function fetchViaJsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cbName = '_gs_' + Date.now() + '_' + Math.floor(Math.random() * 99999);
-    const script = document.createElement('script');
-    let settled = false;
-
-    const finish = (fn) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      fn();
-    };
-
-    const timer = setTimeout(() => finish(() => reject(new Error('JSONP timeout'))), 15000);
-    window[cbName] = (data) => finish(() => resolve(data));
-    const sep = url.includes('?') ? '&' : '?';
-    script.src = url + sep + 'callback=' + cbName + '&_t=' + Date.now();
-    script.onerror = () => finish(() => reject(new Error('JSONP blocked')));
-    document.head.appendChild(script);
-  });
-}
-
-async function fetchViaFetch(url) {
-  const res = await fetch(url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now(), {
-    method: 'GET',
-    redirect: 'follow',
-  });
-  const text = await res.text();
-  const clean = text.trim();
-  if (clean.startsWith('{') || clean.startsWith('[')) return JSON.parse(clean);
-  const m = clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
-  if (m) return JSON.parse(m[1]);
-  throw new Error('Unexpected response format');
-}
-
-async function gasPost(url, body) {
-  const res = await fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-  try { return JSON.parse(await res.text()); }
-  catch(e) { return { status: 'ok' }; }
-}
-
-function applyResponseData(data) {
-  if (!data || !Array.isArray(data.items)) throw new Error('No items array in response');
-
-  items = data.items.map(it => ({
-    id:    String(it.id    || it.ID    || '').trim(),
-    name:  String(it.name  || it.Name  || '').trim(),
-    cat:   String(it.cat   || it.Category || it.category || '').trim(),
-    stock: Number(String(it.stock ?? it.Stock ?? 0).replace(/[^0-9.]/g, '')) || 0,
-    unit:  String(it.unit  || it.Unit  || 'อัน').trim(),
-    min:   Number(String(it.min   ?? it.Min   ?? 0).replace(/[^0-9.]/g, '')) || 0,
-    icon:  String(it.icon  || it.Icon  || '📦').trim(),
-  }));
-  
-  logs = (data.logs || []).map(l => ({
-    timestamp: String(l.timestamp || '').trim(),
-    qr_id:     String(l.qr_id     || '').trim(),
-    item_name: String(l.item_name || l.Item_Name || l.name || '').trim(),
-    cat:       String(l.cat       || l.category  || '').trim(),
-    quantity:  Number(l.quantity ?? l.Quantity ?? 0), // แก้ไขให้รับค่าตัวเลขตรงๆ ไม่โดนแปลงเป็น 0
-    unit:      String(l.unit      || l.Unit      || '').trim(),
-    employee:  String(l.employee  || l.Employee  || '').trim(),
-    note:      String(l.note      || l.Note      || '').trim(),
-  }));
-  saveLocal();
-  renderAll();
-}
-
-function setSyncStatus(state) {
-  const dot = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sheet-status-dot');
-  const s = {
-    syncing: { bg: 'var(--txt2)', text: 'กำลังซิงค์...', col: 'var(--txt2)' },
-    ok:      { bg: 'var(--lime)', text: 'ข้อมูลตรงกัน ✓', col: 'var(--lime)' },
-    error:   { bg: '#FF4D4D',    text: 'ซิงค์ไม่ได้ ⚠',  col: '#FF4D4D' },
-    none:    { bg: 'var(--txt3)', text: 'ยังไม่ได้เชื่อม Sheet', col: 'var(--txt3)' },
-  }[state] || { bg: 'var(--txt3)', text: '—', col: 'var(--txt3)' };
-  dot.style.backgroundColor = s.bg;
-  lbl.textContent = s.text;
-  lbl.style.color = s.col;
-}
-
-async function syncData() {
-  if (!cfg.url) { setSyncStatus('none'); renderAll(); return; }
-  if (isSyncing) return;
-  isSyncing = true;
-  setSyncStatus('syncing');
-
-  let ok = false;
-  try {
-    const data = await fetchViaFetch(cfg.url);
-    applyResponseData(data);
-    setSyncStatus('ok');
-    ok = true;
-  } catch(e1) {
-    console.warn('[Sync] fetch failed:', e1.message, '— trying JSONP...');
-    try {
-      const data = await fetchViaJsonp(cfg.url);
-      applyResponseData(data);
-      setSyncStatus('ok');
-      ok = true;
-    } catch(e2) {
-      console.error('[Sync] JSONP also failed:', e2.message);
-    }
-  }
-
-  if (!ok) {
-    setSyncStatus('error');
-    renderAll();
-    toast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต', '#FF4D4D');
-  }
-  isSyncing = false;
-}
-
-function renderAll() {
-  updateDash();
-  renderAdmin();
-  renderLog();
-  renderChips();
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function goPage(p, el) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-  document.getElementById('page-' + p).classList.add('active');
-  if (el) el.classList.add('active');
-  if (p === 'home')  updateDash();
-  if (p === 'log')   renderLog();
-  if (p === 'admin') renderAdmin();
-  if (p === 'scan')  renderChips();
-  if (p === 'setup') document.getElementById('s-url').value = cfg.url || '';
-}
-
-function requestSetupAccess(el) {
-  if (setupUnlocked) { goPage('setup', el); return; }
-  openPinModal(el);
-}
-
-function lockSetup() {
-  setupUnlocked = false;
-  toast('🔒 ล็อค Setup แล้ว');
-  goPage('home', document.querySelector('.nav-item'));
-  document.querySelectorAll('.nav-item').forEach((x,i) => x.classList.toggle('active', i===0));
-}
-
-// ============================================================
-// PIN MODAL
-// ============================================================
-let pinBuffer = '';
-let pinTargetEl = null;
-
-function openPinModal(navEl) {
-  pinTargetEl = navEl;
-  pinBuffer = '';
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  document.getElementById('pin-modal').classList.add('open');
-}
-
-function closePinModal() {
-  document.getElementById('pin-modal').classList.remove('open');
-  pinBuffer = '';
-  updatePinDots();
-}
-
-function updatePinDots() {
-  for (let i = 0; i < 6; i++) {
-    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
-  }
-}
-
-function pinKey(k) {
-  if (pinBuffer.length >= 6) return;
-  pinBuffer += k;
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  if (pinBuffer.length === 6) setTimeout(checkPin, 120);
-}
-
-function pinDel() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updatePinDots();
-}
-
-function checkPin() {
-  if (pinBuffer === SECURE_PIN) {
-    setupUnlocked = true;
-    closePinModal();
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    const target = pinTargetEl || document.getElementById('nav-setup');
-    if (target) target.classList.add('active');
-    goPage('setup', target);
-    toast('✓ เข้าสู่โหมด Admin แล้ว');
-  } else {
-    document.getElementById('pin-error').textContent = '❌ รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง';
-    pinBuffer = '';
-    const dots = document.querySelector('.pin-dots');
-    dots.style.animation = 'none';
-    dots.offsetHeight;
-    dots.style.animation = 'shake .3s ease';
-    setTimeout(() => dots.style.animation = '', 400);
-    updatePinDots();
-  }
-}
-
-document.getElementById('pin-modal').addEventListener('click', function(e) {
-  if (e.target === this) closePinModal();
-});
-
-// ============================================================
-// CAMERA QR SCAN
-// ============================================================
-let camStream = null;
-let camAnimFrame = null;
-let lastScan = 0;
-
-async function openCamera() {
-  const overlay = document.getElementById('camera-overlay');
-  overlay.classList.add('open');
-  document.getElementById('cam-status').textContent = 'กำลังเปิดกล้อง...';
-  try {
-    camStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-    });
-    const video = document.getElementById('cam-video');
-    video.srcObject = camStream;
-    await video.play();
-    document.getElementById('cam-status').textContent = 'พร้อมสแกน ✓';
-    scanLoop();
-  } catch(err) {
-    document.getElementById('cam-status').textContent = '❌ ไม่สามารถเปิดกล้องได้';
-    setTimeout(() => {
-      closeCamera();
-      toast('ไม่สามารถเปิดกล้องได้ — ใช้การพิมพ์รหัสแทน', '#FFB700');
-    }, 2000);
-  }
-}
-
-function scanLoop() {
-  const video  = document.getElementById('cam-video');
-  const canvas = document.getElementById('cam-canvas');
-  const ctx    = canvas.getContext('2d');
-
-  function tick() {
-    if (!camStream) return;
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width  = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const now = Date.now();
-      if (now - lastScan > 300) {
-        lastScan = now;
-        try {
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
-          if (code && code.data) {
-            closeCamera();
-            scanItem(code.data.trim());
-            return;
-          }
-        } catch(e) {}
+      async function syncData(){
+        if(!cfg.url){setSyncStatus('none');return;} if(isSyncing)return;
+        setIsSyncing(true);setSyncStatus('syncing');let ok=false;
+        try{const d=await fetchViaFetch(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e1){try{const d=await fetchViaJsonp(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e2){}}
+        if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
+        setIsSyncing(false);
       }
+
+      function requestAdminAccess(){setActivePage('admin');if(!setupUnlocked)setPinTarget('admin');}
+      function requestSetupAccess(){setActivePage('setup');if(!setupUnlocked)setPinTarget('setup');}
+      function onPinSuccess(target){setSetupUnlocked(true);setPinTarget(null);showToast(target==='setup'?'✓ เข้าสู่หน้าตั้งค่าแล้ว':'✓ เข้าสู่โหมด Admin แล้ว');}
+      function lockAdmin(){setSetupUnlocked(false);showToast('🔒 ล็อค Admin แล้ว');setActivePage('home');}
+
+      function scanItem(code){const it=items.find(x=>x.id===code);if(!it){showToast('ไม่เจอ QR นี้ในระบบ ❌','#FF4D4D');return;}setCurItem(it);setActivePage('scan');}
+
+      async function confirmWithdraw(user,qty,note){
+        if(!curItem)return;
+        if(!user){showToast('ใส่ชื่อผู้เบิกด้วยนะ ⚠','#FFB700');return;}
+        if(qty<1){showToast('จำนวนต้องมากกว่า 0','#FFB700');return;}
+        if(qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
+        const ts=nowISO(); const snap={...curItem};
+        setItems(prev=>prev.map(x=>x.id===snap.id?{...x,stock:x.stock-qty}:x));
+        setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''},...prev]);
+        setCurItem(null); showToast(`กำลังบันทึกการเบิก "${snap.name}" ☁...`);
+        if(cfg.url){try{await gasPost(cfg.url,{action:'withdraw',timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''});showToast(`เบิก "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`);setTimeout(syncData,1000);}catch(e){showToast('บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)','#FFB700');}}
+        else{showToast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)','#FFB700');}
+      }
+
+      async function addItem(formData){
+        if(!cfg.url){showToast('กรุณาตั้งค่า GAS URL ก่อน ⚠','#FFB700');return;}
+        const{name,cat,stock,unit,min,icon,count}=formData;
+        if(!name){showToast('ใส่ชื่ออุปกรณ์ด้วยนะ ⚠','#FFB700');return;}
+        const cnt=Math.max(1,parseInt(count)||1);
+        const newItems=Array.from({length:cnt},()=>({id:uid(),name,cat,stock:parseInt(stock)||0,unit:unit||'อัน',min:parseInt(min)||10,icon:icon||'📦'}));
+        showToast(`กำลังบันทึก "${name}" ${cnt} ชิ้น ☁...`);
+        try{await gasPost(cfg.url,{action:'add_items',items:newItems});showToast(`บันทึก "${name}" สำเร็จ ✓`);await syncData();}catch(e){showToast('มีปัญหาการส่งไป Sheet','#FF4D4D');}
+      }
+
+      async function delItem(id){
+        if(!confirm('ยืนยันการลบอุปกรณ์นี้?'))return;
+        if(!cfg.url){showToast('ยังไม่ได้เชื่อม Sheet','#FFB700');return;}
+        try{await gasPost(cfg.url,{action:'delete_item',id});showToast('ลบแล้ว ✓');await syncData();}catch(e){showToast('ลบไม่สำเร็จ','#FF4D4D');}
+      }
+
+      function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
+      function copyGAS(){navigator.clipboard.writeText(GAS_CODE).then(()=>showToast('Copy โค้ด GAS แล้ว ✓')).catch(()=>showToast('Copy ไม่ได้ — ลอง Copy เอง','#FFB700'));}
+
+      return (
+        <div style={{ fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'390px',margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:'88px' }}>
+          <TopBar syncStatus={syncStatus} onSync={syncData} />
+          <div style={{ padding:'0 14px' }}>
+            {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')} />}
+            {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmWithdraw} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)} />}
+            {activePage==='log'&&<PageLog logs={logs} items={items} onSync={syncData} />}
+            {activePage==='admin'&&<PageAdmin items={items} setupUnlocked={setupUnlocked} onAddItem={addItem} onDelItem={delItem} onLock={lockAdmin} onUnlock={requestAdminAccess} />}
+            {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} syncStatus={syncStatus} onSave={saveSettings} onSync={syncData} onCopyGAS={copyGAS} onLock={()=>{setSetupUnlocked(false);showToast('🔒 ล็อค ตั้งค่า แล้ว');setActivePage('home');}} onUnlock={requestSetupAccess} />}
+          </div>
+          <BottomNav activePage={activePage} onGoHome={()=>setActivePage('home')} onGoLog={()=>setActivePage('log')} onGoScan={()=>setActivePage('scan')} onGoAdmin={requestAdminAccess} onGoSetup={requestSetupAccess} />
+          {pinTarget&&<PinModal target={pinTarget} correctPin={SECURE_PIN} onSuccess={()=>onPinSuccess(pinTarget)} onClose={()=>{setPinTarget(null);if(!setupUnlocked)setActivePage('home');}} />}
+          {showCamera&&<CameraOverlay onScan={code=>{setShowCamera(false);scanItem(code);}} onClose={()=>setShowCamera(false)} />}
+          {toast&&(
+            <div style={{ position:'fixed',bottom:'96px',left:'50%',transform:'translateX(-50%)',background:toast.color,color:'#fff',borderRadius:'100px',padding:'12px 24px',fontSize:'13px',zIndex:300,whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(33,58,88,0.2)',animation:'toastPop .3s cubic-bezier(0.34,1.56,0.64,1)' }}>{toast.msg}</div>
+          )}
+        </div>
+      );
     }
-    camAnimFrame = requestAnimationFrame(tick);
-  }
-  camAnimFrame = requestAnimationFrame(tick);
-}
 
-function closeCamera() {
-  document.getElementById('camera-overlay').classList.remove('open');
-  if (camAnimFrame) { cancelAnimationFrame(camAnimFrame); camAnimFrame = null; }
-  if (camStream)    { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-function toast(msg, col) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.color = col || 'var(--lime)';
-  t.style.borderColor = col ? (col + '55') : 'rgba(200,255,0,0.25)';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// ============================================================
-// ITEM MANAGEMENT
-// ============================================================
-async function addItem() {
-  if (!cfg.url) { toast('กรุณาตั้งค่า GAS URL ใน Setup ก่อน ⚠', '#FFB700'); return; }
-  const n = document.getElementById('a-name').value.trim();
-  if (!n) { toast('ใส่ชื่ออุปกรณ์ด้วยนะ ⚠', '#FFB700'); return; }
-
-  const cnt = Math.max(1, parseInt(document.getElementById('a-qrn').value) || 1);
-  const newItems = [];
-  for (let i = 0; i < cnt; i++) {
-    newItems.push({
-      id:    uid(),
-      name:  n,
-      cat:   document.getElementById('a-cat').value,
-      stock: parseInt(document.getElementById('a-stock').value) || 0,
-      unit:  document.getElementById('a-unit').value || 'อัน',
-      min:   parseInt(document.getElementById('a-min').value) || 10,
-      icon:  document.getElementById('a-icon').value || '📦',
-    });
-  }
-
-  toast(`กำลังบันทึก "${n}" ${cnt} ชิ้น ☁...`);
-  try {
-    await gasPost(cfg.url, { action: 'add_items', items: newItems });
-    toast(`บันทึก "${n}" สำเร็จ ✓ กำลังซิงค์...`);
-    document.getElementById('a-name').value = '';
-    await syncData();
-  } catch(e) {
-    toast('มีปัญหาการส่งไป Sheet กรุณาตรวจเน็ต', '#FF4D4D');
-  }
-}
-
-function renderAdmin() {
-  const el = document.getElementById('admin-list');
-  if (!items.length) {
-    el.innerHTML = '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">ยังไม่มีอุปกรณ์ — ลองซิงค์ใหม่อีกครั้ง</div>';
-    return;
-  }
-  el.innerHTML = items.map(it => `
-    <div class="admin-item" style="flex-direction:column;align-items:stretch;gap:12px;padding:16px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="admin-icon">${it.icon}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px">${it.name}</div>
-          <div style="font-size:11px;color:var(--txt2)">${it.cat} · ${it.stock} ${it.unit}</div>
-          <div class="mono" style="font-size:10px;color:var(--txt3)">${it.id}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-          <span class="${it.stock <= it.min ? 'pill pill-warn' : 'pill pill-lime'}">${it.stock <= it.min ? 'ใกล้หมด' : 'ปกติ'}</span>
-          <button onclick="delItem('${it.id}')" style="background:none;border:none;color:var(--txt3);font-size:13px;cursor:pointer;padding:2px 6px"><i class="ti ti-trash"></i></button>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;background:var(--bg4);border-radius:12px;padding:12px">
-        <div id="qr-${it.id}" style="background:#fff;padding:6px;border-radius:8px;flex-shrink:0;width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999">...</div>
-        <div style="flex:1;min-width:0">
-          <button onclick="downloadQR('${it.id}','${escHtml(it.name)}')" style="background:var(--limeDim);border:1px solid rgba(200,255,0,0.3);color:var(--lime);border-radius:100px;padding:7px 14px;font-size:12px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;font-weight:600;width:100%"><i class="ti ti-download" style="vertical-align:-2px;font-size:13px"></i> บันทึก QR</button>
-          <button onclick="printQR('${it.id}','${escHtml(it.name)}')" style="background:var(--bg3);border:1px solid var(--border2);color:var(--txt2);border-radius:100px;padding:7px 14px;font-size:12px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;font-weight:600;width:100%;margin-top:6px"><i class="ti ti-printer" style="vertical-align:-2px;font-size:13px"></i> พิมพ์ QR</button>
-        </div>
-      </div>
-    </div>`).join('');
-
-  requestAnimationFrame(() => {
-    items.forEach(it => {
-      const qrEl = document.getElementById('qr-' + it.id);
-      if (!qrEl || qrEl.dataset.generated) return;
-      qrEl.innerHTML = '';
-      try {
-        new QRCode(qrEl, { text: it.id, width: 68, height: 68, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-        qrEl.dataset.generated = '1';
-      } catch(e) { qrEl.textContent = 'Error'; }
-    });
-  });
-}
-
-function escHtml(str) {
-  return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
-
-function downloadQR(id, name) {
-  const el = document.getElementById('qr-' + id);
-  if (!el) { toast('ไม่เจอ QR', '#FF4D4D'); return; }
-  const canvas = el.querySelector('canvas');
-  const img    = el.querySelector('img');
-  let dataUrl  = '';
-  if (canvas) {
-    const out = document.createElement('canvas');
-    out.width = canvas.width + 32; out.height = canvas.height + 32;
-    const ctx = out.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, out.width, out.height);
-    ctx.drawImage(canvas, 16, 16);
-    dataUrl = out.toDataURL('image/png');
-  } else if (img) { dataUrl = img.src; }
-  if (!dataUrl) { toast('ยังไม่พร้อม ลองใหม่', '#FFB700'); return; }
-  const a = document.createElement('a');
-  a.href = dataUrl; a.download = `QR-${name}-${id}.png`; a.click();
-  toast(`บันทึก QR "${name}" แล้ว ✓`);
-}
-
-function printQR(id, name) {
-  const el = document.getElementById('qr-' + id); if (!el) return;
-  const canvas = el.querySelector('canvas');
-  const img    = el.querySelector('img');
-  let src = '';
-  if (canvas) { src = canvas.toDataURL('image/png'); } else if (img) { src = img.src; }
-  if (!src) return;
-  const w = window.open('', '_blank');
-  w.document.write(`<html><head><title>QR - ${name}</title><style>body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;background:#fff}img{width:200px;height:200px;image-rendering:pixelated}h2{margin-top:12px;font-size:18px}p{color:#666;font-size:13px;font-family:monospace;margin-top:4px}@media print{button{display:none}}</style></head><body><img src="${src}"><h2>${name}</h2><p>${id}</p><button onclick="window.print()" style="margin-top:20px;padding:10px 24px;background:#C8FF00;border:none;border-radius:100px;font-size:14px;font-weight:bold;cursor:pointer">🖨 พิมพ์</button></body></html>`);
-  w.document.close();
-}
-
-async function delItem(id) {
-  if (!confirm('ยืนยันการลบอุปกรณ์นี้?')) return;
-  if (!cfg.url) { toast('ยังไม่ได้เชื่อม Sheet', '#FFB700'); return; }
-  try {
-    await gasPost(cfg.url, { action: 'delete_item', id: id });
-    toast('ลบแล้ว ✓');
-    await syncData();
-  } catch(e) {
-    toast('ลบไม่สำเร็จ กรุณาลองใหม่', '#FF4D4D');
-  }
-}
-
-function renderChips() {
-  const el = document.getElementById('sample-chips');
-  const s  = items.slice(0, 6);
-  el.innerHTML = s.length
-    ? s.map(it => `<div class="qr-chip" onclick="scanItem('${it.id}')">${it.icon} ${it.id}</div>`).join('')
-    : '<div style="color:var(--txt3);font-size:12px">ยังไม่มีอุปกรณ์ — กด Sync เพื่อดึงข้อมูล</div>';
-}
-
-// ============================================================
-// SCAN & WITHDRAW
-// ============================================================
-function doManualScan() {
-  const v = document.getElementById('manual-input').value.trim();
-  if (v) scanItem(v);
-}
-
-function scanItem(code) {
-  const it = items.find(x => x.id === code);
-  if (!it) { toast('ไม่เจอ QR นี้ในระบบ ❌', '#FF4D4D'); return; }
-  curItem = it;
-
-  document.getElementById('r-icon').textContent       = it.icon;
-  document.getElementById('r-name').textContent       = it.name;
-  document.getElementById('r-id').textContent         = it.id;
-  document.getElementById('r-cat').textContent        = it.cat;
-
-  const low = it.stock <= it.min;
-  document.getElementById('r-stock-pill').textContent = low ? 'สต๊อกใกล้หมด' : 'สต๊อกปกติ';
-  document.getElementById('r-stock-pill').className   = 'pill ' + (low ? 'pill-warn' : 'pill-lime');
-  document.getElementById('r-stock-num').textContent  = it.stock;
-  document.getElementById('r-stock-num').style.color  = low ? '#FFB700' : 'var(--lime)';
-  document.getElementById('r-unit').textContent       = it.unit;
-  document.getElementById('r-unit2').value            = it.unit;
-  document.getElementById('r-qty').value              = 1;
-  document.getElementById('r-user').value             = '';
-  document.getElementById('r-note').value             = '';
-
-  document.getElementById('scan-start').style.display  = 'none';
-  document.getElementById('scan-result').style.display = 'block';
-
-  if (!document.getElementById('page-scan').classList.contains('active')) {
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    document.getElementById('page-scan').classList.add('active');
-    document.querySelector('[aria-label="สแกน"]')?.classList.add('active');
-  }
-}
-
-function cancelScan() {
-  document.getElementById('scan-start').style.display  = 'block';
-  document.getElementById('scan-result').style.display = 'none';
-  curItem = null;
-}
-
-async function confirmWithdraw() {
-  if (!curItem) return;
-
-  const user = document.getElementById('r-user').value.trim();
-  const qty  = parseInt(document.getElementById('r-qty').value) || 0;
-
-  if (!user)            { toast('ใส่ชื่อผู้เบิกด้วยนะ ⚠', '#FFB700'); return; }
-  if (qty < 1)          { toast('จำนวนต้องมากกว่า 0', '#FFB700'); return; }
-  if (qty > curItem.stock) { toast('จำนวนเกินสต๊อก ❌', '#FF4D4D'); return; }
-
-  const snapName = curItem.name;
-  const snapUnit = curItem.unit;
-  const snapId   = curItem.id;
-  const snapCat  = curItem.cat;
-
-  const entry = {
-    action:     'withdraw',
-    timestamp:  nowISO(),
-    qr_id:      snapId,
-    item_name:  snapName,
-    category:   snapCat,
-    quantity:   qty,
-    unit:       snapUnit,
-    employee:   user,
-    note:       document.getElementById('r-note').value || '',
-  };
-
-  curItem.stock -= qty;
-
-  const logEntry = {
-    timestamp: entry.timestamp,
-    qr_id:     snapId     || '',
-    item_name: snapName   || '',
-    cat:       snapCat    || '',
-    quantity:  qty, // เก็บค่าเป็นตัวเลขจริงลงตัวแปรแอปพลิเคชัน
-    unit:      snapUnit   || '',
-    employee:  user       || '',
-    note:      entry.note || '',
-  };
-  
-  logs.unshift(logEntry);
-  saveLocal();
-  renderLog();
-
-  cancelScan();
-  toast(`กำลังบันทึกการเบิก "${snapName}" ☁...`);
-
-  if (cfg.url) {
-    try {
-      await gasPost(cfg.url, entry);
-      toast(`เบิก "${snapName}" ${qty} ${snapUnit} สำเร็จ ✓`);
-      setTimeout(syncData, 1000);
-    } catch(e) {
-      toast('บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)', '#FFB700');
-    }
-  } else {
-    toast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)', '#FFB700');
-  }
-}
-
-// ============================================================
-// LOG
-// ============================================================
-function showRawDebug() {
-  const el = document.getElementById('debug-out');
-  if (el.style.display !== 'none') { el.style.display = 'none'; return; }
-  const sample = logs.slice(0, 3).map(l => ({
-    item_name: l.item_name,
-    quantity: l.quantity,
-    quantity_type: typeof l.quantity,
-    employee: l.employee,
-    unit: l.unit,
-  }));
-  el.textContent = JSON.stringify(sample, null, 2);
-  el.style.display = 'block';
-}
-
-function renderLog() {
-  const q  = (document.getElementById('log-search').value || '').toLowerCase();
-  const fw = document.getElementById('log-fw').value;
-  const now = new Date();
-  const ws  = new Date(now); ws.setDate(now.getDate() - now.getDay()); ws.setHours(0,0,0,0);
-
-  const fl = logs.filter(l => {
-    const searchOk = (
-      (l.item_name || '').toLowerCase().includes(q) ||
-      (l.employee  || '').toLowerCase().includes(q) ||
-      (l.qr_id     || '').toLowerCase().includes(q)
-    );
-    if (!searchOk) return false;
-
-    if (fw === 'all') return true;
-    const d = parseTs(l.timestamp);
-    if (!d) return false;
-    if (fw === 'today') return d.toDateString() === now.toDateString();
-    if (fw === 'week')  return d >= ws;
-    if (fw === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    return true;
-  });
-
-  const sumEl = document.getElementById('log-summary');
-  if (sumEl && fl.length) {
-    const totalQty    = fl.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
-    const uniqueEmp   = new Set(fl.map(l => l.employee).filter(Boolean)).size;
-    const uniqueItem  = new Set(fl.map(l => l.item_name || l.name).filter(Boolean)).size;
-    sumEl.innerHTML = `
-      <span class="pill pill-lime"><i class="ti ti-list-check" style="font-size:12px"></i> ${fl.length} รายการ</span>
-      <span class="pill pill-purple"><i class="ti ti-box" style="font-size:12px"></i> ${uniqueItem} ชนิด</span>
-      <span class="pill" style="background:var(--cyanDim);color:var(--cyan);border:1px solid rgba(0,229,255,0.25)"><i class="ti ti-users" style="font-size:12px"></i> ${uniqueEmp} คน</span>
-      <span class="pill pill-warn"><i class="ti ti-stack-2" style="font-size:12px"></i> รวม ${totalQty} ชิ้น</span>`;
-  } else if (sumEl) {
-    sumEl.innerHTML = '';
-  }
-
-  const el = document.getElementById('log-list');
-  el.innerHTML = fl.length
-    ? fl.map(l => {
-        const icon = items.find(x => x.id === l.qr_id)?.icon || '📦';
-        const itemName = l.item_name || l.name || '(ไม่ระบุอุปกรณ์)';
-        const empName  = l.employee  || '(ไม่ระบุชื่อ)';
-        const qty      = Number(l.quantity) || 0;
-        const unit     = l.unit || 'ชิ้น';
-        const noteHtml = l.note ? `<div class="log-note" title="${l.note}">📝 ${l.note}</div>` : '';
-        return `
-      <div class="log-item">
-        <div class="log-icon">${icon}</div>
-        <div style="flex:1;min-width:0">
-          <div class="log-name">${itemName}</div>
-          <div class="log-who"><span class="log-who-icon">👤</span><span>${empName}</span></div>
-          <div class="log-meta">${displayTs(l.timestamp)}</div>
-          ${noteHtml}
-        </div>
-        <div class="log-qty-wrap">
-          <div class="log-qty">${qty}</div>
-          <div class="log-unit">${unit}</div>
-        </div>
-      </div>`;
-      }).join('')
-    : '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:16px">ไม่มีรายการ</div>';
-}
-
-// ============================================================
-// SETTINGS
-// ============================================================
-function saveSettings() {
-  cfg.url = (document.getElementById('s-url').value || '').trim();
-  localStorage.setItem('ss2_cfg', JSON.stringify(cfg));
-  syncData();
-}
-
-function copyGAS() {
-  navigator.clipboard.writeText(GAS_CODE)
-    .then(() => toast('Copy โค้ด GAS แล้ว ✓ ไปวางทับของเดิมได้เลย'))
-    .catch(() => toast('Copy ไม่ได้ — ลอง Copy เอง', '#FFB700'));
-}
-
-// ============================================================
-// DASHBOARD
-// ============================================================
-function updateDash() {
-  const now = new Date();
-  const ws  = new Date(now); ws.setDate(now.getDate() - now.getDay()); ws.setHours(0,0,0,0);
-
-  const wl = logs.filter(l => { const d = parseTs(l.timestamp); return d && d >= ws; });
-  const tl = logs.filter(l => { const d = parseTs(l.timestamp); return d && d.toDateString() === now.toDateString(); });
-  const lo = items.filter(x => x.stock <= x.min);
-
-  document.getElementById('d-week').textContent  = wl.length;
-  document.getElementById('d-today').textContent = tl.length;
-  document.getElementById('d-total').textContent = items.length;
-  document.getElementById('d-qr').textContent    = items.length;
-  document.getElementById('d-low').textContent   = lo.length;
-
-  const lastTs = logs.length ? parseTs(logs[0].timestamp) : null;
-  document.getElementById('d-lasttime').textContent = lastTs
-    ? lastTs.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-    : '—';
-
-  const re = document.getElementById('d-recent-list');
-  const rec = logs.slice(0, 4);
-  re.innerHTML = rec.length
-    ? rec.map(l => `
-      <div class="log-item">
-        <div class="log-icon">${items.find(x => x.id === l.qr_id)?.icon || '📦'}</div>
-        <div style="flex:1;min-width:0">
-          <div class="log-name">${l.item_name}</div>
-          <div class="log-meta">${l.employee}</div>
-        </div>
-        <div style="text-align:right">
-          <div class="log-qty">${l.quantity}</div>
-          <div class="log-unit">${l.unit || ''}</div>
-        </div>
-      </div>`).join('')
-    : '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">ยังไม่มีรายการ</div>';
-
-  const loe = document.getElementById('d-low-list');
-  loe.innerHTML = lo.length
-    ? lo.map(it => `
-      <div class="log-item">
-        <div class="log-icon">${it.icon}</div>
-        <div style="flex:1">
-          <div class="log-name">${it.name}</div>
-          <div class="log-meta">${it.cat}</div>
-        </div>
-        <span class="pill pill-warn">${it.stock} ${it.unit}</span>
-      </div>`).join('')
-    : '<div style="color:var(--txt3);font-size:12px;text-align:center;padding:12px">สต๊อกปกติทั้งหมด ✓</div>';
-}
-
-// ============================================================
-// INIT
-// ============================================================
-updateDash();
-syncData();
-</script>
+    ReactDOM.createRoot(document.getElementById('root')).render(<StockScan />);
+  </script>
 </body>
 </html>
