@@ -29,6 +29,7 @@
     @keyframes toastPop { from { opacity:0; transform:translateX(-50%) translateY(8px) scale(0.92) } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1) } }
     @keyframes scanLine { 0%,100% { top:8px; opacity:0 } 10% { opacity:1 } 90% { opacity:1 } 50% { top:calc(100% - 8px) } }
     @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:none } }
   </style>
 </head>
 <body>
@@ -52,11 +53,19 @@
     }
     function normalizeLogs(arr) {
       if (!Array.isArray(arr)) return [];
-      return arr.map(l=>({ timestamp:String(l.timestamp||'').trim(), qr_id:String(l.qr_id||'').trim(), item_name:String(l.item_name||l.Item_Name||l.name||'').trim(), cat:String(l.cat||l.category||'').trim(), quantity:parseInt(String(l.quantity??l.Quantity??0))||0, unit:String(l.unit||l.Unit||'').trim(), employee:String(l.employee||l.Employee||'').trim(), note:String(l.note||l.Note||'').trim() }));
+      return arr.map(l=>({ timestamp:String(l.timestamp||'').trim(), qr_id:String(l.qr_id||'').trim(), item_name:String(l.item_name||l.Item_Name||l.name||'').trim(), cat:String(l.cat||l.category||'').trim(), quantity:parseInt(String(l.quantity??l.Quantity??0))||0, unit:String(l.unit||l.Unit||'').trim(), employee:String(l.employee||l.Employee||'').trim(), note:String(l.note||l.Note||'').trim(), action:String(l.action||'withdraw').trim() }));
     }
     function uid() { return 'QR-'+Date.now().toString(36).toUpperCase().slice(-4)+Math.random().toString(36).substr(2,3).toUpperCase(); }
     function nowISO() { return new Date().toISOString(); }
     function loadLocal(key,fb) { try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;} }
+
+    /* fuzzy match: ทุก keyword ในคำค้นต้องอยู่ในชื่อ (ลำดับไม่สนใจ) */
+    function fuzzyMatch(text, query) {
+      if (!query) return true;
+      const t = text.toLowerCase();
+      const words = query.toLowerCase().trim().split(/\s+/);
+      return words.every(w => t.includes(w));
+    }
 
     /* ─── Constants ─── */
     const SECURE_PIN = "240739";
@@ -67,16 +76,28 @@
       const it = items.find(x=>x.id===l.qr_id);
       const icon = it ? it.icon : '📦';
       const qty = Number(l.quantity)||0;
+      const isReturn = l.action === 'return';
+      const isRestock = l.action === 'restock';
       return (
         <div style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 0', borderBottom: isLast?'none':'1px solid var(--teal-border)' }}>
-          <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{icon}</div>
+          <div style={{ width:'40px',height:'40px',borderRadius:'12px',background: isReturn?'#EEF7FF': isRestock?'var(--mint-dim)':'var(--teal-dim)',border:`1px solid ${isReturn?'#BDD5F5':isRestock?'var(--mint-border)':'var(--teal-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0,position:'relative' }}>
+            {icon}
+            {isReturn && <div style={{ position:'absolute',bottom:'-3px',right:'-3px',width:'14px',height:'14px',borderRadius:'50%',background:'#4A90D9',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff' }}>↩</div>}
+            {isRestock && <div style={{ position:'absolute',bottom:'-3px',right:'-3px',width:'14px',height:'14px',borderRadius:'50%',background:'var(--mint)',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff' }}>+</div>}
+          </div>
           <div style={{ flex:1,minWidth:0 }}>
             <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{l.item_name||l.qr_id}</div>
             <div style={{ fontSize:'12px',color:'var(--txt2)' }}>{l.employee||'—'}</div>
             {showTime && l.timestamp && <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',marginTop:'1px' }}>{displayTs(l.timestamp)}</div>}
             {l.note && <div style={{ fontSize:'11px',color:'var(--txt3)',marginTop:'1px',fontStyle:'italic' }}>{l.note}</div>}
           </div>
-          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'24px',fontWeight:800,color:'var(--teal)',letterSpacing:'-1px',flexShrink:0,lineHeight:1 }}>{qty}<span style={{ fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'11px',color:'var(--txt3)',fontWeight:400,marginLeft:'3px' }}>{l.unit}</span></div>
+          <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'2px',flexShrink:0 }}>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'24px',fontWeight:800,color: isReturn?'#4A90D9': isRestock?'var(--mint)':'var(--teal)',letterSpacing:'-1px',lineHeight:1 }}>
+              {isReturn?'-':isRestock?'+':''}{qty}<span style={{ fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'11px',color:'var(--txt3)',fontWeight:400,marginLeft:'3px' }}>{l.unit}</span>
+            </div>
+            {isReturn && <span style={{ fontSize:'9px',color:'#4A90D9',background:'#EEF7FF',padding:'1px 6px',borderRadius:'100px',border:'1px solid #BDD5F5' }}>คืน</span>}
+            {isRestock && <span style={{ fontSize:'9px',color:'var(--mid-teal)',background:'var(--mint-dim)',padding:'1px 6px',borderRadius:'100px',border:'1px solid var(--mint-border)' }}>เติม</span>}
+          </div>
         </div>
       );
     }
@@ -301,52 +322,95 @@
       );
     }
 
+    /* ─── ItemActionPanel — ใช้ร่วมกัน withdraw / return / restock ─── */
+    function ItemActionPanel({ curItem, onConfirm, onCancel }) {
+      const [mode, setMode] = useState('withdraw'); // 'withdraw' | 'return' | 'restock'
+      const [user, setUser] = useState('');
+      const [qty, setQty] = useState(1);
+      const [note, setNote] = useState('');
+
+      const handleConfirm = () => { onConfirm(mode, user, Number(qty), note); setUser(''); setQty(1); setNote(''); };
+
+      const isLow = curItem.stock <= curItem.min;
+
+      const IS = {background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+      const LS = {fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
+
+      const modeConfigs = {
+        withdraw: { label:'เบิกอุปกรณ์', icon:'ti-arrow-up-right', color:'var(--teal)', grad:'linear-gradient(135deg, var(--teal), var(--mid-teal))', shadow:'0 6px 20px rgba(9,209,199,0.3)', userLabel:'ชื่อผู้เบิก', userPlaceholder:'ชื่อ หรือรหัสพนักงาน', qtyLabel:'จำนวนที่เบิก', btnLabel:'ยืนยันการเบิก' },
+        return:   { label:'คืนอุปกรณ์',  icon:'ti-arrow-back-up', color:'#4A90D9', grad:'linear-gradient(135deg, #4A90D9, #2c6cb0)', shadow:'0 6px 20px rgba(74,144,217,0.3)', userLabel:'ชื่อผู้คืน', userPlaceholder:'ชื่อ หรือรหัสพนักงาน', qtyLabel:'จำนวนที่คืน', btnLabel:'ยืนยันการคืน' },
+        restock:  { label:'เติม Stock',   icon:'ti-plus',          color:'var(--mint)', grad:'linear-gradient(135deg, var(--mint), #29b889)', shadow:'0 6px 20px rgba(70,223,177,0.3)', userLabel:'ชื่อผู้เติม', userPlaceholder:'ผู้รับผิดชอบ / ผู้จัดซื้อ', qtyLabel:'จำนวนที่เพิ่ม', btnLabel:'ยืนยันการเติม Stock' },
+      };
+      const mc = modeConfigs[mode];
+
+      return (
+        <div style={{ animation:'fadeUp .2s ease' }}>
+          {/* Item Card */}
+          <div style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'28px',padding:'20px',margin:'14px 0 0',boxShadow:'var(--shadow-md)' }}>
+            <div style={{ fontSize:'38px',marginBottom:'8px' }}>{curItem.icon}</div>
+            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)' }}>{curItem.name}</div>
+            <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--txt3)',marginTop:'2px' }}>{curItem.id}</div>
+            <div style={{ display:'flex',gap:'6px',flexWrap:'wrap',margin:'10px 0' }}>
+              <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'rgba(9,209,199,0.15)',color:'var(--mid-teal)',border:'1px solid var(--teal-border)' }}>{curItem.cat}</span>
+              <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:isLow?'#FFF4EC':'var(--mint-dim)',color:isLow?'#CC6A00':'var(--mid-teal)',border:`1px solid ${isLow?'#FFC899':'var(--mint-border)'}` }}>{isLow?'สต๊อกใกล้หมด':'สต๊อกปกติ'}</span>
+            </div>
+            <div style={{ display:'flex',alignItems:'baseline',gap:'8px',margin:'4px 0 0' }}>
+              <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'40px',fontWeight:800,color:isLow?'#CC6A00':'var(--teal)',letterSpacing:'-1.5px' }}>{curItem.stock}</div>
+              <div style={{ fontSize:'13px',color:'var(--txt2)' }}>{curItem.unit}</div>
+              <div style={{ fontSize:'11px',color:'var(--txt3)' }}>คงเหลือ</div>
+            </div>
+          </div>
+
+          {/* Mode Selector */}
+          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px',margin:'10px 0' }}>
+            {Object.entries(modeConfigs).map(([key,mc2])=>(
+              <button key={key} onClick={()=>setMode(key)} style={{ padding:'9px 4px',borderRadius:'14px',border:`1.5px solid ${mode===key?mc2.color:'var(--teal-border)'}`,background:mode===key?mc2.grad:'var(--surface)',color:mode===key?'#fff':'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'4px',transition:'.2s',boxShadow:mode===key?mc2.shadow:'var(--shadow-sm)' }}>
+                <i className={`ti ${mc2.icon}`} style={{ fontSize:'13px' }} />
+                {mc2.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Form */}
+          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'16px',boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease' }}>
+            <label style={LS}>{mc.userLabel}</label>
+            <input value={user} onChange={e=>setUser(e.target.value)} placeholder={mc.userPlaceholder} style={IS} />
+            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
+              <div><label style={LS}>{mc.qtyLabel}</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS} /></div>
+              <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{ ...IS,opacity:0.5 }} /></div>
+            </div>
+            <label style={LS}>หมายเหตุ</label>
+            <input value={note} onChange={e=>setNote(e.target.value)} placeholder={mode==='restock'?'แหล่งที่มา / PO (ไม่บังคับ)':'แผนก / เหตุผล (ไม่บังคับ)'} style={IS} />
+
+            <button onClick={handleConfirm} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:mc.grad,color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:mc.shadow,marginTop:'14px' }}>
+              <i className={`ti ${mc.icon}`} style={{ fontSize:'18px' }} /> {mc.btnLabel}
+            </button>
+          </div>
+          <button onClick={onCancel} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer',marginTop:'8px' }}>ยกเลิก</button>
+        </div>
+      );
+    }
+
     /* ─── PageScan ─── */
     function PageScan({ items, curItem, onScan, onConfirm, onCancel, onOpenCamera }) {
-      const [manualCode,setManualCode]=useState('');
-      const [user,setUser]=useState('');
-      const [qty,setQty]=useState(1);
-      const [note,setNote]=useState('');
-      const handleConfirm=()=>{onConfirm(user,Number(qty),note);setUser('');setQty(1);setNote('');};
-      const handleCancel=()=>{onCancel();setUser('');setQty(1);setNote('');};
+      const [manualCode,setManualCode] = useState('');
+      const [nameSearch,setNameSearch] = useState('');
+      const [searchResults,setSearchResults] = useState([]);
+
+      // ค้นหาโดยชื่อ (fuzzy)
+      useEffect(()=>{
+        if (!nameSearch.trim()) { setSearchResults([]); return; }
+        const results = items.filter(it => fuzzyMatch(it.name, nameSearch) || fuzzyMatch(it.cat, nameSearch));
+        setSearchResults(results);
+      },[nameSearch, items]);
+
       const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-      const LS={fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
       const sampleChips=items.slice(0,6);
-      if(curItem){
-        const isLow=curItem.stock<=curItem.min;
-        return (
-          <div style={{ animation:'fadeUp .2s ease' }}>
-            <div style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'28px',padding:'20px',margin:'14px 0',boxShadow:'var(--shadow-md)' }}>
-              <div style={{ fontSize:'38px',marginBottom:'8px' }}>{curItem.icon}</div>
-              <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)' }}>{curItem.name}</div>
-              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--txt3)',marginTop:'2px' }}>{curItem.id}</div>
-              <div style={{ display:'flex',gap:'6px',flexWrap:'wrap',margin:'10px 0' }}>
-                <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'rgba(9,209,199,0.15)',color:'var(--mid-teal)',border:'1px solid var(--teal-border)' }}>{curItem.cat}</span>
-                <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:isLow?'#FFF4EC':'var(--mint-dim)',color:isLow?'#CC6A00':'var(--mid-teal)',border:`1px solid ${isLow?'#FFC899':'var(--mint-border)'}` }}>{isLow?'สต๊อกใกล้หมด':'สต๊อกปกติ'}</span>
-              </div>
-              <div style={{ display:'flex',alignItems:'baseline',gap:'8px',margin:'4px 0 16px' }}>
-                <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'40px',fontWeight:800,color:isLow?'#CC6A00':'var(--teal)',letterSpacing:'-1.5px' }}>{curItem.stock}</div>
-                <div style={{ fontSize:'13px',color:'var(--txt2)' }}>{curItem.unit}</div>
-                <div style={{ fontSize:'11px',color:'var(--txt3)' }}>คงเหลือ</div>
-              </div>
-              <div style={{ borderTop:'1px solid var(--teal-border)',paddingTop:'14px' }}>
-                <label style={LS}>ชื่อผู้เบิก</label>
-                <input value={user} onChange={e=>setUser(e.target.value)} placeholder="ชื่อ หรือรหัสพนักงาน" style={IS} />
-                <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
-                  <div><label style={LS}>จำนวนที่เบิก</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS} /></div>
-                  <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{ ...IS,opacity:0.5 }} /></div>
-                </div>
-                <label style={LS}>หมายเหตุ</label>
-                <input value={note} onChange={e=>setNote(e.target.value)} placeholder="แผนก / เหตุผล (ไม่บังคับ)" style={IS} />
-              </div>
-            </div>
-            <button onClick={handleConfirm} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
-              <i className="ti ti-check" style={{ fontSize:'18px' }} /> ยืนยันการเบิก
-            </button>
-            <button onClick={handleCancel} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer',marginTop:'8px' }}>ยกเลิก</button>
-          </div>
-        );
+
+      if (curItem) {
+        return <ItemActionPanel curItem={curItem} onConfirm={onConfirm} onCancel={onCancel} />;
       }
+
       return (
         <div style={{ animation:'fadeUp .2s ease' }}>
           <div onClick={onOpenCamera} style={{ margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:'28px',cursor:'pointer' }}>
@@ -354,15 +418,62 @@
             <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--navy)',letterSpacing:'-0.5px' }}>แตะเพื่อเปิดกล้อง</div>
             <div style={{ fontSize:'12px',color:'var(--txt3)',marginTop:'4px' }}>สแกน QR Code ด้วยกล้องโทรศัพท์</div>
           </div>
-          <div style={{ display:'flex',alignItems:'center',gap:'10px',margin:'14px 0' }}>
+
+          {/* ── ส่วนค้นหา ─────────────────────────────────── */}
+          <div style={{ display:'flex',alignItems:'center',gap:'10px',margin:'4px 0 12px' }}>
             <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
-            <span style={{ fontSize:'11px',color:'var(--txt3)' }}>หรือ</span>
+            <span style={{ fontSize:'11px',color:'var(--txt3)' }}>หรือค้นหา</span>
             <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
           </div>
-          <input id="manual-input" value={manualCode} onChange={e=>setManualCode(e.target.value)} onKeyDown={e=>e.key==='Enter'&&onScan(manualCode.trim())} placeholder="พิมพ์รหัส QR เช่น QR-PAPER1" style={{ ...IS,marginBottom:'10px' }} />
-          <button onClick={()=>{if(manualCode.trim())onScan(manualCode.trim());}} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer' }}>ค้นหาอุปกรณ์</button>
+
+          {/* ค้นหาด้วยชื่อ */}
+          <div style={{ position:'relative',marginBottom:'10px' }}>
+            <i className="ti ti-search" style={{ position:'absolute',left:'14px',top:'50%',transform:'translateY(-50%)',fontSize:'16px',color:'var(--txt3)',pointerEvents:'none' }} />
+            <input
+              value={nameSearch}
+              onChange={e=>setNameSearch(e.target.value)}
+              placeholder="ค้นหาชื่ออุปกรณ์ เช่น กระดาษ, ปากกา..."
+              style={{ ...IS,paddingLeft:'40px' }}
+            />
+          </div>
+
+          {/* ผลลัพธ์การค้นหาชื่อ */}
+          {nameSearch.trim() && (
+            <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'4px 16px',marginBottom:'12px',boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease' }}>
+              {searchResults.length === 0
+                ? <div style={{ padding:'16px 0',textAlign:'center',color:'var(--txt3)',fontSize:'13px' }}>ไม่พบอุปกรณ์ที่ตรงกัน</div>
+                : searchResults.map((it,i)=>(
+                    <div key={it.id} onClick={()=>onScan(it.id)} style={{ display:'flex',alignItems:'center',gap:'10px',padding:'10px 0',borderBottom:i<searchResults.length-1?'1px solid var(--teal-border)':'none',cursor:'pointer' }}>
+                      <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
+                      <div style={{ flex:1,minWidth:0 }}>
+                        <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{it.name}</div>
+                        <div style={{ fontSize:'11px',color:'var(--txt2)' }}>{it.cat} · {it.stock} {it.unit}</div>
+                      </div>
+                      <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'3px' }}>
+                        <span style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)' }}>{it.id}</span>
+                        <span style={{ display:'inline-flex',padding:'2px 8px',borderRadius:'100px',fontSize:'10px',fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}` }}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
+                      </div>
+                    </div>
+                  ))
+              }
+            </div>
+          )}
+
+          {/* ค้นหาด้วยรหัส QR */}
+          <div style={{ display:'flex',gap:'8px',marginBottom:'10px' }}>
+            <input
+              id="manual-input"
+              value={manualCode}
+              onChange={e=>setManualCode(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&onScan(manualCode.trim())}
+              placeholder="พิมพ์รหัส QR เช่น QR-PAPER1"
+              style={{ ...IS,flex:1 }}
+            />
+            <button onClick={()=>{if(manualCode.trim())onScan(manualCode.trim());}} style={{ padding:'13px 16px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',whiteSpace:'nowrap' }}>ค้นหา</button>
+          </div>
+
           {sampleChips.length>0&&(
-            <div style={{ marginTop:'16px' }}>
+            <div style={{ marginTop:'12px' }}>
               <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px' }}>QR ตัวอย่าง (แตะทดสอบ)</div>
               <div style={{ display:'flex',gap:'6px',flexWrap:'wrap' }}>
                 {sampleChips.map(it=>(
@@ -419,7 +530,7 @@
           )}
           <div style={{ display:'flex',alignItems:'center',gap:'10px',padding:'0 0 6px',borderBottom:'1px solid var(--teal-border)' }}>
             <div style={{ width:'40px',flexShrink:0 }} />
-            <div style={{ flex:1,fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase' }}>อุปกรณ์ / ผู้เบิก</div>
+            <div style={{ flex:1,fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase' }}>อุปกรณ์ / ผู้ดำเนินการ</div>
             <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase',textAlign:'right',flexShrink:0 }}>จำนวน</div>
           </div>
           <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'0 16px',boxShadow:'var(--shadow-sm)',marginTop:'2px' }}>
@@ -427,7 +538,7 @@
           </div>
           <div style={{ marginTop:'12px' }}>
             <button onClick={()=>setShowDebug(v=>!v)} style={{ width:'100%',padding:'10px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',cursor:'pointer' }}>🔍 ดู Raw Data (Debug)</button>
-            {showDebug&&(<pre style={{ marginTop:'8px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:'14px',padding:'12px',fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--navy)',whiteSpace:'pre-wrap',wordBreak:'break-all',maxHeight:'200px',overflowY:'auto' }}>{JSON.stringify(logs.slice(0,3).map(l=>({item_name:l.item_name,quantity:l.quantity,employee:l.employee,unit:l.unit})),null,2)}</pre>)}
+            {showDebug&&(<pre style={{ marginTop:'8px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:'14px',padding:'12px',fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--navy)',whiteSpace:'pre-wrap',wordBreak:'break-all',maxHeight:'200px',overflowY:'auto' }}>{JSON.stringify(logs.slice(0,3).map(l=>({item_name:l.item_name,quantity:l.quantity,employee:l.employee,unit:l.unit,action:l.action})),null,2)}</pre>)}
           </div>
         </div>
       );
@@ -582,7 +693,7 @@
   let itemSh = ss.getSheetByName("Items");
   let logSh  = ss.getSheetByName("Logs");
   if (!itemSh) { itemSh = ss.insertSheet("Items"); itemSh.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); }
-  if (!logSh)  { logSh  = ss.insertSheet("Logs");  logSh.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note"]); }
+  if (!logSh)  { logSh  = ss.insertSheet("Logs");  logSh.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note","Action"]); }
   const payload = JSON.stringify({ items: getItems(itemSh), logs: getLogs(logSh) });
   const cb = e && e.parameter && e.parameter.callback;
   if (cb) return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -591,14 +702,21 @@
 function doPost(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const itemSh = ss.getSheetByName("Items") || (() => { const s=ss.insertSheet("Items"); s.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); return s; })();
-  const logSh  = ss.getSheetByName("Logs")  || (() => { const s=ss.insertSheet("Logs");  s.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note"]); return s; })();
+  const logSh  = ss.getSheetByName("Logs")  || (() => { const s=ss.insertSheet("Logs");  s.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note","Action"]); return s; })();
   const data = JSON.parse(e.postData.contents);
   if (data.action === "add_items") { data.items.forEach(it => itemSh.appendRow([it.id, it.name, it.cat, it.stock, it.unit, it.min, it.icon])); }
-  else if (data.action === "withdraw") {
-    logSh.appendRow([data.timestamp, data.qr_id, data.item_name, data.category, data.quantity, data.unit, data.employee, data.note || ""]);
+  else if (data.action === "withdraw" || data.action === "return" || data.action === "restock") {
+    logSh.appendRow([data.timestamp, data.qr_id, data.item_name, data.category, data.quantity, data.unit, data.employee, data.note || "", data.action]);
     const vals = itemSh.getDataRange().getValues();
     for (let i = 1; i < vals.length; i++) {
-      if (String(vals[i][0]) === String(data.qr_id)) { itemSh.getRange(i+1,4).setValue(Math.max(0, Number(vals[i][3]) - Number(data.quantity))); break; }
+      if (String(vals[i][0]) === String(data.qr_id)) {
+        const cur = Number(vals[i][3]);
+        let next = cur;
+        if (data.action === "withdraw") next = Math.max(0, cur - Number(data.quantity));
+        else if (data.action === "return" || data.action === "restock") next = cur + Number(data.quantity);
+        itemSh.getRange(i+1,4).setValue(next);
+        break;
+      }
     }
   }
   else if (data.action === "delete_item") {
@@ -614,7 +732,7 @@ function getItems(sheet) {
 }
 function getLogs(sheet) {
   const rows = sheet.getDataRange().getValues(); if (rows.length < 2) return [];
-  return rows.slice(1).reverse().slice(0,100).map(r => { let qty = parseInt(r[4]); if (isNaN(qty)) qty = 0; return { timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''), category: String(r[3]||''), quantity: qty, unit: String(r[5]||''), employee: String(r[6]||''), note: String(r[7]||'') }; });
+  return rows.slice(1).reverse().slice(0,100).map(r => { let qty = parseInt(r[4]); if (isNaN(qty)) qty = 0; return { timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''), category: String(r[3]||''), quantity: qty, unit: String(r[5]||''), employee: String(r[6]||''), note: String(r[7]||''), action: String(r[8]||'withdraw') }; });
 }`;
 
     /* ─── Main App ─── */
@@ -658,17 +776,40 @@ function getLogs(sheet) {
 
       function scanItem(code){const it=items.find(x=>x.id===code);if(!it){showToast('ไม่เจอ QR นี้ในระบบ ❌','#FF4D4D');return;}setCurItem(it);setActivePage('scan');}
 
-      async function confirmWithdraw(user,qty,note){
+      async function confirmAction(mode, user, qty, note) {
         if(!curItem)return;
-        if(!user){showToast('ใส่ชื่อผู้เบิกด้วยนะ ⚠','#FFB700');return;}
+        if(!user){showToast('ใส่ชื่อผู้ดำเนินการด้วยนะ ⚠','#FFB700');return;}
         if(qty<1){showToast('จำนวนต้องมากกว่า 0','#FFB700');return;}
-        if(qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
+        if(mode==='withdraw' && qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
+
         const ts=nowISO(); const snap={...curItem};
-        setItems(prev=>prev.map(x=>x.id===snap.id?{...x,stock:x.stock-qty}:x));
-        setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''},...prev]);
-        setCurItem(null); showToast(`กำลังบันทึกการเบิก "${snap.name}" ☁...`);
-        if(cfg.url){try{await gasPost(cfg.url,{action:'withdraw',timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''});showToast(`เบิก "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`);setTimeout(syncData,1000);}catch(e){showToast('บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)','#FFB700');}}
-        else{showToast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)','#FFB700');}
+        const modeLabel = mode==='withdraw'?'เบิก': mode==='return'?'คืน':'เติม Stock';
+        const toastColor = mode==='withdraw'?'#213A58': mode==='return'?'#4A90D9':'var(--mid-teal)';
+
+        // อัปเดต stock ในเครื่อง
+        setItems(prev=>prev.map(x=>{
+          if(x.id!==snap.id)return x;
+          if(mode==='withdraw') return {...x,stock:x.stock-qty};
+          if(mode==='return')   return {...x,stock:x.stock+qty};
+          if(mode==='restock')  return {...x,stock:x.stock+qty};
+          return x;
+        }));
+
+        setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||'',action:mode},...prev]);
+        setCurItem(null);
+        showToast(`กำลังบันทึก${modeLabel} "${snap.name}" ☁...`, toastColor);
+
+        if(cfg.url){
+          try{
+            await gasPost(cfg.url,{action:mode,timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''});
+            showToast(`${modeLabel} "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`, toastColor);
+            setTimeout(syncData,1000);
+          }catch(e){
+            showToast(`บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)`,'#FFB700');
+          }
+        } else {
+          showToast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)','#FFB700');
+        }
       }
 
       async function addItem(formData){
@@ -695,7 +836,7 @@ function getLogs(sheet) {
           <TopBar syncStatus={syncStatus} onSync={syncData} />
           <div style={{ padding:'0 14px' }}>
             {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')} />}
-            {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmWithdraw} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)} />}
+            {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmAction} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)} />}
             {activePage==='log'&&<PageLog logs={logs} items={items} onSync={syncData} />}
             {activePage==='admin'&&<PageAdmin items={items} setupUnlocked={setupUnlocked} onAddItem={addItem} onDelItem={delItem} onLock={lockAdmin} onUnlock={requestAdminAccess} />}
             {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} syncStatus={syncStatus} onSave={saveSettings} onSync={syncData} onCopyGAS={copyGAS} onLock={()=>{setSetupUnlocked(false);showToast('🔒 ล็อค ตั้งค่า แล้ว');setActivePage('home');}} onUnlock={requestSetupAccess} />}
