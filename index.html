@@ -4,854 +4,929 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>StockScan — IDC3</title>
-  <link rel="manifest" href="">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&family=Space+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&family=Space+Mono&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --teal: #09D1C7; --teal-dim: #E4F7F6; --teal-border: #99DDD9;
-      --mint: #46DFB1; --mint-dim: #E5F7F0; --mint-border: #96DEC5;
-      --mid-teal: #15919B; --deep-teal: #0C6478; --navy: #213A58;
-      --bg: #EEF5F7; --surface: #FFFFFF; --surface2: #F5FAFB;
-      --txt: #213A58; --txt2: #4A6878; --txt3: #8AACB8;
-      --r: 14px; --r2: 20px; --r3: 28px;
-      --shadow-sm: 0 1px 4px rgba(33,58,88,0.06), 0 2px 8px rgba(33,58,88,0.04);
-      --shadow-md: 0 4px 16px rgba(33,58,88,0.08), 0 1px 4px rgba(33,58,88,0.05);
+      --teal:#09D1C7;--teal-dim:#E4F7F6;--teal-border:#99DDD9;
+      --mint:#46DFB1;--mint-dim:#E5F7F0;--mint-border:#96DEC5;
+      --mid-teal:#15919B;--deep-teal:#0C6478;--navy:#213A58;
+      --bg:#EEF5F7;--surface:#FFFFFF;--surface2:#F5FAFB;
+      --txt:#213A58;--txt2:#4A6878;--txt3:#8AACB8;
+      --r:14px;--r2:20px;--r3:28px;
+      --shadow-sm:0 1px 4px rgba(33,58,88,0.06),0 2px 8px rgba(33,58,88,0.04);
+      --shadow-md:0 4px 16px rgba(33,58,88,0.08),0 1px 4px rgba(33,58,88,0.05);
+      --emp-grad:linear-gradient(145deg,#4b928b 0%,#68b4aa 35%,#9bd8c6 70%,#ebd08d 100%);
+      --emp-glass:rgba(255,255,255,0.45);--emp-border:rgba(255,255,255,0.6);
+      --emp-dark:#233446;--emp-muted:#4a6572;
     }
-    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); }
-    body { font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; line-height: 1.5; color: var(--txt); }
-    #root { max-width: 390px; margin: 0 auto; min-height: 100vh; }
-    input, select, button { font-family: inherit; }
-    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+    html,body{height:100%;background:var(--bg);}
+    body{font-family:'Noto Sans Thai',sans-serif;font-size:14px;line-height:1.5;color:var(--txt);}
+    #root{max-width:390px;margin:0 auto;min-height:100vh;}
+    input,select,button{font-family:inherit;}
+    input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 
-    @keyframes fadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
-    @keyframes toastPop { from { opacity:0; transform:translateX(-50%) translateY(8px) scale(0.92) } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1) } }
-    @keyframes scanLine { 0%,100% { top:8px; opacity:0 } 10% { opacity:1 } 90% { opacity:1 } 50% { top:calc(100% - 8px) } }
-    @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
-    @keyframes slideDown { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:none } }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes toastPop{from{opacity:0;transform:translateX(-50%) translateY(8px) scale(0.92)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+    @keyframes scanLine{0%,100%{top:8px;opacity:0}10%{opacity:1}90%{opacity:1}50%{top:calc(100% - 8px)}}
+    @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+    @keyframes empUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.8}}
+
+    /* Employee Overlay */
+    .emp-overlay{
+      position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(100%);
+      width:100%;max-width:390px;height:100%;
+      background:var(--emp-grad);
+      display:flex;flex-direction:column;
+      z-index:400;
+      transition:transform 0.4s cubic-bezier(0.2,1,0.3,1);
+    }
+    .emp-overlay.open{transform:translateX(-50%) translateY(0);}
+    .emp-topbar{background:rgba(255,255,255,0.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--emp-border);flex-shrink:0;padding:env(safe-area-inset-top,0) 0 0;}
+    .emp-topbar-inner{padding:14px 16px 10px;}
+    .emp-tb-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .emp-brand{display:flex;align-items:center;gap:7px;}
+    .emp-brand-dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 2s infinite;box-shadow:0 0 8px #fff;}
+    .emp-brand-name{color:var(--emp-dark);font-family:'Prompt',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:2px;}
+    .emp-close-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.5);border:1px solid var(--emp-border);color:var(--emp-dark);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .emp-search-wrap{position:relative;}
+    .emp-search-wrap input{width:100%;padding:10px 14px 10px 38px;background:var(--emp-glass);border:1px solid var(--emp-border);border-radius:12px;color:var(--emp-dark);font-family:'Noto Sans Thai',sans-serif;font-size:0.85rem;outline:none;}
+    .emp-si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--emp-muted);pointer-events:none;font-size:14px;}
+    .emp-list{flex:1;overflow-y:auto;padding:10px 14px 60px;scrollbar-width:none;}
+    .emp-list::-webkit-scrollbar{display:none;}
+    .emp-card{background:var(--emp-glass);border:1px solid var(--emp-border);border-radius:16px;margin-bottom:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;animation:empUp 0.3s ease both;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform 0.15s;}
+    .emp-card:active{transform:scale(0.98);}
+    .emp-avatar{width:52px;height:52px;border-radius:14px;overflow:hidden;border:2px solid #fff;flex-shrink:0;background:rgba(255,255,255,0.5);position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+    .emp-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 15%;display:block;}
+    .emp-avatar-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--emp-dark);background:linear-gradient(135deg,rgba(255,255,255,0.7),rgba(255,255,255,0.3));font-family:'Prompt',sans-serif;}
+    .emp-info{flex:1;min-width:0;}
+    .emp-name{font-family:'Prompt',sans-serif;font-size:0.88rem;font-weight:600;color:var(--emp-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .emp-pos{font-size:0.72rem;color:var(--emp-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .emp-id-badge{background:rgba(255,255,255,0.7);border:1px solid #fff;border-radius:8px;padding:3px 8px;font-size:0.62rem;font-weight:700;color:var(--emp-dark);flex-shrink:0;font-family:'Space Mono',monospace;}
+    .emp-select-chip{background:var(--emp-dark);color:#fff;border-radius:10px;padding:5px 12px;font-size:0.72rem;font-weight:600;flex-shrink:0;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;border:none;}
+    .emp-link-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;background:var(--teal-dim);border:1px solid var(--teal-border);color:var(--mid-teal);font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;}
   </style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
 
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+/* ── Employee Data ── */
+const EMP_IMG = {"OD1158037":"png","OD1158048":"png","OD1159070":"png","OD1159216":"png","OD1159220":"png","OD1159247":"png","OD1159279":"png","OD1160081":"png","OD1160082":"png","OD1160088":"png","OD1160351":"png","OD1160406":"png","OD1161069":"png","OD1161078":"png","OD1161079":"png","OD1161092":"png","OD1161125":"png","OD1161134":"png","OD1161280":"png","OD1161363":"png","OD1161392":"png","OD1162007":"png","OD1162045":"png","OD1162099":"png","OD1162130":"png","OD1162131":"png","OD1162151":"png","OD1162154":"png","OD1162203":"png","OD1162404":"png","OD1162769":"png","OD1165002":"png","OD1165005":"png","OD1165007":"png","OD1166001":"png","OD1167009":"png","OD1169007":"png"};
+const EMP_RAW = [
+  {id:"OD1158037",name:"นายพฤตินัย ล่ำสูง (กอล์ฟ)",pos:"ผู้ช่วยผู้อำนวยการ",phone:"081 937 6638",email:"pruktinail@inet.co.th"},
+  {id:"OD1161092",name:"นายธีรวัฒน์ ถินคำเชิด (ธีร์)",pos:"รองผู้จัดการ",phone:"061 417 4979",email:"teerawat.th@inet.co.th"},
+  {id:"OD1159070",name:"นายขจรศักดิ์ ทับสน (พัท)",pos:"วิศวกรไฟฟ้า",phone:"063 217 3464",email:"kajornsak.th@inet.co.th"},
+  {id:"OD1159220",name:"นายกฤษณพงศ์ เขียวกลาง (ไกด์)",pos:"วิศวกรไฟฟ้า",phone:"",email:"kritsanapong.kh@inet.co.th"},
+  {id:"OD1159247",name:"นายอดิศร ผลรักษ์ (หนุ่ม)",pos:"วิศวกรไฟฟ้า",phone:"063 217 6173",email:"adison.ph@inet.co.th"},
+  {id:"OD1161125",name:"นายศุภชัย ช่วยสุข (แบงค์)",pos:"วิศวกรไฟฟ้า",phone:"063 268 8029",email:"supachai.ch@inet.co.th"},
+  {id:"OD1162007",name:"นายอาทิตย์ โชติปรีดาเศรษฐ์ (แบงค์)",pos:"วิศวกรไฟฟ้า",phone:"065 527 2090",email:"athit.ma@inet.co.th"},
+  {id:"OD1166001",name:"นายพุฒิพงษ์ แก่นจันทร์ (เบนซ์)",pos:"วิศวกรไฟฟ้า",phone:"063 219 1172",email:"puthipong.ka@inet.co.th"},
+  {id:"OD1160082",name:"นายปิติพงษ์ ราชพิลา (อ๊อฟ)",pos:"วิศวกรคอมพิวเตอร์",phone:"063 204 9800",email:"pitipong.ra@inet.co.th"},
+  {id:"OD1158048",name:"ว่าที่ร้อยตรีวีรศักดิ์ แปลลา (วี)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 262 0118",email:"werasakp@inet.co.th"},
+  {id:"OD1159216",name:"นายนิพล พรมน้ำ (ทู)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"",email:"nipon.pr@inet.co.th"},
+  {id:"OD1159279",name:"นายชัยชนะ บุญสุข (นิค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9765",email:"chaichana.bu@inet.co.th"},
+  {id:"OD1160081",name:"นายกฤษณะ เรืองโหรา (นุ๊ก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9799",email:"kritsana.ru@inet.co.th"},
+  {id:"OD1160088",name:"นายสุพจน์ ไทรไกรกระ (ตั้ม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9801",email:"suphot.th@inet.co.th"},
+  {id:"OD1160351",name:"นางสาวจงกล แก้วมาลา (นิว)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 521 4469",email:"jongkon.ka@inet.co.th"},
+  {id:"OD1160406",name:"นายเอกรัตน์ ยอดด่านกลาง (แซม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 725 7455",email:"ekkarat.yo@inet.co.th"},
+  {id:"OD1161069",name:"นายวิชญ์ภาส สืบพงศ์ (หมอก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"061 410 3453",email:"witchaphat.su@inet.co.th"},
+  {id:"OD1161078",name:"นายพีรพัฒน์ โพธิ์จิตร (อั๋น)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"061 410 6213",email:"peerapat.ph@inet.co.th"},
+  {id:"OD1161079",name:"นายนัทธพงศ์ ชมภูเจริญ (แนน)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 268 6703",email:"nuttapong.ch@inet.co.th"},
+  {id:"OD1161134",name:"นายพิชิตพนธ์ สิมมา (นก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"098 280 7256",email:"pichitpon.si@inet.co.th"},
+  {id:"OD1161280",name:"นางสาวณัฐชยา พรรณโณภาศ (คุกกี้)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 197 8503",email:"natchaya.pa@inet.co.th"},
+  {id:"OD1161363",name:"นายอภิสิทธิ์ จำมั่น (แมท)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 512 4657",email:"apisit.ju@inet.co.th"},
+  {id:"OD1161392",name:"นายชินวัฒน์ แสงบุญเรือง (แชมป์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 250 6903",email:"chinnawat.sa@inet.co.th"},
+  {id:"OD1162045",name:"นายธนพงษ์ แก้วปัดชา (ตุ่ม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 513 4096",email:"thanapong.ka@inet.co.th"},
+  {id:"OD1162099",name:"นายศักดิ์ชัย เกตกลางดอน (มนต์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 504 8320",email:"sakchai.ke@inet.co.th"},
+  {id:"OD1162130",name:"นายพศพล ย้อยจันทึก (เปิ้ล)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 512 4631",email:"possapol.yo@inet.co.th"},
+  {id:"OD1162131",name:"นายพิชิต แท่งทอง (แจ็ค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 507 5538",email:"pichit.ta@inet.co.th"},
+  {id:"OD1162154",name:"นายสมคิด เกษสุริยงค์ (คิด)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 1971",email:"somkid.ka@inet.co.th"},
+  {id:"OD1162203",name:"นางสาวกัญญาภัค กิจนาค (สตางค์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 2503",email:"kanyapak.ki@inet.co.th"},
+  {id:"OD1162769",name:"นายพงศธร ศรีสวัสดิ์โชคชัย (แบงค์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 217 6123",email:"pongsatorn.sr@inet.co.th"},
+  {id:"OD1165005",name:"นายนภัส กาษร (ปอ)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 250 6379",email:"naphat.ka@inet.co.th"},
+  {id:"OD1165007",name:"นายสุวัฒน์ อุ่นสุข (บอส)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 937 7191",email:"suwat.oo@inet.co.th"},
+  {id:"OD1167009",name:"นายธนพร แก้วปัดชา (ตาม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 2021",email:"thanaporn.ka@inet.co.th"},
+  {id:"OD1169007",name:"นายกิตตินันท์ มณีวงษ์ (ฟลุ๊ค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"093 124 1271",email:"kittinun.ma@inet.co.th"},
+  {id:"OD1162404",name:"นางสาวรัตติยากร เงินแก้ว (เอ้)",pos:"เจ้าหน้าที่ขุมชนสัมพันธ์",phone:"065 523 1713",email:"rattiyakorn.ng@inet.co.th"},
+  {id:"OD1165002",name:"นางสาวชนนิกานต์ วงพิมล (กีฟ)",pos:"เจ้าหน้าที่ขุมชนสัมพันธ์",phone:"061 398 7469",email:"chonnikarn.wo@inet.co.th"},
+  {id:"OD1162151",name:"นายอิทธิพล พันธุ์ชื่น (มอส)",pos:"ช่างซ่อมบำรุงอาคาร",phone:"065 527 1964",email:"ittiphon.ph@inet.co.th"},
+];
+const EMPLOYEES = EMP_RAW.map(e => {
+  const parts = e.name.replace(/\s*\(.*?\)\s*/g,'').replace(/^(นาย|นางสาว|นาง|ว่าที่ร้อยตรี)\s*/,'').trim().split(' ');
+  const enParts = (e.name||'').replace(/^(Mr\.|Ms\.|Mrs\.|Acting Sub Lt\.)\s*/i,'').trim().split(' ');
+  return {
+    ...e,
+    img: EMP_IMG[e.id] ? `images/${e.id}.${EMP_IMG[e.id]}` : null,
+    displayName: e.name.replace(/\s*\(.*?\)\s*/g,'').replace(/^(นาย|นางสาว|นาง|ว่าที่ร้อยตรี)\s*/,'').trim(),
+    initials: (parts[0]?.[0]||'?') + (parts[1]?.[0]||''),
+  };
+});
 
-  <script type="text/babel">
-    const { useState, useEffect, useCallback, useRef } = React;
+/* ── Helpers ── */
+function parseTs(s){try{const d=new Date(s);return isNaN(d)?null:d;}catch(e){return null;}}
+function displayTs(s){try{return new Date(s).toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return s||'—';}}
+function normalizeItems(arr){if(!Array.isArray(arr))return[];return arr.map(it=>({id:String(it.id||it.ID||'').trim(),name:String(it.name||it.Name||'').trim(),cat:String(it.cat||it.category||it.Category||'').trim(),stock:Number(String(it.stock??it.Stock??0).replace(/[^0-9.]/g,''))||0,unit:String(it.unit||it.Unit||'อัน').trim(),min:Number(String(it.min??it.Min??0).replace(/[^0-9.]/g,''))||0,icon:String(it.icon||it.Icon||'📦').trim()})).filter(it=>it.id);}
+function normalizeLogs(arr){if(!Array.isArray(arr))return[];return arr.map(l=>({timestamp:String(l.timestamp||'').trim(),qr_id:String(l.qr_id||'').trim(),item_name:String(l.item_name||l.Item_Name||l.name||'').trim(),cat:String(l.cat||l.category||'').trim(),quantity:parseInt(String(l.quantity??l.Quantity??0))||0,unit:String(l.unit||l.Unit||'').trim(),employee:String(l.employee||l.Employee||'').trim(),note:String(l.note||l.Note||'').trim(),action:String(l.action||'withdraw').trim()}));}
+function uid(){return 'QR-'+Date.now().toString(36).toUpperCase().slice(-4)+Math.random().toString(36).substr(2,3).toUpperCase();}
+function nowISO(){return new Date().toISOString();}
+function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;}}
+function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
-    /* ─── Helpers ─── */
-    function parseTs(s) { try { const d=new Date(s); return isNaN(d)?null:d; } catch(e){return null;} }
-    function displayTs(s) { try { return new Date(s).toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e){return s||'—';} }
-    function normalizeItems(arr) {
-      if (!Array.isArray(arr)) return [];
-      return arr.map(it=>({ id:String(it.id||it.ID||'').trim(), name:String(it.name||it.Name||'').trim(), cat:String(it.cat||it.category||it.Category||'').trim(), stock:Number(String(it.stock??it.Stock??0).replace(/[^0-9.]/g,''))||0, unit:String(it.unit||it.Unit||'อัน').trim(), min:Number(String(it.min??it.Min??0).replace(/[^0-9.]/g,''))||0, icon:String(it.icon||it.Icon||'📦').trim() })).filter(it=>it.id);
-    }
-    function normalizeLogs(arr) {
-      if (!Array.isArray(arr)) return [];
-      return arr.map(l=>({ timestamp:String(l.timestamp||'').trim(), qr_id:String(l.qr_id||'').trim(), item_name:String(l.item_name||l.Item_Name||l.name||'').trim(), cat:String(l.cat||l.category||'').trim(), quantity:parseInt(String(l.quantity??l.Quantity??0))||0, unit:String(l.unit||l.Unit||'').trim(), employee:String(l.employee||l.Employee||'').trim(), note:String(l.note||l.Note||'').trim(), action:String(l.action||'withdraw').trim() }));
-    }
-    function uid() { return 'QR-'+Date.now().toString(36).toUpperCase().slice(-4)+Math.random().toString(36).substr(2,3).toUpperCase(); }
-    function nowISO() { return new Date().toISOString(); }
-    function loadLocal(key,fb) { try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;} }
+const SECURE_PIN="240739";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbyOqsDZbO6E8W0Ka0EF8jv-BalyMtSiYorH8Vc4lZy3H_fIkeVfaMdldrkvAMBeyFOo/exec";
 
-    /* fuzzy match: ทุก keyword ในคำค้นต้องอยู่ในชื่อ (ลำดับไม่สนใจ) */
-    function fuzzyMatch(text, query) {
-      if (!query) return true;
-      const t = text.toLowerCase();
-      const words = query.toLowerCase().trim().split(/\s+/);
-      return words.every(w => t.includes(w));
-    }
+/* ── EmpMiniAvatar ── */
+function EmpMiniAvatar({emp,size=32,radius=9}){
+  const [imgErr,setImgErr]=useState(false);
+  return(
+    <div style={{width:size,height:size,borderRadius:radius,overflow:'hidden',border:'1.5px solid var(--teal-border)',flexShrink:0,background:'var(--teal-dim)',position:'relative',boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
+      {emp.img&&!imgErr
+        ?<img src={emp.img} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 15%',display:'block'}} onError={()=>setImgErr(true)}/>
+        :<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:size*0.35,fontWeight:700,color:'var(--mid-teal)'}}>{emp.initials}</div>
+      }
+    </div>
+  );
+}
 
-    /* ─── Constants ─── */
-    const SECURE_PIN = "240739";
-    const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyOqsDZbO6E8W0Ka0EF8jv-BalyMtSiYorH8Vc4lZy3H_fIkeVfaMdldrkvAMBeyFOo/exec";
+/* ── EmpCardAvatar (for overlay) ── */
+function EmpCardAvatar({emp}){
+  const [imgErr,setImgErr]=useState(false);
+  return(
+    <div className="emp-avatar">
+      {emp.img&&!imgErr
+        ?<img src={emp.img} alt="" onError={()=>setImgErr(true)}/>
+        :null}
+      {(!emp.img||imgErr)&&<div className="emp-avatar-ph">{emp.initials}</div>}
+    </div>
+  );
+}
 
-    /* ─── LogRow ─── */
-    function LogRow({ l, items, showTime, isLast }) {
-      const it = items.find(x=>x.id===l.qr_id);
-      const icon = it ? it.icon : '📦';
-      const qty = Number(l.quantity)||0;
-      const isReturn = l.action === 'return';
-      const isRestock = l.action === 'restock';
-      return (
-        <div style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 0', borderBottom: isLast?'none':'1px solid var(--teal-border)' }}>
-          <div style={{ width:'40px',height:'40px',borderRadius:'12px',background: isReturn?'#EEF7FF': isRestock?'var(--mint-dim)':'var(--teal-dim)',border:`1px solid ${isReturn?'#BDD5F5':isRestock?'var(--mint-border)':'var(--teal-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0,position:'relative' }}>
-            {icon}
-            {isReturn && <div style={{ position:'absolute',bottom:'-3px',right:'-3px',width:'14px',height:'14px',borderRadius:'50%',background:'#4A90D9',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff' }}>↩</div>}
-            {isRestock && <div style={{ position:'absolute',bottom:'-3px',right:'-3px',width:'14px',height:'14px',borderRadius:'50%',background:'var(--mint)',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'8px',color:'#fff' }}>+</div>}
-          </div>
-          <div style={{ flex:1,minWidth:0 }}>
-            <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{l.item_name||l.qr_id}</div>
-            <div style={{ fontSize:'12px',color:'var(--txt2)' }}>{l.employee||'—'}</div>
-            {showTime && l.timestamp && <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',marginTop:'1px' }}>{displayTs(l.timestamp)}</div>}
-            {l.note && <div style={{ fontSize:'11px',color:'var(--txt3)',marginTop:'1px',fontStyle:'italic' }}>{l.note}</div>}
-          </div>
-          <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'2px',flexShrink:0 }}>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'24px',fontWeight:800,color: isReturn?'#4A90D9': isRestock?'var(--mint)':'var(--teal)',letterSpacing:'-1px',lineHeight:1 }}>
-              {isReturn?'-':isRestock?'+':''}{qty}<span style={{ fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'11px',color:'var(--txt3)',fontWeight:400,marginLeft:'3px' }}>{l.unit}</span>
+/* ── EmployeeDirectory overlay ── */
+function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
+  const [q,setQ]=useState('');
+  useEffect(()=>{if(!isOpen)setQ('');},[isOpen]);
+  const filtered=EMPLOYEES.filter(e=>{
+    if(!q)return true;
+    const qq=q.toLowerCase();
+    return e.name.toLowerCase().includes(qq)||e.id.toLowerCase().includes(qq)||e.pos.includes(q)||e.displayName.includes(q);
+  });
+  return(
+    <div className={`emp-overlay${isOpen?' open':''}`}>
+      <div className="emp-topbar">
+        <div className="emp-topbar-inner">
+          <div className="emp-tb-row1">
+            <div className="emp-brand">
+              <div className="emp-brand-dot"/>
+              <span className="emp-brand-name">INET</span>
+              <span style={{fontSize:'0.68rem',color:'var(--emp-muted)',fontFamily:'Prompt',marginLeft:4}}>IDC-3 · Employee Directory</span>
             </div>
-            {isReturn && <span style={{ fontSize:'9px',color:'#4A90D9',background:'#EEF7FF',padding:'1px 6px',borderRadius:'100px',border:'1px solid #BDD5F5' }}>คืน</span>}
-            {isRestock && <span style={{ fontSize:'9px',color:'var(--mid-teal)',background:'var(--mint-dim)',padding:'1px 6px',borderRadius:'100px',border:'1px solid var(--mint-border)' }}>เติม</span>}
+            <button className="emp-close-btn" onClick={onClose}>✕</button>
+          </div>
+          {selectMode&&(
+            <div style={{fontSize:12,color:'var(--emp-dark)',fontFamily:'Noto Sans Thai',background:'rgba(255,255,255,0.55)',borderRadius:10,padding:'6px 12px',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
+              <i className="ti ti-user-check" style={{fontSize:14}}/>
+              แตะ "เลือก" เพื่อใช้ชื่อพนักงานในการเบิก
+            </div>
+          )}
+          <div className="emp-search-wrap">
+            <i className="ti ti-search emp-si"/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อ ตำแหน่ง หรือรหัส…"/>
           </div>
         </div>
-      );
-    }
+      </div>
+      <div className="emp-list">
+        {filtered.length===0
+          ?<div style={{textAlign:'center',padding:'40px 20px',color:'var(--emp-dark)',opacity:0.6,fontFamily:'Prompt'}}>ไม่พบพนักงาน</div>
+          :filtered.map((e,i)=>(
+            <div key={e.id} className="emp-card" style={{animationDelay:`${i*0.02}s`}}>
+              <EmpCardAvatar emp={e}/>
+              <div className="emp-info">
+                <div className="emp-name">{e.name}</div>
+                <div className="emp-pos">{e.pos}</div>
+              </div>
+              <div className="emp-id-badge">{e.id}</div>
+              {selectMode&&(
+                <button className="emp-select-chip" onClick={()=>{onSelect&&onSelect(e);onClose();}}>เลือก</button>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}
 
-    /* ─── TopBar ─── */
-    const STATUS_MAP = {
-      syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},
-      ok:{color:'var(--teal)',text:'ข้อมูลตรงกัน ✓'},
-      error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},
-      none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'},
-    };
-    function TopBar({ syncStatus, onSync }) {
-      const s = STATUS_MAP[syncStatus]||STATUS_MAP.none;
-      return (
-        <div style={{ padding:'20px 16px 0',display:'flex',alignItems:'center',justifyContent:'space-between' }}>
-          <div style={{ display:'flex',alignItems:'center',gap:'8px' }}>
-            <div style={{ background:'var(--navy)',color:'#fff',fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'13px',padding:'5px 14px',borderRadius:'100px',letterSpacing:'0.3px',boxShadow:'0 2px 8px rgba(33,58,88,0.18)' }}>Stock</div>
-            <span style={{ fontSize:'11px',color:'var(--txt3)',fontFamily:"'Space Mono',monospace",letterSpacing:'.5px' }}>IDC3</span>
-          </div>
-          <div onClick={onSync} style={{ display:'flex',alignItems:'center',gap:'6px',cursor:'pointer',padding:'6px 12px',borderRadius:'100px',background:'var(--surface)',border:'1px solid var(--teal-border)',boxShadow:'var(--shadow-sm)' }}>
-            <div style={{ width:'7px',height:'7px',borderRadius:'50%',background:s.color,flexShrink:0 }} />
-            <span style={{ fontSize:'11px',color:s.color,fontFamily:"'Space Mono',monospace" }}>{s.text}</span>
-          </div>
-        </div>
-      );
-    }
-
-    /* ─── BottomNav ─── */
-    function NavBtn({ active, icon, label, onClick }) {
-      return (
-        <button onClick={onClick} style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'3px',padding:'8px 4px',cursor:'pointer',border:'none',background:'transparent',color:active?'var(--teal)':'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'10px',transition:'.2s',borderRadius:'8px',position:'relative' }}>
-          <i className={`ti ${icon}`} style={{ fontSize:'22px',transform:active?'translateY(-2px) scale(1.1)':'none',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)' }} />
-          <span>{label}</span>
-          {active && <div style={{ position:'absolute',bottom:0,width:'20px',height:'3px',background:'var(--teal)',borderRadius:'100px 100px 0 0' }} />}
+/* ── EmployeePicker (inline in form) ── */
+function EmployeePicker({selected,onSelect,label}){
+  const [q,setQ]=useState('');
+  const [open,setOpen]=useState(false);
+  const [showDir,setShowDir]=useState(false);
+  const suggestions=q.trim()
+    ?EMPLOYEES.filter(e=>e.name.toLowerCase().includes(q.toLowerCase())||e.id.toLowerCase().includes(q.toLowerCase())||e.displayName.includes(q))
+    :EMPLOYEES.slice(0,6);
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'11px 14px 11px 38px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+  return(
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6,marginTop:14}}>
+        <span style={{fontSize:12,color:'var(--txt2)',fontWeight:500}}>{label||'ชื่อผู้เบิก'}</span>
+        <button className="emp-link-btn" onClick={()=>setShowDir(true)} style={{fontSize:10}}>
+          <i className="ti ti-address-book" style={{fontSize:11}}/>ดูรายชื่อพนักงาน
         </button>
-      );
-    }
-    function BottomNav({ activePage, onGoHome, onGoLog, onGoScan, onGoAdmin, onGoSetup }) {
-      return (
-        <div style={{ position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:'390px',background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)' }}>
-          <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome} />
-          <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog} />
-          <div style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative' }}>
-            <button onClick={onGoScan} style={{ position:'absolute',bottom:'8px',width:'52px',height:'52px',borderRadius:'50%',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35)',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
-              <i className="ti ti-scan" style={{ fontSize:'22px',color:'#fff' }} />
-            </button>
-          </div>
-          <NavBtn active={activePage==='admin'} icon="ti-package"  label="เพิ่มอุปกรณ์" onClick={onGoAdmin} />
-          <NavBtn active={activePage==='setup'} icon="ti-settings" label="ตั้งค่า"      onClick={onGoSetup} />
-        </div>
-      );
-    }
-
-    /* ─── PinModal ─── */
-    function PinModal({ target, correctPin, onSuccess, onClose }) {
-      const [buf,setBuf] = useState('');
-      const [error,setError] = useState('');
-      const [shake,setShake] = useState(false);
-      useEffect(()=>{setBuf('');setError('');},[target]);
-      const addKey = k => {
-        if (buf.length>=6) return;
-        const next = buf+k;
-        setBuf(next); setError('');
-        if (next.length===6) {
-          setTimeout(()=>{
-            if (next===correctPin) { onSuccess(); }
-            else { setError('❌ รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง'); setShake(true); setBuf(''); setTimeout(()=>setShake(false),400); }
-          },120);
-        }
-      };
-      const del = () => { setBuf(p=>p.slice(0,-1)); setError(''); };
-      const keys = ['1','2','3','4','5','6','7','8','9'];
-      return (
-        <div style={{ position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end' }} onClick={e=>e.target===e.currentTarget&&onClose()}>
-          <div style={{ background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:'390px',margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)' }}>
-            <div style={{ width:'36px',height:'4px',background:'var(--teal-border)',borderRadius:'100px',margin:'0 auto 24px' }} />
-            <div style={{ textAlign:'center',fontSize:'28px',marginBottom:'8px' }}>🔒</div>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,textAlign:'center',color:'var(--txt)',marginBottom:'4px' }}>Admin Mode</div>
-            <div style={{ fontSize:'12px',color:'var(--txt3)',textAlign:'center',marginBottom:'20px' }}>กรอกรหัส PIN เพื่อเข้าสู่โหมด Admin</div>
-            <div style={{ display:'flex',gap:'12px',justifyContent:'center',marginBottom:'20px',animation:shake?'shake .3s ease':'none' }}>
-              {Array.from({length:6},(_,i)=>(
-                <div key={i} style={{ width:'14px',height:'14px',borderRadius:'50%',border:`2px solid ${i<buf.length?'var(--teal)':'var(--teal-border)'}`,background:i<buf.length?'var(--teal)':'transparent',transition:'.2s',boxShadow:i<buf.length?'0 0 8px rgba(9,209,199,0.35)':'none' }} />
-              ))}
-            </div>
-            <div style={{ display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:'10px' }}>
-              {keys.map(k=>(
-                <button key={k} onClick={()=>addKey(k)} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--txt)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>{k}</button>
-              ))}
-              <div />
-              <button onClick={()=>addKey('0')} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--txt)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>0</button>
-              <button onClick={del} style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'20px',padding:'18px',fontSize:'16px',color:'var(--txt2)',cursor:'pointer',transition:'.15s',textAlign:'center' }}>⌫</button>
-            </div>
-            <div style={{ textAlign:'center',color:'#e03030',fontSize:'12px',marginTop:'12px',minHeight:'18px' }}>{error}</div>
-            <button onClick={onClose} style={{ width:'100%',padding:'13px',borderRadius:'20px',marginTop:'12px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer' }}>ยกเลิก</button>
-          </div>
-        </div>
-      );
-    }
-
-    /* ─── CameraOverlay ─── */
-    function CameraOverlay({ onScan, onClose }) {
-      const videoRef = useRef(null);
-      const canvasRef = useRef(null);
-      const streamRef = useRef(null);
-      const rafRef = useRef(null);
-      const [status,setStatus] = useState('กำลังเปิดกล้อง...');
-      useEffect(()=>{
-        let lastScan=0,active=true;
-        async function start() {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
-            if(!active){stream.getTracks().forEach(t=>t.stop());return;}
-            streamRef.current=stream; const video=videoRef.current; video.srcObject=stream; await video.play();
-            setStatus('พร้อมสแกน ✓'); scanLoop();
-          } catch(err){setStatus('❌ ไม่สามารถเปิดกล้องได้');setTimeout(()=>onClose(),2000);}
-        }
-        function scanLoop(){
-          const video=videoRef.current; const canvas=canvasRef.current;
-          if(!video||!canvas)return; const ctx=canvas.getContext('2d');
-          function tick(){
-            if(!active)return;
-            if(video.readyState===video.HAVE_ENOUGH_DATA){
-              canvas.width=video.videoWidth; canvas.height=video.videoHeight;
-              ctx.drawImage(video,0,0,canvas.width,canvas.height);
-              const now=Date.now();
-              if(now-lastScan>300){lastScan=now;try{const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);const code=window.jsQR&&window.jsQR(imgData.data,imgData.width,imgData.height,{inversionAttempts:'dontInvert'});if(code&&code.data){active=false;onScan(code.data.trim());return;}}catch(e){}}
-            }
-            rafRef.current=requestAnimationFrame(tick);
+      </div>
+      {/* Search box */}
+      <div style={{position:'relative',marginBottom:6}}>
+        <i className="ti ti-search" style={{position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',fontSize:15,color:'var(--txt3)',pointerEvents:'none'}}/>
+        <input value={q} onChange={e=>{setQ(e.target.value);setOpen(true);}} onFocus={()=>setOpen(true)}
+          placeholder="พิมพ์ชื่อหรือรหัสพนักงาน…" style={IS}/>
+        {q&&<button onClick={()=>{setQ('');setOpen(false);}} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'var(--txt3)',cursor:'pointer',fontSize:14}}>✕</button>}
+      </div>
+      {/* Dropdown */}
+      {open&&(
+        <div style={{background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,boxShadow:'var(--shadow-md)',marginBottom:8,maxHeight:200,overflowY:'auto',animation:'slideDown .15s ease',position:'relative',zIndex:10}}>
+          {suggestions.length===0
+            ?<div style={{padding:'12px 14px',color:'var(--txt3)',fontSize:12}}>ไม่พบพนักงาน</div>
+            :suggestions.map((e,i)=>(
+              <div key={e.id} onMouseDown={()=>{onSelect(e);setQ('');setOpen(false);}}
+                style={{display:'flex',alignItems:'center',gap:10,padding:'9px 14px',borderBottom:i<suggestions.length-1?'1px solid var(--teal-border)':'none',cursor:'pointer'}}>
+                <EmpMiniAvatar emp={e} size={32} radius={9}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,fontSize:13,color:'var(--txt)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{e.name}</div>
+                  <div style={{fontSize:11,color:'var(--txt2)'}}>{e.pos}</div>
+                </div>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',flexShrink:0}}>{e.id}</span>
+              </div>
+            ))
           }
-          rafRef.current=requestAnimationFrame(tick);
+        </div>
+      )}
+      {/* Selected display */}
+      {selected&&(
+        <div style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:14,padding:'10px 14px',display:'flex',alignItems:'center',gap:10,animation:'slideDown .15s ease',marginBottom:2}}>
+          <EmpMiniAvatar emp={selected} size={38} radius={11}/>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:700,color:'var(--txt)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{selected.name}</div>
+            <div style={{fontSize:11,color:'var(--txt2)'}}>{selected.pos} · <span style={{fontFamily:"'Space Mono',monospace",fontSize:10}}>{selected.id}</span></div>
+          </div>
+          <button onClick={()=>onSelect(null)} style={{background:'none',border:'none',color:'var(--txt3)',cursor:'pointer',fontSize:14,padding:'2px 4px'}} title="ล้าง">✕</button>
+        </div>
+      )}
+      <EmployeeDirectory isOpen={showDir} onClose={()=>setShowDir(false)} onSelect={e=>{onSelect(e);setShowDir(false);}} selectMode={true}/>
+    </div>
+  );
+}
+
+/* ── LogRow ── */
+function LogRow({l,items,showTime,isLast}){
+  const it=items.find(x=>x.id===l.qr_id);
+  const icon=it?it.icon:'📦';
+  const qty=Number(l.quantity)||0;
+  const isReturn=l.action==='return';
+  const isRestock=l.action==='restock';
+  const emp=EMPLOYEES.find(e=>l.employee&&(e.id===l.employee||e.name===l.employee));
+  return(
+    <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:isLast?'none':'1px solid var(--teal-border)'}}>
+      <div style={{width:40,height:40,borderRadius:12,background:isReturn?'#EEF7FF':isRestock?'var(--mint-dim)':'var(--teal-dim)',border:`1px solid ${isReturn?'#BDD5F5':isRestock?'var(--mint-border)':'var(--teal-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0,position:'relative'}}>
+        {icon}
+        {isReturn&&<div style={{position:'absolute',bottom:-3,right:-3,width:14,height:14,borderRadius:'50%',background:'#4A90D9',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:8,color:'#fff'}}>↩</div>}
+        {isRestock&&<div style={{position:'absolute',bottom:-3,right:-3,width:14,height:14,borderRadius:'50%',background:'var(--mint)',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:8,color:'#fff'}}>+</div>}
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontWeight:700,fontSize:13,color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{l.item_name||l.qr_id}</div>
+        <div style={{fontSize:12,color:'var(--txt2)',display:'flex',alignItems:'center',gap:4,flexWrap:'wrap'}}>
+          {emp?(<><EmpMiniAvatar emp={emp} size={14} radius={4}/><span>{emp.displayName}</span><span style={{fontSize:10,color:'var(--txt3)',fontFamily:"'Space Mono',monospace"}}>{emp.id}</span></>):<span>{l.employee||'—'}</span>}
+        </div>
+        {showTime&&l.timestamp&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',marginTop:1}}>{displayTs(l.timestamp)}</div>}
+        {l.note&&<div style={{fontSize:11,color:'var(--txt3)',marginTop:1,fontStyle:'italic'}}>{l.note}</div>}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:2,flexShrink:0}}>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontSize:24,fontWeight:800,color:isReturn?'#4A90D9':isRestock?'var(--mint)':'var(--teal)',letterSpacing:'-1px',lineHeight:1}}>
+          {isReturn?'-':isRestock?'+':''}{qty}<span style={{fontFamily:"'Noto Sans Thai',sans-serif",fontSize:11,color:'var(--txt3)',fontWeight:400,marginLeft:3}}>{l.unit}</span>
+        </div>
+        {isReturn&&<span style={{fontSize:9,color:'#4A90D9',background:'#EEF7FF',padding:'1px 6px',borderRadius:100,border:'1px solid #BDD5F5'}}>คืน</span>}
+        {isRestock&&<span style={{fontSize:9,color:'var(--mid-teal)',background:'var(--mint-dim)',padding:'1px 6px',borderRadius:100,border:'1px solid var(--mint-border)'}}>เติม</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ── TopBar ── */
+const STATUS_MAP={syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},ok:{color:'var(--teal)',text:'ข้อมูลตรงกัน ✓'},error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'}};
+function TopBar({syncStatus,onSync,onOpenDirectory}){
+  const s=STATUS_MAP[syncStatus]||STATUS_MAP.none;
+  return(
+    <div style={{padding:'20px 16px 0',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+        <div style={{background:'var(--navy)',color:'#fff',fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:13,padding:'5px 14px',borderRadius:100,letterSpacing:'0.3px',boxShadow:'0 2px 8px rgba(33,58,88,0.18)'}}>Stock</div>
+        <span style={{fontSize:11,color:'var(--txt3)',fontFamily:"'Space Mono',monospace",letterSpacing:'.5px'}}>IDC3</span>
+        <button className="emp-link-btn" onClick={onOpenDirectory}>
+          <i className="ti ti-users" style={{fontSize:12}}/>พนักงาน
+        </button>
+      </div>
+      <div onClick={onSync} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'6px 12px',borderRadius:100,background:'var(--surface)',border:'1px solid var(--teal-border)',boxShadow:'var(--shadow-sm)',flexShrink:0}}>
+        <div style={{width:7,height:7,borderRadius:'50%',background:s.color,flexShrink:0}}/>
+        <span style={{fontSize:11,color:s.color,fontFamily:"'Space Mono',monospace"}}>{s.text}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── BottomNav ── */
+function NavBtn({active,icon,label,onClick}){
+  return(
+    <button onClick={onClick} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3,padding:'8px 4px',cursor:'pointer',border:'none',background:'transparent',color:active?'var(--teal)':'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:10,transition:'.2s',borderRadius:8,position:'relative'}}>
+      <i className={`ti ${icon}`} style={{fontSize:22,transform:active?'translateY(-2px) scale(1.1)':'none',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)'}}/>
+      <span>{label}</span>
+      {active&&<div style={{position:'absolute',bottom:0,width:20,height:3,background:'var(--teal)',borderRadius:'100px 100px 0 0'}}/>}
+    </button>
+  );
+}
+function BottomNav({activePage,onGoHome,onGoLog,onGoScan,onGoAdmin,onGoSetup}){
+  return(
+    <div style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:390,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
+      <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome}/>
+      <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog}/>
+      <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
+        <button onClick={onGoScan} style={{position:'absolute',bottom:8,width:52,height:52,borderRadius:'50%',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35)',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)'}}>
+          <i className="ti ti-scan" style={{fontSize:22,color:'#fff'}}/>
+        </button>
+      </div>
+      <NavBtn active={activePage==='admin'} icon="ti-package"  label="เพิ่มอุปกรณ์" onClick={onGoAdmin}/>
+      <NavBtn active={activePage==='setup'} icon="ti-settings" label="ตั้งค่า"      onClick={onGoSetup}/>
+    </div>
+  );
+}
+
+/* ── PinModal ── */
+function PinModal({target,correctPin,onSuccess,onClose}){
+  const [buf,setBuf]=useState('');
+  const [error,setError]=useState('');
+  const [shake,setShake]=useState(false);
+  useEffect(()=>{setBuf('');setError('');},[target]);
+  const addKey=k=>{
+    if(buf.length>=6)return;
+    const next=buf+k; setBuf(next); setError('');
+    if(next.length===6){setTimeout(()=>{if(next===correctPin){onSuccess();}else{setError('❌ รหัสไม่ถูกต้อง ลองใหม่อีกครั้ง');setShake(true);setBuf('');setTimeout(()=>setShake(false),400);}},120);}
+  };
+  const del=()=>{setBuf(p=>p.slice(0,-1));setError('');};
+  return(
+    <div style={{position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end'}} onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div style={{background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:390,margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)'}}>
+        <div style={{width:36,height:4,background:'var(--teal-border)',borderRadius:100,margin:'0 auto 24px'}}/>
+        <div style={{textAlign:'center',fontSize:28,marginBottom:8}}>🔒</div>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,textAlign:'center',color:'var(--txt)',marginBottom:4}}>Admin Mode</div>
+        <div style={{fontSize:12,color:'var(--txt3)',textAlign:'center',marginBottom:20}}>กรอกรหัส PIN เพื่อเข้าสู่โหมด Admin</div>
+        <div style={{display:'flex',gap:12,justifyContent:'center',marginBottom:20,animation:shake?'shake .3s ease':'none'}}>
+          {Array.from({length:6},(_,i)=><div key={i} style={{width:14,height:14,borderRadius:'50%',border:`2px solid ${i<buf.length?'var(--teal)':'var(--teal-border)'}`,background:i<buf.length?'var(--teal)':'transparent',transition:'.2s',boxShadow:i<buf.length?'0 0 8px rgba(9,209,199,0.35)':'none'}}/>)}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:10}}>
+          {['1','2','3','4','5','6','7','8','9'].map(k=><button key={k} onClick={()=>addKey(k)} style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:20,padding:18,fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:'var(--txt)',cursor:'pointer'}}>{k}</button>)}
+          <div/><button onClick={()=>addKey('0')} style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:20,padding:18,fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:'var(--txt)',cursor:'pointer'}}>0</button>
+          <button onClick={del} style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:20,padding:18,fontSize:16,color:'var(--txt2)',cursor:'pointer'}}>⌫</button>
+        </div>
+        <div style={{textAlign:'center',color:'#e03030',fontSize:12,marginTop:12,minHeight:18}}>{error}</div>
+        <button onClick={onClose} style={{width:'100%',padding:13,borderRadius:20,marginTop:12,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:600,cursor:'pointer'}}>ยกเลิก</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── CameraOverlay ── */
+function CameraOverlay({onScan,onClose}){
+  const videoRef=useRef(null),canvasRef=useRef(null),streamRef=useRef(null),rafRef=useRef(null);
+  const [status,setStatus]=useState('กำลังเปิดกล้อง...');
+  useEffect(()=>{
+    let lastScan=0,active=true;
+    async function start(){
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
+        if(!active){stream.getTracks().forEach(t=>t.stop());return;}
+        streamRef.current=stream;const video=videoRef.current;video.srcObject=stream;await video.play();
+        setStatus('พร้อมสแกน ✓');scanLoop();
+      }catch(err){setStatus('❌ ไม่สามารถเปิดกล้องได้');setTimeout(()=>onClose(),2000);}
+    }
+    function scanLoop(){
+      const video=videoRef.current,canvas=canvasRef.current;
+      if(!video||!canvas)return;const ctx=canvas.getContext('2d');
+      function tick(){
+        if(!active)return;
+        if(video.readyState===video.HAVE_ENOUGH_DATA){
+          canvas.width=video.videoWidth;canvas.height=video.videoHeight;ctx.drawImage(video,0,0,canvas.width,canvas.height);
+          const now=Date.now();
+          if(now-lastScan>300){lastScan=now;try{const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);const code=window.jsQR&&window.jsQR(imgData.data,imgData.width,imgData.height,{inversionAttempts:'dontInvert'});if(code&&code.data){active=false;onScan(code.data.trim());return;}}catch(e){}}
         }
-        start();
-        return()=>{active=false;if(rafRef.current)cancelAnimationFrame(rafRef.current);if(streamRef.current)streamRef.current.getTracks().forEach(t=>t.stop());};
-      },[]);
-      return (
-        <div style={{ position:'fixed',inset:0,zIndex:100,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center' }}>
-          <video ref={videoRef} autoPlay playsInline muted style={{ width:'100%',maxWidth:'390px',height:'100%',objectFit:'cover',position:'absolute',inset:0 }} />
-          <canvas ref={canvasRef} style={{ display:'none' }} />
-          <button onClick={onClose} style={{ position:'absolute',top:'48px',right:'16px',zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'50%',width:'44px',height:'44px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px',cursor:'pointer',backdropFilter:'blur(10px)' }}>
-            <i className="ti ti-x" />
-          </button>
-          <div style={{ position:'relative',zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:'16px',width:'100%' }}>
-            <div style={{ width:'240px',height:'240px',borderRadius:'20px',position:'relative',boxShadow:'0 0 0 2000px rgba(33,58,88,0.6)' }}>
-              {[{top:0,left:0,borderWidth:'3px 0 0 3px',borderRadius:'10px 0 0 0'},{top:0,right:0,borderWidth:'3px 3px 0 0',borderRadius:'0 10px 0 0'},{bottom:0,left:0,borderWidth:'0 0 3px 3px',borderRadius:'0 0 0 10px'},{bottom:0,right:0,borderWidth:'0 3px 3px 0',borderRadius:'0 0 10px 0'}].map((s,i)=>(
-                <div key={i} style={{ position:'absolute',width:'44px',height:'44px',borderColor:'var(--teal)',borderStyle:'solid',...s }} />
-              ))}
-              <div style={{ position:'absolute',left:'4px',right:'4px',height:'2px',background:'linear-gradient(90deg, transparent, var(--teal), transparent)',animation:'scanLine 2s ease-in-out infinite' }} />
-            </div>
-            <div style={{ color:'rgba(255,255,255,0.7)',fontSize:'13px',textAlign:'center' }}>วาง QR Code ให้อยู่ในกรอบ</div>
-            <div style={{ color:'#fff',fontFamily:"'Space Mono',monospace",fontSize:'11px',textAlign:'center',minHeight:'16px' }}>{status}</div>
-          </div>
-          <button onClick={()=>{onClose();setTimeout(()=>document.getElementById('manual-input')?.focus(),200);}} style={{ position:'absolute',bottom:'100px',left:'50%',transform:'translateX(-50%)',zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'100px',padding:'10px 24px',fontSize:'13px',fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',backdropFilter:'blur(10px)',whiteSpace:'nowrap' }}>⌨ พิมพ์รหัสแทน</button>
-        </div>
-      );
-    }
-
-    /* ─── PageHome ─── */
-    function StatCard({ icon, value, label, accent, dimBg, borderColor }) {
-      return (
-        <div style={{ background:dimBg,border:`1.5px solid ${borderColor}`,borderRadius:'20px',padding:'18px 16px',boxShadow:'0 2px 8px rgba(33,58,88,0.06)' }}>
-          <i className={`ti ${icon}`} style={{ fontSize:'20px',color:accent,marginBottom:'8px',display:'block' }} />
-          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'32px',fontWeight:800,lineHeight:1,letterSpacing:'-1.5px',color:accent }}>{value}</div>
-          <div style={{ fontSize:'11px',marginTop:'5px',fontWeight:600,color:accent,opacity:0.8 }}>{label}</div>
-        </div>
-      );
-    }
-    function PageHome({ items, logs, onGoScan }) {
-      const now=new Date(), ws=new Date(now);
-      ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
-      const wl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d>=ws;});
-      const tl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d.toDateString()===now.toDateString();});
-      const lo=items.filter(x=>x.stock<=x.min);
-      const lastTs=logs.length?parseTs(logs[0].timestamp):null;
-      const recent=logs.slice(0,4);
-      const Card=({children})=>(<div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'4px 16px',boxShadow:'var(--shadow-sm)' }}>{children}</div>);
-      const Eyebrow=({children})=>(<div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px',marginTop:'20px' }}>{children}</div>);
-      return (
-        <div style={{ animation:'fadeUp .2s ease' }}>
-          <div style={{ background:'linear-gradient(135deg, #0C6478 0%, #213A58 100%)',borderRadius:'28px',padding:'22px',marginTop:'14px',marginBottom:'4px',position:'relative',overflow:'hidden',boxShadow:'0 8px 32px rgba(33,58,88,0.22)' }}>
-            <div style={{ position:'absolute',top:'-40px',right:'-40px',width:'160px',height:'160px',borderRadius:'50%',background:'rgba(255,255,255,0.04)' }} />
-            <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between' }}>
-              <div>
-                <div style={{ fontSize:'10px',color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace",letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'6px' }}>สัปดาห์นี้</div>
-                <div style={{ display:'flex',alignItems:'baseline',gap:'10px' }}>
-                  <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'58px',fontWeight:800,lineHeight:1,letterSpacing:'-3px',color:'#fff' }}>{wl.length}</div>
-                  <div>
-                    <div style={{ fontSize:'13px',color:'rgba(255,255,255,0.6)',fontWeight:600 }}>ครั้งที่เบิก</div>
-                    <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'rgba(255,255,255,0.3)' }}>{lastTs?lastTs.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'—'}</div>
-                  </div>
-                </div>
-              </div>
-              <div style={{ width:'60px',height:'60px',borderRadius:'50%',flexShrink:0,background:'radial-gradient(circle at 35% 35%, rgba(9,209,199,0.35) 0%, rgba(9,209,199,0.04) 60%, transparent 80%)',border:'1px solid rgba(9,209,199,0.18)',boxShadow:'inset 0 4px 12px rgba(9,209,199,0.12), 0 6px 20px rgba(9,209,199,0.12)',position:'relative',overflow:'hidden' }} />
-            </div>
-            <button onClick={onGoScan} style={{ marginTop:'16px',width:'100%',padding:'11px',borderRadius:'14px',border:'1px solid rgba(255,255,255,0.15)',background:'rgba(255,255,255,0.09)',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px' }}>
-              <i className="ti ti-qrcode" style={{ fontSize:'15px' }} /> เบิกอุปกรณ์เลย
-            </button>
-          </div>
-          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginTop:'12px' }}>
-            <StatCard icon="ti-package" value={items.length} label="รายการอุปกรณ์" accent="var(--teal)" dimBg="var(--teal-dim)" borderColor="var(--teal-border)" />
-            <StatCard icon="ti-clipboard-list" value={tl.length} label="เบิกวันนี้" accent="var(--mint)" dimBg="var(--mint-dim)" borderColor="var(--mint-border)" />
-          </div>
-          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginTop:'10px' }}>
-            <StatCard icon="ti-qrcode" value={items.length} label="QR ที่ออกแล้ว" accent="var(--mid-teal)" dimBg="#E8F3F5" borderColor="#A0CDD5" />
-            <StatCard icon="ti-alert-triangle" value={lo.length} label="สต๊อกใกล้หมด" accent={lo.length>0?'#CC6A00':'var(--mid-teal)'} dimBg={lo.length>0?'#FFF4EC':'#E8F3F5'} borderColor={lo.length>0?'#FFC899':'#A0CDD5'} />
-          </div>
-          <Eyebrow>เบิกล่าสุด</Eyebrow>
-          <Card>{recent.length?recent.map((l,i)=><LogRow key={i} l={l} items={items} showTime={false} isLast={i===recent.length-1} />):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'16px' }}>ยังไม่มีรายการ</div>}</Card>
-          <Eyebrow>สต๊อกใกล้หมด</Eyebrow>
-          <Card>
-            {lo.length?lo.map((it,i)=>(
-              <div key={i} style={{ display:'flex',alignItems:'center',gap:'10px',padding:'10px 0',borderBottom:i<lo.length-1?'1px solid var(--teal-border)':'none' }}>
-                <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'#FFF4EC',border:'1px solid #FFC899',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:'14px',fontWeight:700,color:'var(--txt)' }}>{it.name}</div>
-                  <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)' }}>{it.cat}</div>
-                </div>
-                <span style={{ display:'inline-flex',alignItems:'center',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'#FFF4EC',color:'#CC6A00',border:'1px solid #FFC899' }}>{it.stock} {it.unit}</span>
-              </div>
-            )):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'16px' }}>สต๊อกปกติทั้งหมด ✓</div>}
-          </Card>
-        </div>
-      );
-    }
-
-    /* ─── ItemActionPanel — ใช้ร่วมกัน withdraw / return / restock ─── */
-    function ItemActionPanel({ curItem, onConfirm, onCancel }) {
-      const [mode, setMode] = useState('withdraw'); // 'withdraw' | 'return' | 'restock'
-      const [user, setUser] = useState('');
-      const [qty, setQty] = useState(1);
-      const [note, setNote] = useState('');
-
-      const handleConfirm = () => { onConfirm(mode, user, Number(qty), note); setUser(''); setQty(1); setNote(''); };
-
-      const isLow = curItem.stock <= curItem.min;
-
-      const IS = {background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-      const LS = {fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
-
-      const modeConfigs = {
-        withdraw: { label:'เบิกอุปกรณ์', icon:'ti-arrow-up-right', color:'var(--teal)', grad:'linear-gradient(135deg, var(--teal), var(--mid-teal))', shadow:'0 6px 20px rgba(9,209,199,0.3)', userLabel:'ชื่อผู้เบิก', userPlaceholder:'ชื่อ หรือรหัสพนักงาน', qtyLabel:'จำนวนที่เบิก', btnLabel:'ยืนยันการเบิก' },
-        return:   { label:'คืนอุปกรณ์',  icon:'ti-arrow-back-up', color:'#4A90D9', grad:'linear-gradient(135deg, #4A90D9, #2c6cb0)', shadow:'0 6px 20px rgba(74,144,217,0.3)', userLabel:'ชื่อผู้คืน', userPlaceholder:'ชื่อ หรือรหัสพนักงาน', qtyLabel:'จำนวนที่คืน', btnLabel:'ยืนยันการคืน' },
-        restock:  { label:'เติม Stock',   icon:'ti-plus',          color:'var(--mint)', grad:'linear-gradient(135deg, var(--mint), #29b889)', shadow:'0 6px 20px rgba(70,223,177,0.3)', userLabel:'ชื่อผู้เติม', userPlaceholder:'ผู้รับผิดชอบ / ผู้จัดซื้อ', qtyLabel:'จำนวนที่เพิ่ม', btnLabel:'ยืนยันการเติม Stock' },
-      };
-      const mc = modeConfigs[mode];
-
-      return (
-        <div style={{ animation:'fadeUp .2s ease' }}>
-          {/* Item Card */}
-          <div style={{ background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:'28px',padding:'20px',margin:'14px 0 0',boxShadow:'var(--shadow-md)' }}>
-            <div style={{ fontSize:'38px',marginBottom:'8px' }}>{curItem.icon}</div>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)' }}>{curItem.name}</div>
-            <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--txt3)',marginTop:'2px' }}>{curItem.id}</div>
-            <div style={{ display:'flex',gap:'6px',flexWrap:'wrap',margin:'10px 0' }}>
-              <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:'rgba(9,209,199,0.15)',color:'var(--mid-teal)',border:'1px solid var(--teal-border)' }}>{curItem.cat}</span>
-              <span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:isLow?'#FFF4EC':'var(--mint-dim)',color:isLow?'#CC6A00':'var(--mid-teal)',border:`1px solid ${isLow?'#FFC899':'var(--mint-border)'}` }}>{isLow?'สต๊อกใกล้หมด':'สต๊อกปกติ'}</span>
-            </div>
-            <div style={{ display:'flex',alignItems:'baseline',gap:'8px',margin:'4px 0 0' }}>
-              <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'40px',fontWeight:800,color:isLow?'#CC6A00':'var(--teal)',letterSpacing:'-1.5px' }}>{curItem.stock}</div>
-              <div style={{ fontSize:'13px',color:'var(--txt2)' }}>{curItem.unit}</div>
-              <div style={{ fontSize:'11px',color:'var(--txt3)' }}>คงเหลือ</div>
-            </div>
-          </div>
-
-          {/* Mode Selector */}
-          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px',margin:'10px 0' }}>
-            {Object.entries(modeConfigs).map(([key,mc2])=>(
-              <button key={key} onClick={()=>setMode(key)} style={{ padding:'9px 4px',borderRadius:'14px',border:`1.5px solid ${mode===key?mc2.color:'var(--teal-border)'}`,background:mode===key?mc2.grad:'var(--surface)',color:mode===key?'#fff':'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'4px',transition:'.2s',boxShadow:mode===key?mc2.shadow:'var(--shadow-sm)' }}>
-                <i className={`ti ${mc2.icon}`} style={{ fontSize:'13px' }} />
-                {mc2.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Form */}
-          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'16px',boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease' }}>
-            <label style={LS}>{mc.userLabel}</label>
-            <input value={user} onChange={e=>setUser(e.target.value)} placeholder={mc.userPlaceholder} style={IS} />
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
-              <div><label style={LS}>{mc.qtyLabel}</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS} /></div>
-              <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{ ...IS,opacity:0.5 }} /></div>
-            </div>
-            <label style={LS}>หมายเหตุ</label>
-            <input value={note} onChange={e=>setNote(e.target.value)} placeholder={mode==='restock'?'แหล่งที่มา / PO (ไม่บังคับ)':'แผนก / เหตุผล (ไม่บังคับ)'} style={IS} />
-
-            <button onClick={handleConfirm} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:mc.grad,color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:mc.shadow,marginTop:'14px' }}>
-              <i className={`ti ${mc.icon}`} style={{ fontSize:'18px' }} /> {mc.btnLabel}
-            </button>
-          </div>
-          <button onClick={onCancel} style={{ width:'100%',padding:'13px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:600,cursor:'pointer',marginTop:'8px' }}>ยกเลิก</button>
-        </div>
-      );
-    }
-
-    /* ─── PageScan ─── */
-    function PageScan({ items, curItem, onScan, onConfirm, onCancel, onOpenCamera }) {
-      const [manualCode,setManualCode] = useState('');
-      const [nameSearch,setNameSearch] = useState('');
-      const [searchResults,setSearchResults] = useState([]);
-
-      // ค้นหาโดยชื่อ (fuzzy)
-      useEffect(()=>{
-        if (!nameSearch.trim()) { setSearchResults([]); return; }
-        const results = items.filter(it => fuzzyMatch(it.name, nameSearch) || fuzzyMatch(it.cat, nameSearch));
-        setSearchResults(results);
-      },[nameSearch, items]);
-
-      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-      const sampleChips=items.slice(0,6);
-
-      if (curItem) {
-        return <ItemActionPanel curItem={curItem} onConfirm={onConfirm} onCancel={onCancel} />;
+        rafRef.current=requestAnimationFrame(tick);
       }
-
-      return (
-        <div style={{ animation:'fadeUp .2s ease' }}>
-          <div onClick={onOpenCamera} style={{ margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:'28px',cursor:'pointer' }}>
-            <i className="ti ti-camera" style={{ fontSize:'48px',color:'var(--teal)',display:'block',marginBottom:'10px' }} />
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'22px',fontWeight:800,color:'var(--navy)',letterSpacing:'-0.5px' }}>แตะเพื่อเปิดกล้อง</div>
-            <div style={{ fontSize:'12px',color:'var(--txt3)',marginTop:'4px' }}>สแกน QR Code ด้วยกล้องโทรศัพท์</div>
-          </div>
-
-          {/* ── ส่วนค้นหา ─────────────────────────────────── */}
-          <div style={{ display:'flex',alignItems:'center',gap:'10px',margin:'4px 0 12px' }}>
-            <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
-            <span style={{ fontSize:'11px',color:'var(--txt3)' }}>หรือค้นหา</span>
-            <div style={{ flex:1,height:'1px',background:'var(--teal-border)' }} />
-          </div>
-
-          {/* ค้นหาด้วยชื่อ */}
-          <div style={{ position:'relative',marginBottom:'10px' }}>
-            <i className="ti ti-search" style={{ position:'absolute',left:'14px',top:'50%',transform:'translateY(-50%)',fontSize:'16px',color:'var(--txt3)',pointerEvents:'none' }} />
-            <input
-              value={nameSearch}
-              onChange={e=>setNameSearch(e.target.value)}
-              placeholder="ค้นหาชื่ออุปกรณ์ เช่น กระดาษ, ปากกา..."
-              style={{ ...IS,paddingLeft:'40px' }}
-            />
-          </div>
-
-          {/* ผลลัพธ์การค้นหาชื่อ */}
-          {nameSearch.trim() && (
-            <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'4px 16px',marginBottom:'12px',boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease' }}>
-              {searchResults.length === 0
-                ? <div style={{ padding:'16px 0',textAlign:'center',color:'var(--txt3)',fontSize:'13px' }}>ไม่พบอุปกรณ์ที่ตรงกัน</div>
-                : searchResults.map((it,i)=>(
-                    <div key={it.id} onClick={()=>onScan(it.id)} style={{ display:'flex',alignItems:'center',gap:'10px',padding:'10px 0',borderBottom:i<searchResults.length-1?'1px solid var(--teal-border)':'none',cursor:'pointer' }}>
-                      <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
-                      <div style={{ flex:1,minWidth:0 }}>
-                        <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{it.name}</div>
-                        <div style={{ fontSize:'11px',color:'var(--txt2)' }}>{it.cat} · {it.stock} {it.unit}</div>
-                      </div>
-                      <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'3px' }}>
-                        <span style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)' }}>{it.id}</span>
-                        <span style={{ display:'inline-flex',padding:'2px 8px',borderRadius:'100px',fontSize:'10px',fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}` }}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
-                      </div>
-                    </div>
-                  ))
-              }
-            </div>
-          )}
-
-          {/* ค้นหาด้วยรหัส QR */}
-          <div style={{ display:'flex',gap:'8px',marginBottom:'10px' }}>
-            <input
-              id="manual-input"
-              value={manualCode}
-              onChange={e=>setManualCode(e.target.value)}
-              onKeyDown={e=>e.key==='Enter'&&onScan(manualCode.trim())}
-              placeholder="พิมพ์รหัส QR เช่น QR-PAPER1"
-              style={{ ...IS,flex:1 }}
-            />
-            <button onClick={()=>{if(manualCode.trim())onScan(manualCode.trim());}} style={{ padding:'13px 16px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',whiteSpace:'nowrap' }}>ค้นหา</button>
-          </div>
-
-          {sampleChips.length>0&&(
-            <div style={{ marginTop:'12px' }}>
-              <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px' }}>QR ตัวอย่าง (แตะทดสอบ)</div>
-              <div style={{ display:'flex',gap:'6px',flexWrap:'wrap' }}>
-                {sampleChips.map(it=>(
-                  <div key={it.id} onClick={()=>onScan(it.id)} style={{ padding:'6px 12px',borderRadius:'100px',background:'var(--surface)',border:'1.5px solid var(--teal-border)',fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'var(--teal)',cursor:'pointer',boxShadow:'var(--shadow-sm)' }}>{it.icon} {it.id}</div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      );
+      rafRef.current=requestAnimationFrame(tick);
     }
+    start();
+    return()=>{active=false;if(rafRef.current)cancelAnimationFrame(rafRef.current);if(streamRef.current)streamRef.current.getTracks().forEach(t=>t.stop());};
+  },[]);
+  return(
+    <div style={{position:'fixed',inset:0,zIndex:100,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+      <video ref={videoRef} autoPlay playsInline muted style={{width:'100%',maxWidth:390,height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
+      <canvas ref={canvasRef} style={{display:'none'}}/>
+      <button onClick={onClose} style={{position:'absolute',top:48,right:16,zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'50%',width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,cursor:'pointer',backdropFilter:'blur(10px)'}}>
+        <i className="ti ti-x"/>
+      </button>
+      <div style={{position:'relative',zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:16,width:'100%'}}>
+        <div style={{width:240,height:240,borderRadius:20,position:'relative',boxShadow:'0 0 0 2000px rgba(33,58,88,0.6)'}}>
+          {[{top:0,left:0,borderWidth:'3px 0 0 3px',borderRadius:'10px 0 0 0'},{top:0,right:0,borderWidth:'3px 3px 0 0',borderRadius:'0 10px 0 0'},{bottom:0,left:0,borderWidth:'0 0 3px 3px',borderRadius:'0 0 0 10px'},{bottom:0,right:0,borderWidth:'0 3px 3px 0',borderRadius:'0 0 10px 0'}].map((s,i)=><div key={i} style={{position:'absolute',width:44,height:44,borderColor:'var(--teal)',borderStyle:'solid',...s}}/>)}
+          <div style={{position:'absolute',left:4,right:4,height:2,background:'linear-gradient(90deg, transparent, var(--teal), transparent)',animation:'scanLine 2s ease-in-out infinite'}}/>
+        </div>
+        <div style={{color:'rgba(255,255,255,0.7)',fontSize:13,textAlign:'center'}}>วาง QR Code ให้อยู่ในกรอบ</div>
+        <div style={{color:'#fff',fontFamily:"'Space Mono',monospace",fontSize:11,textAlign:'center',minHeight:16}}>{status}</div>
+      </div>
+      <button onClick={()=>{onClose();setTimeout(()=>document.getElementById('manual-input')?.focus(),200);}} style={{position:'absolute',bottom:100,left:'50%',transform:'translateX(-50%)',zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:100,padding:'10px 24px',fontSize:13,fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',backdropFilter:'blur(10px)',whiteSpace:'nowrap'}}>⌨ พิมพ์รหัสแทน</button>
+    </div>
+  );
+}
 
-    /* ─── PageLog ─── */
-    function PageLog({ logs, items, onSync }) {
-      const [search,setSearch]=useState('');
-      const [fw,setFw]=useState('week');
-      const [showDebug,setShowDebug]=useState(false);
-      const now=new Date(), ws=new Date(now);
-      ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
-      const filtered=logs.filter(l=>{
-        const q=search.toLowerCase();
-        const m=!q||(l.item_name||'').toLowerCase().includes(q)||(l.employee||'').toLowerCase().includes(q)||(l.qr_id||'').toLowerCase().includes(q);
-        if(!m)return false; if(fw==='all')return true;
-        const d=parseTs(l.timestamp); if(!d)return false;
-        if(fw==='today')return d.toDateString()===now.toDateString();
-        if(fw==='week')return d>=ws;
-        if(fw==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-        return true;
-      });
-      const totalQty=filtered.reduce((s,l)=>s+(Number(l.quantity)||0),0);
-      const uniqueEmp=new Set(filtered.map(l=>l.employee).filter(Boolean)).size;
-      const uniqueItem=new Set(filtered.map(l=>l.item_name).filter(Boolean)).size;
-      const SS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',padding:'10px 12px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',WebkitAppearance:'none'};
-      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',marginBottom:'10px'};
-      const Pill=({children,color,bg,border})=>(<span style={{ display:'inline-flex',alignItems:'center',gap:'4px',padding:'4px 10px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:bg,color,border:`1px solid ${border}` }}>{children}</span>);
-      return (
-        <div style={{ animation:'fadeUp .2s ease' }}>
-          <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'14px',marginBottom:'10px' }}>
-            <select value={fw} onChange={e=>setFw(e.target.value)} style={SS}>
-              <option value="all">ทุกช่วงเวลา</option><option value="today">วันนี้</option><option value="week">สัปดาห์นี้</option><option value="month">เดือนนี้</option>
-            </select>
-            <button onClick={onSync} style={{ padding:'10px 16px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px' }}>
-              <i className="ti ti-refresh" style={{ fontSize:'15px' }} /> รีเฟรช
-            </button>
-          </div>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ค้นหาชื่อ หรืออุปกรณ์..." style={IS} />
-          {filtered.length>0&&(
-            <div style={{ display:'flex',gap:'6px',marginBottom:'12px',flexWrap:'wrap' }}>
-              <Pill color="var(--mid-teal)" bg="var(--teal-dim)" border="var(--teal-border)"><i className="ti ti-list-check" style={{ fontSize:'11px' }} /> {filtered.length} รายการ</Pill>
-              <Pill color="var(--mid-teal)" bg="var(--mint-dim)" border="var(--mint-border)"><i className="ti ti-box" style={{ fontSize:'11px' }} /> {uniqueItem} ชนิด</Pill>
-              <Pill color="var(--mid-teal)" bg="#E8F3F5" border="#A0CDD5"><i className="ti ti-users" style={{ fontSize:'11px' }} /> {uniqueEmp} คน</Pill>
-              <Pill color="#CC6A00" bg="#FFF4EC" border="#FFC899"><i className="ti ti-stack-2" style={{ fontSize:'11px' }} /> รวม {totalQty} ชิ้น</Pill>
-            </div>
-          )}
-          <div style={{ display:'flex',alignItems:'center',gap:'10px',padding:'0 0 6px',borderBottom:'1px solid var(--teal-border)' }}>
-            <div style={{ width:'40px',flexShrink:0 }} />
-            <div style={{ flex:1,fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase' }}>อุปกรณ์ / ผู้ดำเนินการ</div>
-            <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'9px',color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase',textAlign:'right',flexShrink:0 }}>จำนวน</div>
-          </div>
-          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'0 16px',boxShadow:'var(--shadow-sm)',marginTop:'2px' }}>
-            {filtered.length?filtered.map((l,i)=><LogRow key={i} l={l} items={items} showTime isLast={i===filtered.length-1} />):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'20px' }}>ไม่มีรายการ</div>}
-          </div>
-          <div style={{ marginTop:'12px' }}>
-            <button onClick={()=>setShowDebug(v=>!v)} style={{ width:'100%',padding:'10px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',cursor:'pointer' }}>🔍 ดู Raw Data (Debug)</button>
-            {showDebug&&(<pre style={{ marginTop:'8px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:'14px',padding:'12px',fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--navy)',whiteSpace:'pre-wrap',wordBreak:'break-all',maxHeight:'200px',overflowY:'auto' }}>{JSON.stringify(logs.slice(0,3).map(l=>({item_name:l.item_name,quantity:l.quantity,employee:l.employee,unit:l.unit,action:l.action})),null,2)}</pre>)}
+/* ── PageHome ── */
+function StatCard({icon,value,label,accent,dimBg,borderColor}){
+  return(
+    <div style={{background:dimBg,border:`1.5px solid ${borderColor}`,borderRadius:20,padding:'18px 16px',boxShadow:'0 2px 8px rgba(33,58,88,0.06)'}}>
+      <i className={`ti ${icon}`} style={{fontSize:20,color:accent,marginBottom:8,display:'block'}}/>
+      <div style={{fontFamily:"'Outfit',sans-serif",fontSize:32,fontWeight:800,lineHeight:1,letterSpacing:'-1.5px',color:accent}}>{value}</div>
+      <div style={{fontSize:11,marginTop:5,fontWeight:600,color:accent,opacity:0.8}}>{label}</div>
+    </div>
+  );
+}
+function PageHome({items,logs,onGoScan}){
+  const now=new Date(),ws=new Date(now);
+  ws.setDate(now.getDate()-now.getDay());ws.setHours(0,0,0,0);
+  const wl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d>=ws;});
+  const tl=logs.filter(l=>{const d=parseTs(l.timestamp);return d&&d.toDateString()===now.toDateString();});
+  const lo=items.filter(x=>x.stock<=x.min);
+  const lastTs=logs.length?parseTs(logs[0].timestamp):null;
+  const recent=logs.slice(0,4);
+  const Card=({children})=><div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:'4px 16px',boxShadow:'var(--shadow-sm)'}}>{children}</div>;
+  const Eyebrow=({children})=><div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:8,marginTop:20}}>{children}</div>;
+  return(
+    <div style={{animation:'fadeUp .2s ease'}}>
+      <div style={{background:'linear-gradient(135deg, #0C6478 0%, #213A58 100%)',borderRadius:28,padding:22,marginTop:14,marginBottom:4,position:'relative',overflow:'hidden',boxShadow:'0 8px 32px rgba(33,58,88,0.22)'}}>
+        <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,borderRadius:'50%',background:'rgba(255,255,255,0.04)'}}/>
+        <div style={{fontSize:10,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace",letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:6}}>สัปดาห์นี้</div>
+        <div style={{display:'flex',alignItems:'baseline',gap:10}}>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:58,fontWeight:800,lineHeight:1,letterSpacing:'-3px',color:'#fff'}}>{wl.length}</div>
+          <div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.6)',fontWeight:600}}>ครั้งที่เบิก</div>
+            <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(255,255,255,0.3)'}}>{lastTs?lastTs.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'—'}</div>
           </div>
         </div>
-      );
-    }
-
-    /* ─── PageAdmin ─── */
-    function AdminContent({ items, onAddItem, onDelItem, onLock }) {
-      const [form,setForm]=useState({name:'',cat:'เครื่องเขียน',stock:'100',unit:'',min:'10',icon:'📦',count:'1'});
-      const set=(k,v)=>setForm(p=>({...p,[k]:v}));
-      const handleAdd=async()=>{await onAddItem(form);setForm(p=>({...p,name:'',stock:'100',unit:'',count:'1'}));};
-      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'14px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-      const LS={fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',marginTop:'14px',fontWeight:500};
-      useEffect(()=>{
-        if(!window.QRCode)return;
-        const timer=setTimeout(()=>{
-          items.forEach(it=>{
-            const el=document.getElementById('qr-'+it.id); if(!el||el.dataset.generated)return;
-            el.innerHTML='';
-            try{new window.QRCode(el,{text:it.id,width:68,height:68,colorDark:'#213A58',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});el.dataset.generated='1';}catch(e){}
-          });
-        },300);
-        return()=>clearTimeout(timer);
-      },[items]);
-      const downloadQR=(id,name)=>{
-        const el=document.getElementById('qr-'+id); if(!el)return;
-        const canvas=el.querySelector('canvas'); const img=el.querySelector('img'); let dataUrl='';
-        if(canvas){const out=document.createElement('canvas');out.width=canvas.width+32;out.height=canvas.height+32;const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out.width,out.height);ctx.drawImage(canvas,16,16);dataUrl=out.toDataURL('image/png');}
-        else if(img){dataUrl=img.src;}
-        if(!dataUrl)return; const a=document.createElement('a');a.href=dataUrl;a.download=`QR-${name}-${id}.png`;a.click();
-      };
-      return (
-        <>
-          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'14px',boxShadow:'var(--shadow-sm)' }}>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'18px',letterSpacing:'-0.3px',color:'var(--teal)',marginBottom:'14px' }}>+ เพิ่มอุปกรณ์</div>
-            <label style={LS}>ชื่ออุปกรณ์</label>
-            <input value={form.name} onChange={e=>set('name',e.target.value)} placeholder="เช่น กระดาษ A4" style={IS} />
-            <label style={LS}>หมวดหมู่</label>
-            <select value={form.cat} onChange={e=>set('cat',e.target.value)} style={{ ...IS,WebkitAppearance:'none' }}>
-              <option>เครื่องเขียน</option><option>อุปกรณ์สำนักงาน</option><option>วัสดุสิ้นเปลือง</option><option>อุปกรณ์ IT</option><option>อื่นๆ</option>
-            </select>
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
-              <div><label style={LS}>จำนวนคงเหลือ</label><input type="number" value={form.stock} onChange={e=>set('stock',e.target.value)} style={IS} /></div>
-              <div><label style={LS}>หน่วย</label><input value={form.unit} onChange={e=>set('unit',e.target.value)} placeholder="อัน/แผ่น" style={IS} /></div>
+        <button onClick={onGoScan} style={{marginTop:16,width:'100%',padding:11,borderRadius:14,border:'1px solid rgba(255,255,255,0.15)',background:'rgba(255,255,255,0.09)',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+          <i className="ti ti-qrcode" style={{fontSize:15}}/> เบิกอุปกรณ์เลย
+        </button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:12}}>
+        <StatCard icon="ti-package" value={items.length} label="รายการอุปกรณ์" accent="var(--teal)" dimBg="var(--teal-dim)" borderColor="var(--teal-border)"/>
+        <StatCard icon="ti-clipboard-list" value={tl.length} label="เบิกวันนี้" accent="var(--mint)" dimBg="var(--mint-dim)" borderColor="var(--mint-border)"/>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:10}}>
+        <StatCard icon="ti-qrcode" value={items.length} label="QR ที่ออกแล้ว" accent="var(--mid-teal)" dimBg="#E8F3F5" borderColor="#A0CDD5"/>
+        <StatCard icon="ti-alert-triangle" value={lo.length} label="สต๊อกใกล้หมด" accent={lo.length>0?'#CC6A00':'var(--mid-teal)'} dimBg={lo.length>0?'#FFF4EC':'#E8F3F5'} borderColor={lo.length>0?'#FFC899':'#A0CDD5'}/>
+      </div>
+      <Eyebrow>เบิกล่าสุด</Eyebrow>
+      <Card>{recent.length?recent.map((l,i)=><LogRow key={i} l={l} items={items} showTime={false} isLast={i===recent.length-1}/>):<div style={{color:'var(--txt3)',fontSize:12,textAlign:'center',padding:16}}>ยังไม่มีรายการ</div>}</Card>
+      <Eyebrow>สต๊อกใกล้หมด</Eyebrow>
+      <Card>
+        {lo.length?lo.map((it,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:i<lo.length-1?'1px solid var(--teal-border)':'none'}}>
+            <div style={{width:40,height:40,borderRadius:12,background:'#FFF4EC',border:'1px solid #FFC899',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>{it.icon}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:700,color:'var(--txt)'}}>{it.name}</div>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)'}}>{it.cat}</div>
             </div>
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px' }}>
-              <div><label style={LS}>แจ้งเตือนเมื่อ ≤</label><input type="number" value={form.min} onChange={e=>set('min',e.target.value)} style={IS} /></div>
-              <div><label style={LS}>Emoji icon</label><input value={form.icon} onChange={e=>set('icon',e.target.value)} maxLength={2} style={IS} /></div>
-            </div>
-            <label style={LS}>ออก QR Code จำนวน (ชิ้น)</label>
-            <input type="number" min="1" max="99" value={form.count} onChange={e=>set('count',e.target.value)} style={IS} />
-            <button onClick={handleAdd} style={{ width:'100%',padding:'15px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',boxShadow:'0 6px 20px rgba(9,209,199,0.28)',marginTop:'14px' }}>
-              <i className="ti ti-plus" style={{ fontSize:'18px' }} /> บันทึกและสร้าง QR Code
-            </button>
+            <span style={{display:'inline-flex',alignItems:'center',padding:'4px 10px',borderRadius:100,fontSize:11,fontWeight:600,background:'#FFF4EC',color:'#CC6A00',border:'1px solid #FFC899'}}>{it.stock} {it.unit}</span>
           </div>
-          <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:'8px',marginTop:'20px' }}>รายการอุปกรณ์</div>
-          {items.length?items.map(it=>(
-            <div key={it.id} style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'16px',padding:'16px',marginBottom:'8px',boxShadow:'var(--shadow-sm)' }}>
-              <div style={{ display:'flex',alignItems:'center',gap:'10px' }}>
-                <div style={{ width:'40px',height:'40px',borderRadius:'12px',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0 }}>{it.icon}</div>
-                <div style={{ flex:1,minWidth:0 }}>
-                  <div style={{ fontWeight:700,fontSize:'13px',color:'var(--txt)' }}>{it.name}</div>
-                  <div style={{ fontSize:'11px',color:'var(--txt2)',marginTop:'1px' }}>{it.cat} · {it.stock} {it.unit}</div>
-                  <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'10px',color:'var(--txt3)',marginTop:'1px' }}>{it.id}</div>
-                </div>
-                <div style={{ display:'flex',flexDirection:'column',gap:'4px',alignItems:'flex-end' }}>
-                  <span style={{ display:'inline-flex',padding:'3px 9px',borderRadius:'100px',fontSize:'11px',fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}` }}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
-                  <button onClick={()=>onDelItem(it.id)} style={{ background:'none',border:'none',color:'var(--txt3)',fontSize:'14px',cursor:'pointer',padding:'2px 4px' }}><i className="ti ti-trash" /></button>
-                </div>
-              </div>
-              <div style={{ display:'flex',alignItems:'center',gap:'12px',background:'var(--teal-dim)',borderRadius:'12px',padding:'12px',border:'1px solid var(--teal-border)',marginTop:'12px' }}>
-                <div id={`qr-${it.id}`} style={{ background:'#fff',padding:'6px',borderRadius:'8px',flexShrink:0,width:'80px',height:'80px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'#999' }}>…</div>
-                <div style={{ flex:1 }}>
-                  <button onClick={()=>downloadQR(it.id,it.name)} style={{ display:'block',width:'100%',padding:'7px 14px',background:'rgba(9,209,199,0.12)',border:'1px solid var(--teal-border)',color:'var(--mid-teal)',borderRadius:'100px',fontSize:'12px',fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',fontWeight:600,marginBottom:'6px' }}>
-                    <i className="ti ti-download" style={{ verticalAlign:'-2px',fontSize:'13px',marginRight:'4px' }} /> บันทึก QR
-                  </button>
-                </div>
-              </div>
-            </div>
-          )):<div style={{ color:'var(--txt3)',fontSize:'12px',textAlign:'center',padding:'20px' }}>ยังไม่มีอุปกรณ์</div>}
-          <button onClick={onLock} style={{ width:'100%',padding:'12px',borderRadius:'20px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px',marginTop:'8px',marginBottom:'16px' }}>
-            <i className="ti ti-lock" style={{ fontSize:'14px' }} /> ล็อค Admin
+        )):<div style={{color:'var(--txt3)',fontSize:12,textAlign:'center',padding:16}}>สต๊อกปกติทั้งหมด ✓</div>}
+      </Card>
+    </div>
+  );
+}
+
+/* ── ItemActionPanel (with EmployeePicker) ── */
+function ItemActionPanel({curItem,onConfirm,onCancel}){
+  const [mode,setMode]=useState('withdraw');
+  const [selEmp,setSelEmp]=useState(null);
+  const [qty,setQty]=useState(1);
+  const [note,setNote]=useState('');
+  const isLow=curItem.stock<=curItem.min;
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+  const LS={fontSize:12,color:'var(--txt2)',display:'block',marginBottom:6,marginTop:14,fontWeight:500};
+  const MC={
+    withdraw:{label:'เบิกอุปกรณ์',icon:'ti-arrow-up-right',color:'var(--teal)',grad:'linear-gradient(135deg,var(--teal),var(--mid-teal))',shadow:'0 6px 20px rgba(9,209,199,0.3)',userLabel:'ชื่อผู้เบิก',qtyLabel:'จำนวนที่เบิก',btnLabel:'ยืนยันการเบิก'},
+    return:{label:'คืนอุปกรณ์',icon:'ti-arrow-back-up',color:'#4A90D9',grad:'linear-gradient(135deg,#4A90D9,#2c6cb0)',shadow:'0 6px 20px rgba(74,144,217,0.3)',userLabel:'ชื่อผู้คืน',qtyLabel:'จำนวนที่คืน',btnLabel:'ยืนยันการคืน'},
+    restock:{label:'เติม Stock',icon:'ti-plus',color:'var(--mint)',grad:'linear-gradient(135deg,var(--mint),#29b889)',shadow:'0 6px 20px rgba(70,223,177,0.3)',userLabel:'ชื่อผู้เติม',qtyLabel:'จำนวนที่เพิ่ม',btnLabel:'ยืนยันการเติม Stock'},
+  };
+  const mc=MC[mode];
+  const handleConfirm=()=>{
+    if(!selEmp){alert('กรุณาเลือกพนักงานก่อนยืนยัน');return;}
+    onConfirm(mode,selEmp,Number(qty),note);
+    setSelEmp(null);setQty(1);setNote('');
+  };
+  return(
+    <div style={{animation:'fadeUp .2s ease'}}>
+      {/* Item card */}
+      <div style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:28,padding:20,margin:'14px 0 0',boxShadow:'var(--shadow-md)'}}>
+        <div style={{fontSize:38,marginBottom:8}}>{curItem.icon}</div>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)'}}>{curItem.name}</div>
+        <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'var(--txt3)',marginTop:2}}>{curItem.id}</div>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',margin:'10px 0'}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:4,padding:'4px 10px',borderRadius:100,fontSize:11,fontWeight:600,background:'rgba(9,209,199,0.15)',color:'var(--mid-teal)',border:'1px solid var(--teal-border)'}}>{curItem.cat}</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:4,padding:'4px 10px',borderRadius:100,fontSize:11,fontWeight:600,background:isLow?'#FFF4EC':'var(--mint-dim)',color:isLow?'#CC6A00':'var(--mid-teal)',border:`1px solid ${isLow?'#FFC899':'var(--mint-border)'}`}}>{isLow?'สต๊อกใกล้หมด':'สต๊อกปกติ'}</span>
+        </div>
+        <div style={{display:'flex',alignItems:'baseline',gap:8,margin:'4px 0 0'}}>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:40,fontWeight:800,color:isLow?'#CC6A00':'var(--teal)',letterSpacing:'-1.5px'}}>{curItem.stock}</div>
+          <div style={{fontSize:13,color:'var(--txt2)'}}>{curItem.unit}</div>
+          <div style={{fontSize:11,color:'var(--txt3)'}}>คงเหลือ</div>
+        </div>
+      </div>
+      {/* Mode tabs */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6,margin:'10px 0'}}>
+        {Object.entries(MC).map(([key,m2])=>(
+          <button key={key} onClick={()=>setMode(key)} style={{padding:'9px 4px',borderRadius:14,border:`1.5px solid ${mode===key?m2.color:'var(--teal-border)'}`,background:mode===key?m2.grad:'var(--surface)',color:mode===key?'#fff':'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:12,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:4,transition:'.2s',boxShadow:mode===key?m2.shadow:'var(--shadow-sm)'}}>
+            <i className={`ti ${m2.icon}`} style={{fontSize:13}}/>{m2.label}
           </button>
-        </>
-      );
-    }
-    function PageAdmin({ items, setupUnlocked, onAddItem, onDelItem, onLock, onUnlock }) {
-      if(!setupUnlocked) return (
-        <div style={{ padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease' }}>
-          <div style={{ width:'72px',height:'72px',borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:'32px' }}>🔐</div>
-          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,color:'var(--txt)',marginBottom:'6px' }}>เพิ่มอุปกรณ์</div>
-          <div style={{ fontSize:'13px',color:'var(--txt3)',marginBottom:'24px' }}>ต้องกรอก PIN เพื่อเข้าถึง</div>
-          <button onClick={onUnlock} style={{ padding:'14px 32px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
-            <i className="ti ti-lock-open" style={{ fontSize:'16px',verticalAlign:'-3px',marginRight:'6px' }} /> กรอก PIN เพื่อเข้า
-          </button>
+        ))}
+      </div>
+      {/* Form */}
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:16,boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease'}}>
+        {/* ★ Employee Picker ★ */}
+        <EmployeePicker selected={selEmp} onSelect={setSelEmp} label={mc.userLabel}/>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          <div><label style={LS}>{mc.qtyLabel}</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS}/></div>
+          <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{...IS,opacity:0.5}}/></div>
         </div>
-      );
-      return <div style={{ animation:'fadeUp .2s ease' }}><AdminContent items={items} onAddItem={onAddItem} onDelItem={onDelItem} onLock={onLock} /></div>;
-    }
+        <label style={LS}>หมายเหตุ</label>
+        <input value={note} onChange={e=>setNote(e.target.value)} placeholder={mode==='restock'?'แหล่งที่มา / PO (ไม่บังคับ)':'แผนก / เหตุผล (ไม่บังคับ)'} style={IS}/>
+        <button onClick={handleConfirm} style={{width:'100%',padding:15,borderRadius:20,border:'none',background:mc.grad,color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,boxShadow:mc.shadow,marginTop:14}}>
+          <i className={`ti ${mc.icon}`} style={{fontSize:18}}/> {mc.btnLabel}
+        </button>
+      </div>
+      <button onClick={onCancel} style={{width:'100%',padding:13,borderRadius:20,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:600,cursor:'pointer',marginTop:8}}>ยกเลิก</button>
+    </div>
+  );
+}
 
-    /* ─── PageSetup ─── */
-    function SetupContent({ cfg, onSave, onSync, onCopyGAS, onLock }) {
-      const [url,setUrl]=useState(cfg.url||'');
-      useEffect(()=>{setUrl(cfg.url||'');},[cfg.url]);
-      const handleInput=v=>{setUrl(v);if(v.includes('script.google.com'))onSave(v);};
-      const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:'14px',color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-      return (
-        <>
-          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'14px',boxShadow:'var(--shadow-sm)' }}>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:'16px',color:'var(--txt)',marginBottom:'14px' }}>เชื่อมต่อ Google Sheet</div>
-            <label style={{ fontSize:'12px',color:'var(--txt2)',display:'block',marginBottom:'6px',fontWeight:500 }}>Google Apps Script URL</label>
-            <input value={url} onChange={e=>handleInput(e.target.value)} placeholder="https://script.google.com/macros/s/..." style={IS} />
-            <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'14px' }}>
-              <button onClick={onSync} style={{ padding:'11px',borderRadius:'14px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:700,cursor:'pointer' }}>ทดสอบเชื่อมต่อ</button>
-              <button onClick={onLock} style={{ padding:'11px',borderRadius:'14px',border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'13px',fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'5px' }}>
-                <i className="ti ti-lock" style={{ fontSize:'14px' }} /> ล็อค
+/* ── PageScan ── */
+function PageScan({items,curItem,onScan,onConfirm,onCancel,onOpenCamera}){
+  const [manualCode,setManualCode]=useState('');
+  const [nameSearch,setNameSearch]=useState('');
+  const [searchResults,setSearchResults]=useState([]);
+  useEffect(()=>{if(!nameSearch.trim()){setSearchResults([]);return;}setSearchResults(items.filter(it=>fuzzyMatch(it.name,nameSearch)||fuzzyMatch(it.cat,nameSearch)));},[nameSearch,items]);
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+  if(curItem)return <ItemActionPanel curItem={curItem} onConfirm={onConfirm} onCancel={onCancel}/>;
+  return(
+    <div style={{animation:'fadeUp .2s ease'}}>
+      <div onClick={onOpenCamera} style={{margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:28,cursor:'pointer'}}>
+        <i className="ti ti-camera" style={{fontSize:48,color:'var(--teal)',display:'block',marginBottom:10}}/>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:'var(--navy)',letterSpacing:'-0.5px'}}>แตะเพื่อเปิดกล้อง</div>
+        <div style={{fontSize:12,color:'var(--txt3)',marginTop:4}}>สแกน QR Code ด้วยกล้องโทรศัพท์</div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,margin:'4px 0 12px'}}>
+        <div style={{flex:1,height:1,background:'var(--teal-border)'}}/><span style={{fontSize:11,color:'var(--txt3)'}}>หรือค้นหา</span><div style={{flex:1,height:1,background:'var(--teal-border)'}}/>
+      </div>
+      <div style={{position:'relative',marginBottom:10}}>
+        <i className="ti ti-search" style={{position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',fontSize:16,color:'var(--txt3)',pointerEvents:'none'}}/>
+        <input value={nameSearch} onChange={e=>setNameSearch(e.target.value)} placeholder="ค้นหาชื่ออุปกรณ์ เช่น กระดาษ, ปากกา..." style={{...IS,paddingLeft:40}}/>
+      </div>
+      {nameSearch.trim()&&(
+        <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:'4px 16px',marginBottom:12,boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease'}}>
+          {searchResults.length===0?<div style={{padding:'16px 0',textAlign:'center',color:'var(--txt3)',fontSize:13}}>ไม่พบอุปกรณ์ที่ตรงกัน</div>
+            :searchResults.map((it,i)=>(
+              <div key={it.id} onClick={()=>onScan(it.id)} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:i<searchResults.length-1?'1px solid var(--teal-border)':'none',cursor:'pointer'}}>
+                <div style={{width:40,height:40,borderRadius:12,background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>{it.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,fontSize:13,color:'var(--txt)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{it.name}</div>
+                  <div style={{fontSize:11,color:'var(--txt2)'}}>{it.cat} · {it.stock} {it.unit}</div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3}}>
+                  <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)'}}>{it.id}</span>
+                  <span style={{display:'inline-flex',padding:'2px 8px',borderRadius:100,fontSize:10,fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}`}}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      )}
+      <div style={{display:'flex',gap:8,marginBottom:10}}>
+        <input id="manual-input" value={manualCode} onChange={e=>setManualCode(e.target.value)} onKeyDown={e=>e.key==='Enter'&&onScan(manualCode.trim())} placeholder="พิมพ์รหัส QR เช่น QR-PAPER1" style={{...IS,flex:1}}/>
+        <button onClick={()=>{if(manualCode.trim())onScan(manualCode.trim());}} style={{padding:'13px 16px',borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap'}}>ค้นหา</button>
+      </div>
+      {items.slice(0,6).length>0&&(
+        <div style={{marginTop:12}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:8}}>QR ตัวอย่าง (แตะทดสอบ)</div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {items.slice(0,6).map(it=><div key={it.id} onClick={()=>onScan(it.id)} style={{padding:'6px 12px',borderRadius:100,background:'var(--surface)',border:'1.5px solid var(--teal-border)',fontFamily:"'Space Mono',monospace",fontSize:11,color:'var(--teal)',cursor:'pointer',boxShadow:'var(--shadow-sm)'}}>{it.icon} {it.id}</div>)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── PageLog ── */
+function PageLog({logs,items,onSync}){
+  const [search,setSearch]=useState('');
+  const [fw,setFw]=useState('week');
+  const [showDebug,setShowDebug]=useState(false);
+  const now=new Date(),ws=new Date(now);
+  ws.setDate(now.getDate()-now.getDay());ws.setHours(0,0,0,0);
+  const filtered=logs.filter(l=>{
+    const q=search.toLowerCase();
+    const empObj=EMPLOYEES.find(e=>l.employee&&(e.id===l.employee||e.name===l.employee));
+    const m=!q||(l.item_name||'').toLowerCase().includes(q)||(l.employee||'').toLowerCase().includes(q)||(l.qr_id||'').toLowerCase().includes(q)||(empObj&&empObj.name.toLowerCase().includes(q));
+    if(!m)return false;if(fw==='all')return true;
+    const d=parseTs(l.timestamp);if(!d)return false;
+    if(fw==='today')return d.toDateString()===now.toDateString();
+    if(fw==='week')return d>=ws;
+    if(fw==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    return true;
+  });
+  const totalQty=filtered.reduce((s,l)=>s+(Number(l.quantity)||0),0);
+  const uniqueEmp=new Set(filtered.map(l=>l.employee).filter(Boolean)).size;
+  const uniqueItem=new Set(filtered.map(l=>l.item_name).filter(Boolean)).size;
+  const SS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,padding:'10px 12px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',WebkitAppearance:'none'};
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',marginBottom:10};
+  const Pill=({children,color,bg,border})=><span style={{display:'inline-flex',alignItems:'center',gap:4,padding:'4px 10px',borderRadius:100,fontSize:11,fontWeight:600,background:bg,color,border:`1px solid ${border}`}}>{children}</span>;
+  return(
+    <div style={{animation:'fadeUp .2s ease'}}>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:14,marginBottom:10}}>
+        <select value={fw} onChange={e=>setFw(e.target.value)} style={SS}><option value="all">ทุกช่วงเวลา</option><option value="today">วันนี้</option><option value="week">สัปดาห์นี้</option><option value="month">เดือนนี้</option></select>
+        <button onClick={onSync} style={{padding:'10px 16px',borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+          <i className="ti ti-refresh" style={{fontSize:15}}/> รีเฟรช
+        </button>
+      </div>
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ค้นหาชื่อพนักงาน รหัส หรืออุปกรณ์..." style={IS}/>
+      {filtered.length>0&&(
+        <div style={{display:'flex',gap:6,marginBottom:12,flexWrap:'wrap'}}>
+          <Pill color="var(--mid-teal)" bg="var(--teal-dim)" border="var(--teal-border)"><i className="ti ti-list-check" style={{fontSize:11}}/> {filtered.length} รายการ</Pill>
+          <Pill color="var(--mid-teal)" bg="var(--mint-dim)" border="var(--mint-border)"><i className="ti ti-box" style={{fontSize:11}}/> {uniqueItem} ชนิด</Pill>
+          <Pill color="var(--mid-teal)" bg="#E8F3F5" border="#A0CDD5"><i className="ti ti-users" style={{fontSize:11}}/> {uniqueEmp} คน</Pill>
+          <Pill color="#CC6A00" bg="#FFF4EC" border="#FFC899"><i className="ti ti-stack-2" style={{fontSize:11}}/> รวม {totalQty} ชิ้น</Pill>
+        </div>
+      )}
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'0 0 6px',borderBottom:'1px solid var(--teal-border)'}}>
+        <div style={{width:40,flexShrink:0}}/>
+        <div style={{flex:1,fontFamily:"'Space Mono',monospace",fontSize:9,color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase'}}>อุปกรณ์ / พนักงาน</div>
+        <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:'var(--txt3)',letterSpacing:'1.2px',textTransform:'uppercase',textAlign:'right',flexShrink:0}}>จำนวน</div>
+      </div>
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:'0 16px',boxShadow:'var(--shadow-sm)',marginTop:2}}>
+        {filtered.length?filtered.map((l,i)=><LogRow key={i} l={l} items={items} showTime isLast={i===filtered.length-1}/>):<div style={{color:'var(--txt3)',fontSize:12,textAlign:'center',padding:20}}>ไม่มีรายการ</div>}
+      </div>
+      <div style={{marginTop:12}}>
+        <button onClick={()=>setShowDebug(v=>!v)} style={{width:'100%',padding:10,borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt3)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:12,cursor:'pointer'}}>🔍 ดู Raw Data (Debug)</button>
+        {showDebug&&<pre style={{marginTop:8,background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:14,padding:12,fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--navy)',whiteSpace:'pre-wrap',wordBreak:'break-all',maxHeight:200,overflowY:'auto'}}>{JSON.stringify(logs.slice(0,3).map(l=>({item_name:l.item_name,quantity:l.quantity,employee:l.employee,unit:l.unit,action:l.action})),null,2)}</pre>}
+      </div>
+    </div>
+  );
+}
+
+/* ── PageAdmin ── */
+function AdminContent({items,onAddItem,onDelItem,onLock}){
+  const [form,setForm]=useState({name:'',cat:'เครื่องเขียน',stock:'100',unit:'',min:'10',icon:'📦',count:'1'});
+  const set=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const handleAdd=async()=>{await onAddItem(form);setForm(p=>({...p,name:'',stock:'100',unit:'',count:'1'}));};
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+  const LS={fontSize:12,color:'var(--txt2)',display:'block',marginBottom:6,marginTop:14,fontWeight:500};
+  useEffect(()=>{
+    if(!window.QRCode)return;
+    const timer=setTimeout(()=>{
+      items.forEach(it=>{const el=document.getElementById('qr-'+it.id);if(!el||el.dataset.generated)return;el.innerHTML='';try{new window.QRCode(el,{text:it.id,width:68,height:68,colorDark:'#213A58',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});el.dataset.generated='1';}catch(e){}});
+    },300);
+    return()=>clearTimeout(timer);
+  },[items]);
+  const downloadQR=(id,name)=>{const el=document.getElementById('qr-'+id);if(!el)return;const canvas=el.querySelector('canvas'),img=el.querySelector('img');let dataUrl='';if(canvas){const out=document.createElement('canvas');out.width=canvas.width+32;out.height=canvas.height+32;const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,out.width,out.height);ctx.drawImage(canvas,16,16);dataUrl=out.toDataURL('image/png');}else if(img){dataUrl=img.src;}if(!dataUrl)return;const a=document.createElement('a');a.href=dataUrl;a.download=`QR-${name}-${id}.png`;a.click();};
+  return(
+    <>
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:14,boxShadow:'var(--shadow-sm)'}}>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:18,letterSpacing:'-0.3px',color:'var(--teal)',marginBottom:14}}>+ เพิ่มอุปกรณ์</div>
+        <label style={LS}>ชื่ออุปกรณ์</label><input value={form.name} onChange={e=>set('name',e.target.value)} placeholder="เช่น กระดาษ A4" style={IS}/>
+        <label style={LS}>หมวดหมู่</label>
+        <select value={form.cat} onChange={e=>set('cat',e.target.value)} style={{...IS,WebkitAppearance:'none'}}><option>เครื่องเขียน</option><option>อุปกรณ์สำนักงาน</option><option>วัสดุสิ้นเปลือง</option><option>อุปกรณ์ IT</option><option>อื่นๆ</option></select>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          <div><label style={LS}>จำนวนคงเหลือ</label><input type="number" value={form.stock} onChange={e=>set('stock',e.target.value)} style={IS}/></div>
+          <div><label style={LS}>หน่วย</label><input value={form.unit} onChange={e=>set('unit',e.target.value)} placeholder="อัน/แผ่น" style={IS}/></div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          <div><label style={LS}>แจ้งเตือนเมื่อ ≤</label><input type="number" value={form.min} onChange={e=>set('min',e.target.value)} style={IS}/></div>
+          <div><label style={LS}>Emoji icon</label><input value={form.icon} onChange={e=>set('icon',e.target.value)} maxLength={2} style={IS}/></div>
+        </div>
+        <label style={LS}>ออก QR Code จำนวน (ชิ้น)</label>
+        <input type="number" min="1" max="99" value={form.count} onChange={e=>set('count',e.target.value)} style={IS}/>
+        <button onClick={handleAdd} style={{width:'100%',padding:15,borderRadius:20,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,boxShadow:'0 6px 20px rgba(9,209,199,0.28)',marginTop:14}}>
+          <i className="ti ti-plus" style={{fontSize:18}}/> บันทึกและสร้าง QR Code
+        </button>
+      </div>
+      <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:8,marginTop:20}}>รายการอุปกรณ์</div>
+      {items.length?items.map(it=>(
+        <div key={it.id} style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:16,padding:16,marginBottom:8,boxShadow:'var(--shadow-sm)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:40,height:40,borderRadius:12,background:'var(--teal-dim)',border:'1px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>{it.icon}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:700,fontSize:13,color:'var(--txt)'}}>{it.name}</div>
+              <div style={{fontSize:11,color:'var(--txt2)',marginTop:1}}>{it.cat} · {it.stock} {it.unit}</div>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',marginTop:1}}>{it.id}</div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:4,alignItems:'flex-end'}}>
+              <span style={{display:'inline-flex',padding:'3px 9px',borderRadius:100,fontSize:11,fontWeight:600,background:it.stock<=it.min?'#FFF4EC':'var(--teal-dim)',color:it.stock<=it.min?'#CC6A00':'var(--mid-teal)',border:`1px solid ${it.stock<=it.min?'#FFC899':'var(--teal-border)'}`}}>{it.stock<=it.min?'ใกล้หมด':'ปกติ'}</span>
+              <button onClick={()=>onDelItem(it.id)} style={{background:'none',border:'none',color:'var(--txt3)',fontSize:14,cursor:'pointer',padding:'2px 4px'}}><i className="ti ti-trash"/></button>
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:12,background:'var(--teal-dim)',borderRadius:12,padding:12,border:'1px solid var(--teal-border)',marginTop:12}}>
+            <div id={`qr-${it.id}`} style={{background:'#fff',padding:6,borderRadius:8,flexShrink:0,width:80,height:80,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,color:'#999'}}>…</div>
+            <div style={{flex:1}}>
+              <button onClick={()=>downloadQR(it.id,it.name)} style={{display:'block',width:'100%',padding:'7px 14px',background:'rgba(9,209,199,0.12)',border:'1px solid var(--teal-border)',color:'var(--mid-teal)',borderRadius:100,fontSize:12,fontFamily:"'Noto Sans Thai',sans-serif",cursor:'pointer',fontWeight:600,marginBottom:6}}>
+                <i className="ti ti-download" style={{verticalAlign:'-2px',fontSize:13,marginRight:4}}/> บันทึก QR
               </button>
             </div>
           </div>
-          <div style={{ background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:'20px',padding:'20px',marginTop:'10px',boxShadow:'var(--shadow-sm)',marginBottom:'16px' }}>
-            <div style={{ fontFamily:"'Outfit',sans-serif",fontWeight:700,fontSize:'14px',color:'var(--txt)',marginBottom:'12px' }}>วิธีตั้งค่า Apps Script</div>
-            {[{num:'1',title:'อัปเดต Apps Script',desc:'เข้าไปที่ Google Sheet → Extensions → Apps Script ลบโค้ดเก่าทิ้งทั้งหมด แล้ววางโค้ดใหม่แทน',action:<button onClick={onCopyGAS} style={{ marginTop:'8px',padding:'8px 16px',borderRadius:'100px',border:'1.5px solid var(--teal-border)',background:'var(--teal-dim)',color:'var(--mid-teal)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'12px',fontWeight:600,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:'5px' }}><i className="ti ti-copy" style={{ fontSize:'13px' }} /> Copy โค้ด GAS</button>},{num:'2',title:'Deploy เป็น Web App',desc:'Deploy → New deployment → Web app\nExecute as: Me · Who has access: Anyone\nCopy URL มาวางในช่องด้านบน'}].map((step,i)=>(
-              <div key={i} style={{ display:'flex',gap:'12px',padding:'14px 0',borderBottom:i<1?'1px solid var(--teal-border)':'none' }}>
-                <div style={{ width:'28px',height:'28px',borderRadius:'50%',background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',color:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Space Mono',monospace",fontSize:'12px',flexShrink:0,marginTop:'2px',fontWeight:700 }}>{step.num}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:'13px',fontWeight:700,color:'var(--txt)',marginBottom:'3px' }}>{step.title}</div>
-                  <div style={{ fontSize:'12px',color:'var(--txt2)',lineHeight:1.6,whiteSpace:'pre-line' }}>{step.desc}</div>
-                  {step.action}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      );
-    }
-    function PageSetup({ cfg, setupUnlocked, syncStatus, onSave, onSync, onCopyGAS, onLock, onUnlock }) {
-      if(!setupUnlocked) return (
-        <div style={{ padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease' }}>
-          <div style={{ width:'72px',height:'72px',borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:'32px' }}>⚙️</div>
-          <div style={{ fontFamily:"'Outfit',sans-serif",fontSize:'20px',fontWeight:800,color:'var(--txt)',marginBottom:'6px' }}>ตั้งค่าระบบ</div>
-          <div style={{ fontSize:'13px',color:'var(--txt3)',marginBottom:'24px' }}>ต้องกรอก PIN เพื่อเข้าถึง</div>
-          <button onClick={onUnlock} style={{ padding:'14px 32px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'15px',fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)' }}>
-            <i className="ti ti-lock-open" style={{ fontSize:'16px',verticalAlign:'-3px',marginRight:'6px' }} /> กรอก PIN เพื่อเข้า
+        </div>
+      )):<div style={{color:'var(--txt3)',fontSize:12,textAlign:'center',padding:20}}>ยังไม่มีอุปกรณ์</div>}
+      <button onClick={onLock} style={{width:'100%',padding:12,borderRadius:20,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:8,marginBottom:16}}>
+        <i className="ti ti-lock" style={{fontSize:14}}/> ล็อค Admin
+      </button>
+    </>
+  );
+}
+function PageAdmin({items,setupUnlocked,onAddItem,onDelItem,onLock,onUnlock}){
+  if(!setupUnlocked)return(
+    <div style={{padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease'}}>
+      <div style={{width:72,height:72,borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:32}}>🔐</div>
+      <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:'var(--txt)',marginBottom:6}}>เพิ่มอุปกรณ์</div>
+      <div style={{fontSize:13,color:'var(--txt3)',marginBottom:24}}>ต้องกรอก PIN เพื่อเข้าถึง</div>
+      <button onClick={onUnlock} style={{padding:'14px 32px',borderRadius:20,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)'}}>
+        <i className="ti ti-lock-open" style={{fontSize:16,verticalAlign:'-3px',marginRight:6}}/> กรอก PIN เพื่อเข้า
+      </button>
+    </div>
+  );
+  return <div style={{animation:'fadeUp .2s ease'}}><AdminContent items={items} onAddItem={onAddItem} onDelItem={onDelItem} onLock={onLock}/></div>;
+}
+
+/* ── PageSetup ── */
+function SetupContent({cfg,onSave,onSync,onCopyGAS,onLock}){
+  const [url,setUrl]=useState(cfg.url||'');
+  useEffect(()=>{setUrl(cfg.url||'');},[cfg.url]);
+  const handleInput=v=>{setUrl(v);if(v.includes('script.google.com'))onSave(v);};
+  const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
+  const GAS=`function doGet(e){const ss=SpreadsheetApp.getActiveSpreadsheet();let iS=ss.getSheetByName("Items"),lS=ss.getSheetByName("Logs");if(!iS){iS=ss.insertSheet("Items");iS.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]);}if(!lS){lS=ss.insertSheet("Logs");lS.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Employee_ID","Note","Action"]);}const payload=JSON.stringify({items:getItems(iS),logs:getLogs(lS)});const cb=e&&e.parameter&&e.parameter.callback;if(cb)return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);}
+function doPost(e){const ss=SpreadsheetApp.getActiveSpreadsheet();const iS=ss.getSheetByName("Items")||ss.insertSheet("Items");const lS=ss.getSheetByName("Logs")||ss.insertSheet("Logs");const data=JSON.parse(e.postData.contents);if(data.action==="add_items"){data.items.forEach(it=>iS.appendRow([it.id,it.name,it.cat,it.stock,it.unit,it.min,it.icon]));}else if(["withdraw","return","restock"].includes(data.action)){lS.appendRow([data.timestamp,data.qr_id,data.item_name,data.category,data.quantity,data.unit,data.employee_name||data.employee,data.employee_id||"",data.note||"",data.action]);const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.qr_id)){const cur=Number(vals[i][3]);let next=cur;if(data.action==="withdraw")next=Math.max(0,cur-Number(data.quantity));else next=cur+Number(data.quantity);iS.getRange(i+1,4).setValue(next);break;}}}else if(data.action==="delete_item"){const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.id)){iS.deleteRow(i+1);break;}}}return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);}
+function getItems(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];const h=rows[0].map(c=>String(c).trim().toLowerCase());const col=k=>h.indexOf(k);return rows.slice(1).map(r=>({id:String(r[col('id')]||''),name:String(r[col('name')]||''),cat:String(r[col('category')]||r[col('cat')]||''),stock:Number(r[col('stock')])||0,unit:String(r[col('unit')]||'อัน'),min:Number(r[col('min')])||0,icon:String(r[col('icon')]||'📦')})).filter(it=>it.id);}
+function getLogs(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];return rows.slice(1).reverse().slice(0,100).map(r=>{let qty=parseInt(r[4]);if(isNaN(qty))qty=0;return{timestamp:String(r[0]||''),qr_id:String(r[1]||''),item_name:String(r[2]||''),category:String(r[3]||''),quantity:qty,unit:String(r[5]||''),employee:String(r[6]||''),employee_id:String(r[7]||''),note:String(r[8]||''),action:String(r[9]||'withdraw')};});}`;
+  return(
+    <>
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:14,boxShadow:'var(--shadow-sm)'}}>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:16,color:'var(--txt)',marginBottom:14}}>เชื่อมต่อ Google Sheet</div>
+        <label style={{fontSize:12,color:'var(--txt2)',display:'block',marginBottom:6,fontWeight:500}}>Google Apps Script URL</label>
+        <input value={url} onChange={e=>handleInput(e.target.value)} placeholder="https://script.google.com/macros/s/..." style={IS}/>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:14}}>
+          <button onClick={onSync} style={{padding:11,borderRadius:14,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:700,cursor:'pointer'}}>ทดสอบเชื่อมต่อ</button>
+          <button onClick={onLock} style={{padding:11,borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:5}}>
+            <i className="ti ti-lock" style={{fontSize:14}}/> ล็อค
           </button>
         </div>
-      );
-      return <div style={{ animation:'fadeUp .2s ease' }}><SetupContent cfg={cfg} onSave={onSave} onSync={onSync} onCopyGAS={onCopyGAS} onLock={onLock} /></div>;
-    }
-
-    /* ─── GAS Code string ─── */
-    const GAS_CODE = `function doGet(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let itemSh = ss.getSheetByName("Items");
-  let logSh  = ss.getSheetByName("Logs");
-  if (!itemSh) { itemSh = ss.insertSheet("Items"); itemSh.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); }
-  if (!logSh)  { logSh  = ss.insertSheet("Logs");  logSh.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note","Action"]); }
-  const payload = JSON.stringify({ items: getItems(itemSh), logs: getLogs(logSh) });
-  const cb = e && e.parameter && e.parameter.callback;
-  if (cb) return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);
-  return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);
-}
-function doPost(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const itemSh = ss.getSheetByName("Items") || (() => { const s=ss.insertSheet("Items"); s.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]); return s; })();
-  const logSh  = ss.getSheetByName("Logs")  || (() => { const s=ss.insertSheet("Logs");  s.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Note","Action"]); return s; })();
-  const data = JSON.parse(e.postData.contents);
-  if (data.action === "add_items") { data.items.forEach(it => itemSh.appendRow([it.id, it.name, it.cat, it.stock, it.unit, it.min, it.icon])); }
-  else if (data.action === "withdraw" || data.action === "return" || data.action === "restock") {
-    logSh.appendRow([data.timestamp, data.qr_id, data.item_name, data.category, data.quantity, data.unit, data.employee, data.note || "", data.action]);
-    const vals = itemSh.getDataRange().getValues();
-    for (let i = 1; i < vals.length; i++) {
-      if (String(vals[i][0]) === String(data.qr_id)) {
-        const cur = Number(vals[i][3]);
-        let next = cur;
-        if (data.action === "withdraw") next = Math.max(0, cur - Number(data.quantity));
-        else if (data.action === "return" || data.action === "restock") next = cur + Number(data.quantity);
-        itemSh.getRange(i+1,4).setValue(next);
-        break;
-      }
-    }
-  }
-  else if (data.action === "delete_item") {
-    const vals = itemSh.getDataRange().getValues();
-    for (let i = 1; i < vals.length; i++) { if (String(vals[i][0]) === String(data.id)) { itemSh.deleteRow(i+1); break; } }
-  }
-  return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);
-}
-function getItems(sheet) {
-  const rows = sheet.getDataRange().getValues(); if (rows.length < 2) return [];
-  const h = rows[0].map(c => String(c).trim().toLowerCase()); const col = k => h.indexOf(k);
-  return rows.slice(1).map(r => ({ id: String(r[col('id')]||''), name: String(r[col('name')]||''), cat: String(r[col('category')]||r[col('cat')]||''), stock: Number(r[col('stock')])||0, unit: String(r[col('unit')]||'อัน'), min: Number(r[col('min')])||0, icon: String(r[col('icon')]||'📦') })).filter(it => it.id);
-}
-function getLogs(sheet) {
-  const rows = sheet.getDataRange().getValues(); if (rows.length < 2) return [];
-  return rows.slice(1).reverse().slice(0,100).map(r => { let qty = parseInt(r[4]); if (isNaN(qty)) qty = 0; return { timestamp: String(r[0]||''), qr_id: String(r[1]||''), item_name: String(r[2]||''), category: String(r[3]||''), quantity: qty, unit: String(r[5]||''), employee: String(r[6]||''), note: String(r[7]||''), action: String(r[8]||'withdraw') }; });
-}`;
-
-    /* ─── Main App ─── */
-    function StockScan() {
-      const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
-      const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
-      const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
-      const [activePage,setActivePage]=useState('home');
-      const [curItem,setCurItem]=useState(null);
-      const [setupUnlocked,setSetupUnlocked]=useState(false);
-      const [isSyncing,setIsSyncing]=useState(false);
-      const [syncStatus,setSyncStatus]=useState('none');
-      const [pinTarget,setPinTarget]=useState(null);
-      const [showCamera,setShowCamera]=useState(false);
-      const [toast,setToast]=useState(null);
-
-      useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
-      useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
-      useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
-      useEffect(()=>{syncData();},[]);
-
-      const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
-
-      async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
-      function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
-      async function gasPost(url,body){const res=await fetch(url,{method:'POST',body:JSON.stringify(body)});try{return JSON.parse(await res.text());}catch(e){return{status:'ok'};}}
-      function applyResponseData(data){if(!data||!Array.isArray(data.items))throw new Error('No items');setItems(normalizeItems(data.items));setLogs(normalizeLogs(data.logs||[]));}
-
-      async function syncData(){
-        if(!cfg.url){setSyncStatus('none');return;} if(isSyncing)return;
-        setIsSyncing(true);setSyncStatus('syncing');let ok=false;
-        try{const d=await fetchViaFetch(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e1){try{const d=await fetchViaJsonp(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e2){}}
-        if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
-        setIsSyncing(false);
-      }
-
-      function requestAdminAccess(){setActivePage('admin');if(!setupUnlocked)setPinTarget('admin');}
-      function requestSetupAccess(){setActivePage('setup');if(!setupUnlocked)setPinTarget('setup');}
-      function onPinSuccess(target){setSetupUnlocked(true);setPinTarget(null);showToast(target==='setup'?'✓ เข้าสู่หน้าตั้งค่าแล้ว':'✓ เข้าสู่โหมด Admin แล้ว');}
-      function lockAdmin(){setSetupUnlocked(false);showToast('🔒 ล็อค Admin แล้ว');setActivePage('home');}
-
-      function scanItem(code){const it=items.find(x=>x.id===code);if(!it){showToast('ไม่เจอ QR นี้ในระบบ ❌','#FF4D4D');return;}setCurItem(it);setActivePage('scan');}
-
-      async function confirmAction(mode, user, qty, note) {
-        if(!curItem)return;
-        if(!user){showToast('ใส่ชื่อผู้ดำเนินการด้วยนะ ⚠','#FFB700');return;}
-        if(qty<1){showToast('จำนวนต้องมากกว่า 0','#FFB700');return;}
-        if(mode==='withdraw' && qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
-
-        const ts=nowISO(); const snap={...curItem};
-        const modeLabel = mode==='withdraw'?'เบิก': mode==='return'?'คืน':'เติม Stock';
-        const toastColor = mode==='withdraw'?'#213A58': mode==='return'?'#4A90D9':'var(--mid-teal)';
-
-        // อัปเดต stock ในเครื่อง
-        setItems(prev=>prev.map(x=>{
-          if(x.id!==snap.id)return x;
-          if(mode==='withdraw') return {...x,stock:x.stock-qty};
-          if(mode==='return')   return {...x,stock:x.stock+qty};
-          if(mode==='restock')  return {...x,stock:x.stock+qty};
-          return x;
-        }));
-
-        setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||'',action:mode},...prev]);
-        setCurItem(null);
-        showToast(`กำลังบันทึก${modeLabel} "${snap.name}" ☁...`, toastColor);
-
-        if(cfg.url){
-          try{
-            await gasPost(cfg.url,{action:mode,timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:user,note:note||''});
-            showToast(`${modeLabel} "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`, toastColor);
-            setTimeout(syncData,1000);
-          }catch(e){
-            showToast(`บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)`,'#FFB700');
-          }
-        } else {
-          showToast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)','#FFB700');
-        }
-      }
-
-      async function addItem(formData){
-        if(!cfg.url){showToast('กรุณาตั้งค่า GAS URL ก่อน ⚠','#FFB700');return;}
-        const{name,cat,stock,unit,min,icon,count}=formData;
-        if(!name){showToast('ใส่ชื่ออุปกรณ์ด้วยนะ ⚠','#FFB700');return;}
-        const cnt=Math.max(1,parseInt(count)||1);
-        const newItems=Array.from({length:cnt},()=>({id:uid(),name,cat,stock:parseInt(stock)||0,unit:unit||'อัน',min:parseInt(min)||10,icon:icon||'📦'}));
-        showToast(`กำลังบันทึก "${name}" ${cnt} ชิ้น ☁...`);
-        try{await gasPost(cfg.url,{action:'add_items',items:newItems});showToast(`บันทึก "${name}" สำเร็จ ✓`);await syncData();}catch(e){showToast('มีปัญหาการส่งไป Sheet','#FF4D4D');}
-      }
-
-      async function delItem(id){
-        if(!confirm('ยืนยันการลบอุปกรณ์นี้?'))return;
-        if(!cfg.url){showToast('ยังไม่ได้เชื่อม Sheet','#FFB700');return;}
-        try{await gasPost(cfg.url,{action:'delete_item',id});showToast('ลบแล้ว ✓');await syncData();}catch(e){showToast('ลบไม่สำเร็จ','#FF4D4D');}
-      }
-
-      function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
-      function copyGAS(){navigator.clipboard.writeText(GAS_CODE).then(()=>showToast('Copy โค้ด GAS แล้ว ✓')).catch(()=>showToast('Copy ไม่ได้ — ลอง Copy เอง','#FFB700'));}
-
-      return (
-        <div style={{ fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'390px',margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:'88px' }}>
-          <TopBar syncStatus={syncStatus} onSync={syncData} />
-          <div style={{ padding:'0 14px' }}>
-            {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')} />}
-            {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmAction} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)} />}
-            {activePage==='log'&&<PageLog logs={logs} items={items} onSync={syncData} />}
-            {activePage==='admin'&&<PageAdmin items={items} setupUnlocked={setupUnlocked} onAddItem={addItem} onDelItem={delItem} onLock={lockAdmin} onUnlock={requestAdminAccess} />}
-            {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} syncStatus={syncStatus} onSave={saveSettings} onSync={syncData} onCopyGAS={copyGAS} onLock={()=>{setSetupUnlocked(false);showToast('🔒 ล็อค ตั้งค่า แล้ว');setActivePage('home');}} onUnlock={requestSetupAccess} />}
+      </div>
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:10,boxShadow:'var(--shadow-sm)',marginBottom:16}}>
+        <div style={{fontFamily:"'Outfit',sans-serif",fontWeight:700,fontSize:14,color:'var(--txt)',marginBottom:12}}>วิธีตั้งค่า Apps Script</div>
+        {[{num:'1',title:'อัปเดต Apps Script',desc:'เข้าไปที่ Google Sheet → Extensions → Apps Script ลบโค้ดเก่าทิ้ง แล้ววางโค้ดใหม่',action:<button onClick={()=>navigator.clipboard.writeText(GAS).then(()=>alert('Copy แล้ว ✓'))} style={{marginTop:8,padding:'8px 16px',borderRadius:100,border:'1.5px solid var(--teal-border)',background:'var(--teal-dim)',color:'var(--mid-teal)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:12,fontWeight:600,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:5}}><i className="ti ti-copy" style={{fontSize:13}}/> Copy โค้ด GAS</button>},{num:'2',title:'Deploy เป็น Web App',desc:'Deploy → New deployment → Web app\nExecute as: Me · Who has access: Anyone\nCopy URL มาวางในช่องด้านบน'}].map((step,i)=>(
+          <div key={i} style={{display:'flex',gap:12,padding:'14px 0',borderBottom:i<1?'1px solid var(--teal-border)':'none'}}>
+            <div style={{width:28,height:28,borderRadius:'50%',background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',color:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Space Mono',monospace",fontSize:12,flexShrink:0,marginTop:2,fontWeight:700}}>{step.num}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontWeight:700,color:'var(--txt)',marginBottom:3}}>{step.title}</div>
+              <div style={{fontSize:12,color:'var(--txt2)',lineHeight:1.6,whiteSpace:'pre-line'}}>{step.desc}</div>
+              {step.action}
+            </div>
           </div>
-          <BottomNav activePage={activePage} onGoHome={()=>setActivePage('home')} onGoLog={()=>setActivePage('log')} onGoScan={()=>setActivePage('scan')} onGoAdmin={requestAdminAccess} onGoSetup={requestSetupAccess} />
-          {pinTarget&&<PinModal target={pinTarget} correctPin={SECURE_PIN} onSuccess={()=>onPinSuccess(pinTarget)} onClose={()=>{setPinTarget(null);if(!setupUnlocked)setActivePage('home');}} />}
-          {showCamera&&<CameraOverlay onScan={code=>{setShowCamera(false);scanItem(code);}} onClose={()=>setShowCamera(false)} />}
-          {toast&&(
-            <div style={{ position:'fixed',bottom:'96px',left:'50%',transform:'translateX(-50%)',background:toast.color,color:'#fff',borderRadius:'100px',padding:'12px 24px',fontSize:'13px',zIndex:300,whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(33,58,88,0.2)',animation:'toastPop .3s cubic-bezier(0.34,1.56,0.64,1)' }}>{toast.msg}</div>
-          )}
-        </div>
-      );
-    }
+        ))}
+      </div>
+    </>
+  );
+}
+function PageSetup({cfg,setupUnlocked,onSave,onSync,onLock,onUnlock}){
+  if(!setupUnlocked)return(
+    <div style={{padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease'}}>
+      <div style={{width:72,height:72,borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:32}}>⚙️</div>
+      <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:'var(--txt)',marginBottom:6}}>ตั้งค่าระบบ</div>
+      <div style={{fontSize:13,color:'var(--txt3)',marginBottom:24}}>ต้องกรอก PIN เพื่อเข้าถึง</div>
+      <button onClick={onUnlock} style={{padding:'14px 32px',borderRadius:20,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',boxShadow:'0 6px 20px rgba(9,209,199,0.3)'}}>
+        <i className="ti ti-lock-open" style={{fontSize:16,verticalAlign:'-3px',marginRight:6}}/> กรอก PIN เพื่อเข้า
+      </button>
+    </div>
+  );
+  return <div style={{animation:'fadeUp .2s ease'}}><SetupContent cfg={cfg} onSave={onSave} onSync={onSync} onLock={onLock}/></div>;
+}
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<StockScan />);
-  </script>
+/* ── Main App ── */
+function StockScan(){
+  const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
+  const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
+  const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
+  const [activePage,setActivePage]=useState('home');
+  const [curItem,setCurItem]=useState(null);
+  const [setupUnlocked,setSetupUnlocked]=useState(false);
+  const [isSyncing,setIsSyncing]=useState(false);
+  const [syncStatus,setSyncStatus]=useState('none');
+  const [pinTarget,setPinTarget]=useState(null);
+  const [showCamera,setShowCamera]=useState(false);
+  const [showDirectory,setShowDirectory]=useState(false);
+  const [toast,setToast]=useState(null);
+
+  useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
+  useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
+  useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
+  useEffect(()=>{syncData();},[]);
+
+  const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
+
+  async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
+  function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
+  async function gasPost(url,body){const res=await fetch(url,{method:'POST',body:JSON.stringify(body)});try{return JSON.parse(await res.text());}catch(e){return{status:'ok'};}}
+  function applyResponseData(data){if(!data||!Array.isArray(data.items))throw new Error('No items');setItems(normalizeItems(data.items));setLogs(normalizeLogs(data.logs||[]));}
+
+  async function syncData(){
+    if(!cfg.url){setSyncStatus('none');return;}if(isSyncing)return;
+    setIsSyncing(true);setSyncStatus('syncing');let ok=false;
+    try{const d=await fetchViaFetch(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e1){try{const d=await fetchViaJsonp(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e2){}}
+    if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
+    setIsSyncing(false);
+  }
+
+  function requestAdminAccess(){setActivePage('admin');if(!setupUnlocked)setPinTarget('admin');}
+  function requestSetupAccess(){setActivePage('setup');if(!setupUnlocked)setPinTarget('setup');}
+  function onPinSuccess(target){setSetupUnlocked(true);setPinTarget(null);showToast(target==='setup'?'✓ เข้าสู่หน้าตั้งค่าแล้ว':'✓ เข้าสู่โหมด Admin แล้ว');}
+  function lockAdmin(){setSetupUnlocked(false);showToast('🔒 ล็อค Admin แล้ว');setActivePage('home');}
+  function scanItem(code){const it=items.find(x=>x.id===code);if(!it){showToast('ไม่เจอ QR นี้ในระบบ ❌','#FF4D4D');return;}setCurItem(it);setActivePage('scan');}
+
+  async function confirmAction(mode,empObj,qty,note){
+    if(!curItem)return;
+    if(!empObj){showToast('กรุณาเลือกพนักงานก่อน ⚠','#FFB700');return;}
+    if(qty<1){showToast('จำนวนต้องมากกว่า 0','#FFB700');return;}
+    if(mode==='withdraw'&&qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
+    const ts=nowISO();const snap={...curItem};
+    const modeLabel=mode==='withdraw'?'เบิก':mode==='return'?'คืน':'เติม Stock';
+    const toastColor=mode==='withdraw'?'#213A58':mode==='return'?'#4A90D9':'var(--mid-teal)';
+    setItems(prev=>prev.map(x=>{if(x.id!==snap.id)return x;if(mode==='withdraw')return{...x,stock:x.stock-qty};return{...x,stock:x.stock+qty};}));
+    setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:empObj.id,note:note||'',action:mode},...prev]);
+    setCurItem(null);
+    showToast(`กำลังบันทึก${modeLabel} "${snap.name}" ☁...`,toastColor);
+    if(cfg.url){
+      try{
+        await gasPost(cfg.url,{action:mode,timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:empObj.id,employee_name:empObj.name,employee_id:empObj.id,note:note||''});
+        showToast(`${modeLabel} "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`,toastColor);
+        setTimeout(syncData,1000);
+      }catch(e){showToast(`บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)`,'#FFB700');}
+    }else{showToast('บันทึกในเครื่องแล้ว (ยังไม่ได้เชื่อม Sheet)','#FFB700');}
+  }
+
+  async function addItem(formData){
+    if(!cfg.url){showToast('กรุณาตั้งค่า GAS URL ก่อน ⚠','#FFB700');return;}
+    const{name,cat,stock,unit,min,icon,count}=formData;
+    if(!name){showToast('ใส่ชื่ออุปกรณ์ด้วยนะ ⚠','#FFB700');return;}
+    const cnt=Math.max(1,parseInt(count)||1);
+    const newItems=Array.from({length:cnt},()=>({id:uid(),name,cat,stock:parseInt(stock)||0,unit:unit||'อัน',min:parseInt(min)||10,icon:icon||'📦'}));
+    showToast(`กำลังบันทึก "${name}" ${cnt} ชิ้น ☁...`);
+    try{await gasPost(cfg.url,{action:'add_items',items:newItems});showToast(`บันทึก "${name}" สำเร็จ ✓`);await syncData();}catch(e){showToast('มีปัญหาการส่งไป Sheet','#FF4D4D');}
+  }
+
+  async function delItem(id){
+    if(!confirm('ยืนยันการลบอุปกรณ์นี้?'))return;
+    if(!cfg.url){showToast('ยังไม่ได้เชื่อม Sheet','#FFB700');return;}
+    try{await gasPost(cfg.url,{action:'delete_item',id});showToast('ลบแล้ว ✓');await syncData();}catch(e){showToast('ลบไม่สำเร็จ','#FF4D4D');}
+  }
+
+  function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
+
+  return(
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:88}}>
+      <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)}/>
+      <div style={{padding:'0 14px'}}>
+        {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')}/>}
+        {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmAction} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)}/>}
+        {activePage==='log'&&<PageLog logs={logs} items={items} onSync={syncData}/>}
+        {activePage==='admin'&&<PageAdmin items={items} setupUnlocked={setupUnlocked} onAddItem={addItem} onDelItem={delItem} onLock={lockAdmin} onUnlock={requestAdminAccess}/>}
+        {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} onSave={saveSettings} onSync={syncData} onLock={()=>{setSetupUnlocked(false);showToast('🔒 ล็อค ตั้งค่า แล้ว');setActivePage('home');}} onUnlock={requestSetupAccess}/>}
+      </div>
+      <BottomNav activePage={activePage} onGoHome={()=>setActivePage('home')} onGoLog={()=>setActivePage('log')} onGoScan={()=>setActivePage('scan')} onGoAdmin={requestAdminAccess} onGoSetup={requestSetupAccess}/>
+      {pinTarget&&<PinModal target={pinTarget} correctPin={SECURE_PIN} onSuccess={()=>onPinSuccess(pinTarget)} onClose={()=>{setPinTarget(null);if(!setupUnlocked)setActivePage('home');}}/>}
+      {showCamera&&<CameraOverlay onScan={code=>{setShowCamera(false);scanItem(code);}} onClose={()=>setShowCamera(false)}/>}
+      {/* ★ Employee Directory Overlay ★ */}
+      <EmployeeDirectory isOpen={showDirectory} onClose={()=>setShowDirectory(false)} selectMode={false}/>
+      {toast&&<div style={{position:'fixed',bottom:96,left:'50%',transform:'translateX(-50%)',background:toast.color,color:'#fff',borderRadius:100,padding:'12px 24px',fontSize:13,zIndex:300,whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(33,58,88,0.2)',animation:'toastPop .3s cubic-bezier(0.34,1.56,0.64,1)'}}>{toast.msg}</div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<StockScan/>);
+</script>
 </body>
 </html>
