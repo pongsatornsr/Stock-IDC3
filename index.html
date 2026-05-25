@@ -180,7 +180,7 @@ function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;
 function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
 const SECURE_PIN="240739";
-const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbyOqsDZbO6E8W0Ka0EF8jv-BalyMtSiYorH8Vc4lZy3H_fIkeVfaMdldrkvAMBeyFOo/exec";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbw-0-qcSU_6ElpPbPASZhWYC2NF9hBBBHBrh48jG9KKfvv4eJfwvhoMLkWda95T1IsS/exec";
 
 /* ── EmpMiniAvatar ── */
 function EmpMiniAvatar({emp,size=32,radius=9}){
