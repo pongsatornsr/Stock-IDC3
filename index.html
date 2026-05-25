@@ -72,6 +72,43 @@
 </head>
 <body>
 <div id="root"></div>
+<script type="text/plain" id="gas-template">// ═══════════════════════════════════════════════════
+// StockScan IDC-3 — Google Apps Script
+// ── ตั้งค่า LINE Messaging API ──────────────────────
+// 1) วาง Channel Access Token จาก LINE Developers
+// 2) วาง Group ID ของกลุ่มที่ต้องการแจ้งเตือน
+// ════════════════════════════════════════════════════
+var LINE_TOKEN = "";   // ← วาง Channel Access Token ตรงนี้
+var LINE_GROUP = "";   // ← วาง Group ID ตรงนี้
+
+function sendLine(msg) {
+  if (!LINE_TOKEN || !LINE_GROUP) return;
+  try {
+    UrlFetchApp.fetch("https://api.line.me/v2/bot/message/push", {
+      method: "post",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + LINE_TOKEN },
+      payload: JSON.stringify({ to: LINE_GROUP, messages: [{ type: "text", text: msg }] }),
+      muteHttpExceptions: true
+    });
+  } catch(e) { Logger.log("LINE error: " + e); }
+}
+
+function doGet(e){const ss=SpreadsheetApp.getActiveSpreadsheet();let iS=ss.getSheetByName("Items"),lS=ss.getSheetByName("Logs");if(!iS){iS=ss.insertSheet("Items");iS.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]);}if(!lS){lS=ss.insertSheet("Logs");lS.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Employee_ID","Note","Action"]);}const payload=JSON.stringify({items:getItems(iS),logs:getLogs(lS)});const cb=e&&e.parameter&&e.parameter.callback;if(cb)return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);}
+function doPost(e){const ss=SpreadsheetApp.getActiveSpreadsheet();const iS=ss.getSheetByName("Items")||ss.insertSheet("Items");const lS=ss.getSheetByName("Logs")||ss.insertSheet("Logs");const data=JSON.parse(e.postData.contents);if(data.action==="add_items"){data.items.forEach(it=>iS.appendRow([it.id,it.name,it.cat,it.stock,it.unit,it.min,it.icon]));}else if(["withdraw","return","restock"].includes(data.action)){lS.appendRow([data.timestamp,data.qr_id,data.item_name,data.category,data.quantity,data.unit,data.employee_name||data.employee,data.employee_id||"",data.note||"",data.action]);const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.qr_id)){const cur=Number(vals[i][3]);let next=cur;if(data.action==="withdraw")next=Math.max(0,cur-Number(data.quantity));else next=cur+Number(data.quantity);iS.getRange(i+1,4).setValue(next);break;}}
+  var icon=data.action==="withdraw"?"📤":data.action==="return"?"📥":"📦";
+  var label=data.action==="withdraw"?"เบิกของ":data.action==="return"?"คืนของ":"เติม Stock";
+  var d=new Date();
+  var ds=Utilities.formatDate(d,Session.getScriptTimeZone(),"d MMM yyyy HH:mm");
+  var msg=icon+" แจ้งเตือน"+label+" — IDC-3\n"
+    +"👤 พนักงาน: "+(data.employee_name||data.employee||"-")+"\n"
+    +"📋 รายการ: "+data.item_name+"\n"
+    +"🔢 จำนวน: "+data.quantity+" "+data.unit+"\n"
+    +"🕐 เวลา: "+ds;
+  sendLine(msg);
+  }else if(data.action==="delete_item"){const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.id)){iS.deleteRow(i+1);break;}}}return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);}
+function getItems(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];const h=rows[0].map(c=>String(c).trim().toLowerCase());const col=k=>h.indexOf(k);return rows.slice(1).map(r=>({id:String(r[col('id')]||''),name:String(r[col('name')]||''),cat:String(r[col('category')]||r[col('cat')]||''),stock:Number(r[col('stock')])||0,unit:String(r[col('unit')]||'อัน'),min:Number(r[col('min')])||0,icon:String(r[col('icon')]||'📦')})).filter(it=>it.id);}
+function getLogs(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];return rows.slice(1).reverse().slice(0,100).map(r=>{let qty=parseInt(r[4]);if(isNaN(qty))qty=0;return{timestamp:String(r[0]||''),qr_id:String(r[1]||''),item_name:String(r[2]||''),category:String(r[3]||''),quantity:qty,unit:String(r[5]||''),employee:String(r[6]||''),employee_id:String(r[7]||''),note:String(r[8]||''),action:String(r[9]||'withdraw')};});}
+</script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -779,10 +816,7 @@ function SetupContent({cfg,onSave,onSync,onCopyGAS,onLock}){
   useEffect(()=>{setUrl(cfg.url||'');},[cfg.url]);
   const handleInput=v=>{setUrl(v);if(v.includes('script.google.com'))onSave(v);};
   const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-  const GAS=`function doGet(e){const ss=SpreadsheetApp.getActiveSpreadsheet();let iS=ss.getSheetByName("Items"),lS=ss.getSheetByName("Logs");if(!iS){iS=ss.insertSheet("Items");iS.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]);}if(!lS){lS=ss.insertSheet("Logs");lS.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Employee_ID","Note","Action"]);}const payload=JSON.stringify({items:getItems(iS),logs:getLogs(lS)});const cb=e&&e.parameter&&e.parameter.callback;if(cb)return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);}
-function doPost(e){const ss=SpreadsheetApp.getActiveSpreadsheet();const iS=ss.getSheetByName("Items")||ss.insertSheet("Items");const lS=ss.getSheetByName("Logs")||ss.insertSheet("Logs");const data=JSON.parse(e.postData.contents);if(data.action==="add_items"){data.items.forEach(it=>iS.appendRow([it.id,it.name,it.cat,it.stock,it.unit,it.min,it.icon]));}else if(["withdraw","return","restock"].includes(data.action)){lS.appendRow([data.timestamp,data.qr_id,data.item_name,data.category,data.quantity,data.unit,data.employee_name||data.employee,data.employee_id||"",data.note||"",data.action]);const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.qr_id)){const cur=Number(vals[i][3]);let next=cur;if(data.action==="withdraw")next=Math.max(0,cur-Number(data.quantity));else next=cur+Number(data.quantity);iS.getRange(i+1,4).setValue(next);break;}}}else if(data.action==="delete_item"){const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.id)){iS.deleteRow(i+1);break;}}}return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);}
-function getItems(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];const h=rows[0].map(c=>String(c).trim().toLowerCase());const col=k=>h.indexOf(k);return rows.slice(1).map(r=>({id:String(r[col('id')]||''),name:String(r[col('name')]||''),cat:String(r[col('category')]||r[col('cat')]||''),stock:Number(r[col('stock')])||0,unit:String(r[col('unit')]||'อัน'),min:Number(r[col('min')])||0,icon:String(r[col('icon')]||'📦')})).filter(it=>it.id);}
-function getLogs(sheet){const rows=sheet.getDataRange().getValues();if(rows.length<2)return[];return rows.slice(1).reverse().slice(0,100).map(r=>{let qty=parseInt(r[4]);if(isNaN(qty))qty=0;return{timestamp:String(r[0]||''),qr_id:String(r[1]||''),item_name:String(r[2]||''),category:String(r[3]||''),quantity:qty,unit:String(r[5]||''),employee:String(r[6]||''),employee_id:String(r[7]||''),note:String(r[8]||''),action:String(r[9]||'withdraw')};});}`;
+  const GAS = document.getElementById('gas-template').textContent;
   return(
     <>
       <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:14,boxShadow:'var(--shadow-sm)'}}>
@@ -796,18 +830,48 @@ function getLogs(sheet){const rows=sheet.getDataRange().getValues();if(rows.leng
           </button>
         </div>
       </div>
-      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:10,boxShadow:'var(--shadow-sm)',marginBottom:16}}>
-        <div style={{fontFamily:"'Outfit',sans-serif",fontWeight:700,fontSize:14,color:'var(--txt)',marginBottom:12}}>วิธีตั้งค่า Apps Script</div>
-        {[{num:'1',title:'อัปเดต Apps Script',desc:'เข้าไปที่ Google Sheet → Extensions → Apps Script ลบโค้ดเก่าทิ้ง แล้ววางโค้ดใหม่',action:<button onClick={()=>navigator.clipboard.writeText(GAS).then(()=>alert('Copy แล้ว ✓'))} style={{marginTop:8,padding:'8px 16px',borderRadius:100,border:'1.5px solid var(--teal-border)',background:'var(--teal-dim)',color:'var(--mid-teal)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:12,fontWeight:600,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:5}}><i className="ti ti-copy" style={{fontSize:13}}/> Copy โค้ด GAS</button>},{num:'2',title:'Deploy เป็น Web App',desc:'Deploy → New deployment → Web app\nExecute as: Me · Who has access: Anyone\nCopy URL มาวางในช่องด้านบน'}].map((step,i)=>(
-          <div key={i} style={{display:'flex',gap:12,padding:'14px 0',borderBottom:i<1?'1px solid var(--teal-border)':'none'}}>
-            <div style={{width:28,height:28,borderRadius:'50%',background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',color:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Space Mono',monospace",fontSize:12,flexShrink:0,marginTop:2,fontWeight:700}}>{step.num}</div>
-            <div style={{flex:1}}>
-              <div style={{fontSize:13,fontWeight:700,color:'var(--txt)',marginBottom:3}}>{step.title}</div>
-              <div style={{fontSize:12,color:'var(--txt2)',lineHeight:1.6,whiteSpace:'pre-line'}}>{step.desc}</div>
-              {step.action}
-            </div>
+      {/* LINE Messaging API Card */}
+      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:20,marginTop:10,boxShadow:'var(--shadow-sm)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
+          <div style={{width:36,height:36,borderRadius:12,background:'#06C755',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>💬</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:15,color:'var(--txt)'}}>LINE Messaging API</div>
+            <div style={{fontSize:11,color:'var(--txt3)',marginTop:1}}>แจ้งเตือนเข้ากลุ่มเมื่อมีการเบิก / คืน / เติม</div>
           </div>
-        ))}
+          <div style={{fontSize:11,color:'var(--txt3)',background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:100,padding:'3px 9px',flexShrink:0}}>ตั้งใน GAS</div>
+        </div>
+        {/* Step-by-step */}
+        <div style={{background:'var(--teal-dim)',border:'1px solid var(--teal-border)',borderRadius:16,padding:'14px 16px',marginTop:14}}>
+          <div style={{fontSize:12,fontWeight:700,color:'var(--txt)',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+            <i className="ti ti-list-numbers" style={{fontSize:14,color:'var(--mid-teal)'}}/> วิธีตั้งค่าทีละขั้นตอน
+          </div>
+          {[
+            {num:'1',title:'สร้าง LINE Official Account (ฟรี)',body:'ไปที่ manager.line.biz → กด "สร้างบัญชี" → กรอกข้อมูล → เลือกแผน Free',link:'https://manager.line.biz',linkLabel:'manager.line.biz'},
+            {num:'2',title:'เปิด Messaging API',body:'ใน LINE OA Manager → Settings → Messaging API → Enable → กรอกชื่อ Provider → Confirm'},
+            {num:'3',title:'คัดลอก Channel Access Token',body:'ไปที่ developers.line.biz → เลือก Channel → Messaging API tab → Issue "Channel access token (long-lived)" → Copy',link:'https://developers.line.biz/console',linkLabel:'developers.line.biz'},
+            {num:'4',title:'เพิ่ม Bot เข้ากลุ่มไลน์',body:'เปิดกลุ่มไลน์ที่ต้องการ → กด + เพิ่มสมาชิก → ค้นหา LINE OA ด้วยชื่อหรือ QR Code แล้วเพิ่มเข้ากลุ่ม'},
+            {num:'5',title:'หา Group ID',body:'ใน LINE Developers Console → ไปที่ Messaging API Settings → Webhook URL → วาง URL จาก webhook.site\nส่งข้อความในกลุ่ม → ดู groupId ใน webhook log แล้ว Copy'},
+            {num:'6',title:'วาง Token + Group ID ใน GAS',body:'เปิด GAS → วาง Channel Access Token ใส่ LINE_TOKEN\nวาง Group ID ใส่ LINE_GROUP → กด Save → Deploy ใหม่'},
+          ].map((s,i,arr)=>(
+            <div key={i} style={{display:'flex',gap:10,paddingBottom:i<arr.length-1?12:0,marginBottom:i<arr.length-1?12:0,borderBottom:i<arr.length-1?'1px dashed var(--teal-border)':'none'}}>
+              <div style={{width:22,height:22,borderRadius:'50%',background:'var(--teal)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,flexShrink:0,marginTop:1,fontFamily:"'Space Mono',monospace"}}>{s.num}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:700,color:'var(--txt)',marginBottom:3}}>{s.title}</div>
+                <div style={{fontSize:11,color:'var(--txt2)',lineHeight:1.6,whiteSpace:'pre-line'}}>{s.body}</div>
+                {s.link&&<a href={s.link} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:3,marginTop:5,padding:'4px 10px',borderRadius:100,background:'#06C755',color:'#fff',fontSize:11,fontWeight:700,textDecoration:'none'}}>
+                  <i className="ti ti-external-link" style={{fontSize:11}}/> {s.linkLabel}
+                </a>}
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Copy GAS button */}
+        <button onClick={()=>navigator.clipboard.writeText(GAS).then(()=>alert('Copy โค้ด GAS แล้ว ✓\n\nนำไปวางใน Google Apps Script แทนโค้ดเดิม แล้ว Deploy ใหม่'))} style={{width:'100%',marginTop:12,padding:'11px 16px',borderRadius:14,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:7}}>
+          <i className="ti ti-copy" style={{fontSize:15}}/> Copy โค้ด GAS ใหม่ (รองรับ LINE แล้ว)
+        </button>
+        <div style={{marginTop:10,padding:'10px 14px',borderRadius:12,background:'#FFFBEC',border:'1px solid #FFE08A',fontSize:11,color:'#7A5500',lineHeight:1.6}}>
+          <strong>💡 หมายเหตุ:</strong> หลัง Copy โค้ดแล้ว ต้อง Deploy ใหม่เป็น <strong>New deployment</strong> เสมอ (ไม่ใช่ Update) เพื่อให้โค้ดใหม่มีผล
+        </div>
       </div>
     </>
   );
@@ -851,6 +915,7 @@ function StockScan(){
   async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
   function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
   async function gasPost(url,body){const res=await fetch(url,{method:'POST',body:JSON.stringify(body)});try{return JSON.parse(await res.text());}catch(e){return{status:'ok'};}}
+
   function applyResponseData(data){if(!data||!Array.isArray(data.items))throw new Error('No items');setItems(normalizeItems(data.items));setLogs(normalizeLogs(data.logs||[]));}
 
   async function syncData(){
