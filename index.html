@@ -320,7 +320,7 @@ function LogRow({l,items,showTime,isLast}){
 }
 
 /* ── TopBar ── */
-const STATUS_MAP={syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},ok:{color:'var(--teal)',text:'ข้อมูลตรงกัน ✓'},error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'}};
+const STATUS_MAP={syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},ok:{color:'var(--teal)',text:'Connected ✓'},error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'}};
 function TopBar({syncStatus,onSync,onOpenDirectory}){
   const s=STATUS_MAP[syncStatus]||STATUS_MAP.none;
   return(
