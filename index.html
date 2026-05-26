@@ -2245,6 +2245,8 @@ function StockScan(){
   const [setupUnlocked,setSetupUnlocked]=useState(false);
   const [isSyncing,setIsSyncing]=useState(false);
   const [syncStatus,setSyncStatus]=useState('none');
+  // authReady: true หลังจาก sync ครั้งแรกเสร็จ (หรือไม่มี GAS URL)
+  const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
   const [pinTarget,setPinTarget]=useState(null);
   const [showCamera,setShowCamera]=useState(false);
   const [showDirectory,setShowDirectory]=useState(false);
@@ -2268,8 +2270,22 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
   }
 
   // ── Auth guards ──
-  if(!loggedInEmp) return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
-  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} gasUrl={cfg.url} onAuthUpdate={handleAuthUpdate} onDone={()=>setNeedChangePw(false)}/>;
+  if(!loggedInEmp){
+    if(!authReady) return(
+      <div className="cin-wrap">
+        <div className="cin-bg"><div className="cin-bg-grad"/><div className="cin-orb cin-orb-1"/><div className="cin-orb cin-orb-2"/><CinParticles/><div className="cin-vignette"/></div>
+        <div style={{zIndex:5,textAlign:'center',color:'#fff'}}>
+          <div style={{fontSize:40,marginBottom:16}}>📦</div>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.4rem',fontWeight:800,letterSpacing:'1.5px',marginBottom:10}}>INET-IDC3</div>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,color:'rgba(255,255,255,0.7)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.9rem'}}>
+            <span style={{display:'inline-block',width:16,height:16,border:'2px solid rgba(9,209,199,0.8)',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.8s linear infinite'}}/>
+            กำลังโหลดข้อมูลจากระบบ...
+          </div>
+        </div>
+      </div>
+    );
+    return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
+  }  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} gasUrl={cfg.url} onAuthUpdate={handleAuthUpdate} onDone={()=>setNeedChangePw(false)}/>;
   function handleLogout(){if(!window.confirm('ต้องการออกจากระบบ?'))return;setLoggedInEmp(null);setNeedChangePw(false);setSetupUnlocked(false);setActivePage('home');}
 
   async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
@@ -2293,6 +2309,7 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
       }
       setSyncStatus('ok');ok=true;}catch(e2){}}
     if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
+    setAuthReady(true);
     setIsSyncing(false);
   }
 
