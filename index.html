@@ -2247,6 +2247,7 @@ function StockScan(){
   const [syncStatus,setSyncStatus]=useState('none');
   // authReady: true หลังจาก sync ครั้งแรกเสร็จ (หรือไม่มี GAS URL)
   const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
+  const [syncFailed,setSyncFailed]=useState(false);
   const [pinTarget,setPinTarget]=useState(null);
   const [showCamera,setShowCamera]=useState(false);
   const [showDirectory,setShowDirectory]=useState(false);
@@ -2274,14 +2275,28 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
     if(!authReady) return(
       <div className="cin-wrap">
         <div className="cin-bg"><div className="cin-bg-grad"/><div className="cin-orb cin-orb-1"/><div className="cin-orb cin-orb-2"/><CinParticles/><div className="cin-vignette"/></div>
-        <div style={{zIndex:5,textAlign:'center',color:'#fff'}}>
-          <div style={{fontSize:40,marginBottom:16}}>📦</div>
-          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.4rem',fontWeight:800,letterSpacing:'1.5px',marginBottom:10}}>INET-IDC3</div>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,color:'rgba(255,255,255,0.7)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.9rem'}}>
-            <span style={{display:'inline-block',width:16,height:16,border:'2px solid rgba(9,209,199,0.8)',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.8s linear infinite'}}/>
-            กำลังโหลดข้อมูลจากระบบ...
+        {syncFailed ? (
+          <div style={{zIndex:5,textAlign:'center',color:'#fff',padding:'0 32px'}}>
+            <div style={{fontSize:44,marginBottom:14}}>⚠️</div>
+            <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.3rem',fontWeight:800,marginBottom:8}}>เชื่อมต่อไม่ได้</div>
+            <div style={{color:'rgba(255,255,255,0.65)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.85rem',marginBottom:24,lineHeight:1.6}}>ไม่สามารถดึงข้อมูลจาก Server ได้{'\n'}กรุณาตรวจสอบสัญญาณอินเทอร์เน็ต</div>
+            <button onClick={()=>{setSyncFailed(false);syncData();}} style={{
+              padding:'13px 32px',borderRadius:14,border:'none',
+              background:'linear-gradient(135deg,rgba(255,255,255,0.95),rgba(220,248,246,0.95))',
+              color:'#0C5060',fontFamily:"'Prompt',sans-serif",fontWeight:700,fontSize:'1rem',
+              cursor:'pointer',boxShadow:'0 8px 24px rgba(0,0,0,0.2)',
+            }}>🔄 ลองใหม่</button>
           </div>
-        </div>
+        ) : (
+          <div style={{zIndex:5,textAlign:'center',color:'#fff'}}>
+            <div style={{fontSize:40,marginBottom:16}}>📦</div>
+            <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.4rem',fontWeight:800,letterSpacing:'1.5px',marginBottom:10}}>INET-IDC3</div>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,color:'rgba(255,255,255,0.7)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.9rem'}}>
+              <span style={{display:'inline-block',width:16,height:16,border:'2px solid rgba(9,209,199,0.8)',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.8s linear infinite'}}/>
+              กำลังโหลดข้อมูลจากระบบ...
+            </div>
+          </div>
+        )}
       </div>
     );
     return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
@@ -2308,8 +2323,15 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
         setAuthData(prev=>{const merged={...prev,...d.auth};saveAuthCache(merged);return merged;});
       }
       setSyncStatus('ok');ok=true;}catch(e2){}}
-    if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
-    setAuthReady(true);
+    if(!ok){
+      setSyncStatus('error');
+      // ถ้ายังไม่เคย sync สำเร็จเลย (เครื่องใหม่) → ให้แสดงหน้า retry แทน login
+      if(!authReady) setSyncFailed(true);
+      else showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');
+    } else {
+      setSyncFailed(false);
+      setAuthReady(true);
+    }
     setIsSyncing(false);
   }
 
