@@ -1056,7 +1056,7 @@ function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;
 function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
 const SECURE_PIN="240739";
-const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbwF0BWM38e0QCiEaHUXoJv96VWU-bWcwgWzrxtg-KbcY5jUX_PX1lb-RoIJZZPkeeA/exec";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbx21Q12dXKy-poXtyqrSmdWCqcIHkXXHSOOKoxja8Qo3ZmrYGP_O7CEm9zg-I3mhHBJ/exec";
 
 /* ── EmpMiniAvatar ── */
 function EmpMiniAvatar({emp,size=32,radius=9}){
