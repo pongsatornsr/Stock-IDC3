@@ -2248,6 +2248,7 @@ function StockScan(){
   // authReady: true หลังจาก sync ครั้งแรกเสร็จ (หรือไม่มี GAS URL)
   const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
   const [syncFailed,setSyncFailed]=useState(false);
+    const [authSynced, setAuthSynced] = useState(false);
   const [pinTarget,setPinTarget]=useState(null);
   const [showCamera,setShowCamera]=useState(false);
   const [showDirectory,setShowDirectory]=useState(false);
@@ -2299,6 +2300,10 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
         )}
       </div>
     );
+if (!authSynced && cfg.url) {
+  // ยังอยู่หน้า loading อยู่แล้ว (จาก !authReady block ด้านบน)
+  return null;
+}
     return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
   }  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} gasUrl={cfg.url} onAuthUpdate={handleAuthUpdate} onDone={()=>setNeedChangePw(false)}/>;
   function handleLogout(){if(!window.confirm('ต้องการออกจากระบบ?'))return;setLoggedInEmp(null);setNeedChangePw(false);setSetupUnlocked(false);setActivePage('home');}
@@ -2331,6 +2336,7 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
     } else {
       setSyncFailed(false);
       setAuthReady(true);
+            setAuthSynced(true);
     }
     setIsSyncing(false);
   }
