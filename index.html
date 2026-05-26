@@ -2245,10 +2245,14 @@ function StockScan(){
   const [setupUnlocked,setSetupUnlocked]=useState(false);
   const [isSyncing,setIsSyncing]=useState(false);
   const [syncStatus,setSyncStatus]=useState('none');
-  // authReady: true หลังจาก sync ครั้งแรกเสร็จ (หรือไม่มี GAS URL)
+  // authReady: ใช้แค่ backward compat — ใช้ authSynced แทนแล้ว
   const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
   const [syncFailed,setSyncFailed]=useState(false);
-    const [authSynced, setAuthSynced] = useState(false);
+  // authSynced: true เมื่อ sync GAS สำเร็จ หรือมี cache อยู่แล้ว (เครื่องเคยใช้งาน)
+  const [authSynced, setAuthSynced] = useState(()=>{
+    const cached=loadAuthCache();
+    return Object.keys(cached).length>0 || (!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
+  });
   const [pinTarget,setPinTarget]=useState(null);
   const [showCamera,setShowCamera]=useState(false);
   const [showDirectory,setShowDirectory]=useState(false);
@@ -2272,44 +2276,51 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
   }
 
   // ── Auth guards ──
+  // authSynced = sync สำเร็จอย่างน้อย 1 ครั้ง (authData จาก GAS พร้อมแล้ว)
+  // syncFailed = sync ล้มเหลวและยังไม่เคย sync สำเร็จเลย (เครื่องใหม่ / ไม่มีแคช)
+  // ถ้า sync ล้มเหลวแต่มีแคชใน localStorage → ให้ข้ามไปหน้า Login ได้เลย (offline mode)
+  const hasCachedAuth = Object.keys(authData).length > 0;
   if(!loggedInEmp){
-    if(!authReady) return(
-      <div className="cin-wrap">
-        <div className="cin-bg"><div className="cin-bg-grad"/><div className="cin-orb cin-orb-1"/><div className="cin-orb cin-orb-2"/><CinParticles/><div className="cin-vignette"/></div>
-        {syncFailed ? (
-          <div style={{zIndex:5,textAlign:'center',color:'#fff',padding:'0 32px'}}>
-            <div style={{fontSize:44,marginBottom:14}}>⚠️</div>
-            <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.3rem',fontWeight:800,marginBottom:8}}>เชื่อมต่อไม่ได้</div>
-            <div style={{color:'rgba(255,255,255,0.65)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.85rem',marginBottom:24,lineHeight:1.6}}>ไม่สามารถดึงข้อมูลจาก Server ได้{'\n'}กรุณาตรวจสอบสัญญาณอินเทอร์เน็ต</div>
-            <button onClick={()=>{setSyncFailed(false);syncData();}} style={{
-              padding:'13px 32px',borderRadius:14,border:'none',
-              background:'linear-gradient(135deg,rgba(255,255,255,0.95),rgba(220,248,246,0.95))',
-              color:'#0C5060',fontFamily:"'Prompt',sans-serif",fontWeight:700,fontSize:'1rem',
-              cursor:'pointer',boxShadow:'0 8px 24px rgba(0,0,0,0.2)',
-            }}>🔄 ลองใหม่</button>
+    if(!authSynced){
+      // ถ้า sync fail แต่มี auth cache อยู่ → ไม่ต้องรอ ไปหน้า Login เลย
+      if(syncFailed && hasCachedAuth){
+        // fall through ไปหน้า Login ด้านล่าง
+      } else {
+        return(
+          <div className="cin-wrap">
+            <div className="cin-bg"><div className="cin-bg-grad"/><div className="cin-orb cin-orb-1"/><div className="cin-orb cin-orb-2"/><CinParticles/><div className="cin-vignette"/></div>
+            {syncFailed ? (
+              <div style={{zIndex:5,textAlign:'center',color:'#fff',padding:'0 32px'}}>
+                <div style={{fontSize:44,marginBottom:14}}>⚠️</div>
+                <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.3rem',fontWeight:800,marginBottom:8}}>เชื่อมต่อไม่ได้</div>
+                <div style={{color:'rgba(255,255,255,0.65)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.85rem',marginBottom:24,lineHeight:1.6}}>ไม่สามารถดึงข้อมูลจาก Server ได้{'\n'}กรุณาตรวจสอบสัญญาณอินเทอร์เน็ต</div>
+                <button onClick={()=>{setSyncFailed(false);syncData();}} style={{
+                  padding:'13px 32px',borderRadius:14,border:'none',
+                  background:'linear-gradient(135deg,rgba(255,255,255,0.95),rgba(220,248,246,0.95))',
+                  color:'#0C5060',fontFamily:"'Prompt',sans-serif",fontWeight:700,fontSize:'1rem',
+                  cursor:'pointer',boxShadow:'0 8px 24px rgba(0,0,0,0.2)',
+                }}>🔄 ลองใหม่</button>
+              </div>
+            ) : (
+              <div style={{zIndex:5,textAlign:'center',color:'#fff'}}>
+                <div style={{fontSize:40,marginBottom:16}}>📦</div>
+                <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.4rem',fontWeight:800,letterSpacing:'1.5px',marginBottom:10}}>INET-IDC3</div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,color:'rgba(255,255,255,0.7)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.9rem'}}>
+                  <span style={{display:'inline-block',width:16,height:16,border:'2px solid rgba(9,209,199,0.8)',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.8s linear infinite'}}/>
+                  กำลังโหลดข้อมูลจากระบบ...
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div style={{zIndex:5,textAlign:'center',color:'#fff'}}>
-            <div style={{fontSize:40,marginBottom:16}}>📦</div>
-            <div style={{fontFamily:"'Outfit',sans-serif",fontSize:'1.4rem',fontWeight:800,letterSpacing:'1.5px',marginBottom:10}}>INET-IDC3</div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,color:'rgba(255,255,255,0.7)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:'0.9rem'}}>
-              <span style={{display:'inline-block',width:16,height:16,border:'2px solid rgba(9,209,199,0.8)',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.8s linear infinite'}}/>
-              กำลังโหลดข้อมูลจากระบบ...
-            </div>
-          </div>
-        )}
-      </div>
-    );
-if (!authSynced && cfg.url) {
-  // ยังอยู่หน้า loading อยู่แล้ว (จาก !authReady block ด้านบน)
-  return null;
-}
+        );
+      }
+    }
     return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
   }  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} gasUrl={cfg.url} onAuthUpdate={handleAuthUpdate} onDone={()=>setNeedChangePw(false)}/>;
   function handleLogout(){if(!window.confirm('ต้องการออกจากระบบ?'))return;setLoggedInEmp(null);setNeedChangePw(false);setSetupUnlocked(false);setActivePage('home');}
 
-  async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
-  function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
+  async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow',mode:'cors'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
+  function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),25000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
   async function gasPost(url,body){const res=await fetch(url,{method:'POST',body:JSON.stringify(body)});try{return JSON.parse(await res.text());}catch(e){return{status:'ok'};}}
 
   function applyResponseData(data){if(!data||!Array.isArray(data.items))throw new Error('No items');setItems(normalizeItems(data.items));setLogs(normalizeLogs(data.logs||[]));}
@@ -2330,13 +2341,13 @@ if (!authSynced && cfg.url) {
       setSyncStatus('ok');ok=true;}catch(e2){}}
     if(!ok){
       setSyncStatus('error');
-      // ถ้ายังไม่เคย sync สำเร็จเลย (เครื่องใหม่) → ให้แสดงหน้า retry แทน login
-      if(!authReady) setSyncFailed(true);
+      // ถ้ายังไม่เคย sync สำเร็จเลย → แสดงหน้า retry
+      if(!authSynced) setSyncFailed(true);
       else showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');
     } else {
       setSyncFailed(false);
       setAuthReady(true);
-            setAuthSynced(true);
+      setAuthSynced(true);
     }
     setIsSyncing(false);
   }
