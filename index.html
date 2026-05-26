@@ -945,8 +945,28 @@ function sendLine(msg) {
   } catch(e) { Logger.log("LINE error: " + e); }
 }
 
-function doGet(e){const ss=SpreadsheetApp.getActiveSpreadsheet();let iS=ss.getSheetByName("Items"),lS=ss.getSheetByName("Logs");if(!iS){iS=ss.insertSheet("Items");iS.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]);}if(!lS){lS=ss.insertSheet("Logs");lS.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Employee_ID","Note","Action"]);}const payload=JSON.stringify({items:getItems(iS),logs:getLogs(lS)});const cb=e&&e.parameter&&e.parameter.callback;if(cb)return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);}
-function doPost(e){const ss=SpreadsheetApp.getActiveSpreadsheet();const iS=ss.getSheetByName("Items")||ss.insertSheet("Items");const lS=ss.getSheetByName("Logs")||ss.insertSheet("Logs");const data=JSON.parse(e.postData.contents);if(data.action==="add_items"){data.items.forEach(it=>iS.appendRow([it.id,it.name,it.cat,it.stock,it.unit,it.min,it.icon]));}else if(["withdraw","return","restock"].includes(data.action)){lS.appendRow([data.timestamp,data.qr_id,data.item_name,data.category,data.quantity,data.unit,data.employee_name||data.employee,data.employee_id||"",data.note||"",data.action]);const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.qr_id)){const cur=Number(vals[i][3]);let next=cur;if(data.action==="withdraw")next=Math.max(0,cur-Number(data.quantity));else next=cur+Number(data.quantity);iS.getRange(i+1,4).setValue(next);break;}}
+function doGet(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var iS=ss.getSheetByName("Items"),lS=ss.getSheetByName("Logs"),aS=ss.getSheetByName("Auth");
+  if(!iS){iS=ss.insertSheet("Items");iS.appendRow(["ID","Name","Category","Stock","Unit","Min","Icon"]);}
+  if(!lS){lS=ss.insertSheet("Logs");lS.appendRow(["Timestamp","QR_ID","Item_Name","Category","Quantity","Unit","Employee","Employee_ID","Note","Action"]);}
+  if(!aS){aS=ss.insertSheet("Auth");aS.appendRow(["Employee_ID","Hash","Changed","UpdatedAt"]);}
+  var authObj={};
+  var aVals=aS.getDataRange().getValues();
+  for(var i=1;i<aVals.length;i++){
+    if(aVals[i][0])authObj[String(aVals[i][0])]={hash:String(aVals[i][1]),changed:aVals[i][2]===true||aVals[i][2]==='TRUE'||aVals[i][2]===1,updatedAt:String(aVals[i][3]||'')};
+  }
+  var payload=JSON.stringify({items:getItems(iS),logs:getLogs(lS),auth:authObj});
+  var cb=e&&e.parameter&&e.parameter.callback;
+  if(cb)return ContentService.createTextOutput(cb+"("+payload+")").setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(payload).setMimeType(ContentService.MimeType.JSON);
+}
+function doPost(e){const ss=SpreadsheetApp.getActiveSpreadsheet();const iS=ss.getSheetByName("Items")||ss.insertSheet("Items");const lS=ss.getSheetByName("Logs")||ss.insertSheet("Logs");const aS=ss.getSheetByName("Auth")||(()=>{var s=ss.insertSheet("Auth");s.appendRow(["Employee_ID","Hash","Changed","UpdatedAt"]);return s;})();const data=JSON.parse(e.postData.contents);
+  if(data.action==="set_password"){
+    var aVals=aS.getDataRange().getValues();var found=false;
+    for(var i=1;i<aVals.length;i++){if(String(aVals[i][0])===String(data.employee_id)){aS.getRange(i+1,2,1,3).setValues([[data.hash,true,data.updatedAt||new Date().toISOString()]]);found=true;break;}}
+    if(!found)aS.appendRow([data.employee_id,data.hash,true,data.updatedAt||new Date().toISOString()]);
+  }else if(data.action==="add_items"){data.items.forEach(it=>iS.appendRow([it.id,it.name,it.cat,it.stock,it.unit,it.min,it.icon]));}else if(["withdraw","return","restock"].includes(data.action)){lS.appendRow([data.timestamp,data.qr_id,data.item_name,data.category,data.quantity,data.unit,data.employee_name||data.employee,data.employee_id||"",data.note||"",data.action]);const vals=iS.getDataRange().getValues();for(let i=1;i<vals.length;i++){if(String(vals[i][0])===String(data.qr_id)){const cur=Number(vals[i][3]);let next=cur;if(data.action==="withdraw")next=Math.max(0,cur-Number(data.quantity));else next=cur+Number(data.quantity);iS.getRange(i+1,4).setValue(next);break;}}
   var icon=data.action==="withdraw"?"📤":data.action==="return"?"📥":"📦";
   var label=data.action==="withdraw"?"เบิกของ":data.action==="return"?"คืนของ":"เติม Stock";
   var d=new Date();
@@ -1036,7 +1056,7 @@ function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;
 function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
 const SECURE_PIN="240739";
-const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbw-0-qcSU_6ElpPbPASZhWYC2NF9hBBBHBrh48jG9KKfvv4eJfwvhoMLkWda95T1IsS/exec";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbwF0BWM38e0QCiEaHUXoJv96VWU-bWcwgWzrxtg-KbcY5jUX_PX1lb-RoIJZZPkeeA/exec";
 
 /* ── EmpMiniAvatar ── */
 function EmpMiniAvatar({emp,size=32,radius=9}){
@@ -1342,9 +1362,33 @@ function TopBar({syncStatus,onSync,onOpenDirectory,loggedInEmp,onLogout}){
   );
 }
 
-/* ── Auth Helpers ── */
-function loadAuth(){try{return JSON.parse(localStorage.getItem('ss2_auth'))||{};}catch(e){return{};}}
-function saveAuth(data){localStorage.setItem('ss2_auth',JSON.stringify(data));}
+/* ══════════════════════════════════════════════════════
+   AUTH SYSTEM v3 — GAS-backed persistent passwords
+   ─────────────────────────────────────────────────────
+   รหัสผ่านเริ่มต้น = ตัดตัวอักษรออกจาก ID
+     OD1162769  → 1162769
+     20085      → 20085
+     671166     → 671166
+   บังคับเปลี่ยนครั้งแรก → เก็บใน GAS Sheet "Auth"
+   ── sync กลับมาทุกครั้งที่เปิด App ──────────────────
+══════════════════════════════════════════════════════ */
+
+function getDefaultPassword(empId){
+  // ตัดตัวอักษร (a-z, A-Z) ออกทั้งหมด เหลือแต่ตัวเลข
+  return empId.replace(/[A-Za-z]/g,'');
+}
+
+/* Auth state อยู่ใน React context — ไม่ใช้ localStorage เป็น source of truth
+   แต่ยัง cache ไว้ใน localStorage เป็น fallback ระหว่างรอ sync */
+function loadAuthCache(){try{return JSON.parse(localStorage.getItem('ss2_auth_v3'))||{};}catch(e){return{};}}
+function saveAuthCache(data){try{localStorage.setItem('ss2_auth_v3',JSON.stringify(data));}catch(e){}}
+
+/* Simple hash (FNV-1a 32bit) — ไม่ส่ง plaintext ไป sheet */
+function hashPin(pin){
+  let h=2166136261;
+  for(let i=0;i<pin.length;i++){h^=pin.charCodeAt(i);h=(h*16777619)>>>0;}
+  return h.toString(16).padStart(8,'0');
+}
 
 /* ── Cinematic Particles ── */
 function CinParticles(){
@@ -1372,7 +1416,7 @@ function CinParticles(){
 }
 
 /* ── Login Screen ── */
-function LoginScreen({onLogin}){
+function LoginScreen({onLogin, authData, isSyncing}){
   const [username,setUsername]=useState('');
   const [password,setPassword]=useState('');
   const [err,setErr]=useState('');
@@ -1383,13 +1427,24 @@ function LoginScreen({onLogin}){
     setErr('');
     const emp=EMPLOYEES.find(e=>e.id===username.trim());
     if(!emp){setErr('ไม่พบรหัสพนักงานนี้ในระบบ');triggerShake();return;}
-    const auth=loadAuth();
-    const storedPw=auth[emp.id]?.password;
-    const correctPw=storedPw||emp.id;
-    const isFirst=!storedPw;
-    if(password!==correctPw){setErr('รหัสผ่านไม่ถูกต้อง');triggerShake();return;}
+    const empId=emp.id;
+    const record=authData[empId];
+    const isFirstLogin=!record||!record.changed;
+    if(isFirstLogin){
+      // ครั้งแรก: password = ส่วนตัวเลขของ ID
+      const defaultPw=getDefaultPassword(empId);
+      if(password!==defaultPw){
+        setErr(`รหัสผ่านไม่ถูกต้อง\n(ครั้งแรก: ใช้ตัวเลขจากรหัสพนักงาน)`);
+        triggerShake();return;
+      }
+    } else {
+      // เคยตั้งรหัสแล้ว: เปรียบ hash
+      if(hashPin(password)!==record.hash){
+        setErr('รหัสผ่านไม่ถูกต้อง');triggerShake();return;
+      }
+    }
     setLoading(true);
-    setTimeout(()=>onLogin(emp,isFirst),400);
+    setTimeout(()=>onLogin(emp,isFirstLogin),400);
   }
   const inputBase={
     width:'100%',padding:'13px 16px',
@@ -1499,7 +1554,7 @@ function LoginScreen({onLogin}){
           <button
             className="cin-login-btn"
             onClick={handleLogin}
-            disabled={loading}
+            disabled={loading|| isSyncing}
             style={{
               width:'100%',padding:'15px',border:'none',borderRadius:14,
               background: loading
@@ -1518,13 +1573,15 @@ function LoginScreen({onLogin}){
             onTouchStart={e=>{if(!loading)e.currentTarget.style.transform='scale(0.97)';}}
             onTouchEnd={e=>{e.currentTarget.style.transform='scale(1)';}}
           >
-            {loading
-              ? <span style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-                  <span style={{display:'inline-block',width:14,height:14,border:'2px solid #0C5060',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.7s linear infinite'}}/>
-                  กำลังเข้าสู่ระบบ...
-                </span>
-              : 'เข้าสู่ระบบ →'
-            }
+{isSyncing 
+  ? 'กำลังเชื่อมต่อฐานข้อมูล...' 
+  : loading
+  ? <span style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+      <span style={{display:'inline-block',width:14,height:14,border:'2px solid #0C5060',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.7s linear infinite'}}/>
+      กำลังเข้าสู่ระบบ...
+    </span>
+  : 'เข้าสู่ระบบ →'
+}
           </button>
         </div>
 
@@ -1532,7 +1589,7 @@ function LoginScreen({onLogin}){
         <div className="cin-hint" style={{
           color:'rgba(255,255,255,0.45)',fontSize:'0.68rem',textAlign:'center',
           marginTop:18,fontFamily:"'Noto Sans Thai',sans-serif",letterSpacing:'0.3px',
-        }}>ครั้งแรก: รหัสผ่านคือรหัสพนักงานของคุณ</div>
+        }}>ครั้งแรก: รหัสผ่านคือตัวเลขจากรหัสพนักงาน เช่น OD1100000 → 1100000</div>
       </div>
 
       {/* Footer bar */}
@@ -1554,16 +1611,41 @@ function LoginScreen({onLogin}){
 }
 
 /* ── Change Password Screen ── */
-function ChangePasswordScreen({emp,onDone}){
+function ChangePasswordScreen({emp, onDone, gasUrl, onAuthUpdate}){
   const [step,setStep]=useState('new');
   const [newPin,setNewPin]=useState('');
   const [confirmPin,setConfirmPin]=useState('');
   const [doShakeNow,setDoShakeNow]=useState(false);
   const [err,setErr]=useState('');
+  const [saving,setSaving]=useState(false);
   const current=step==='new'?newPin:confirmPin;
   const setCurrent=step==='new'?setNewPin:setConfirmPin;
   function triggerShake(){setDoShakeNow(true);setTimeout(()=>setDoShakeNow(false),500);}
+
+  async function saveNewPassword(pin){
+    setSaving(true);
+    const hash=hashPin(pin);
+    const record={hash,changed:true,updatedAt:new Date().toISOString()};
+    // 1) อัป cache ในเครื่องก่อน (ใช้ได้ทันที)
+    const cache=loadAuthCache();
+    cache[emp.id]=record;
+    saveAuthCache(cache);
+    onAuthUpdate(emp.id,record);
+    // 2) ส่งไป GAS Sheet (ถ้ามี URL)
+    if(gasUrl){
+      try{
+        await fetch(gasUrl,{
+          method:'POST',
+          body:JSON.stringify({action:'set_password',employee_id:emp.id,hash,updatedAt:record.updatedAt})
+        });
+      }catch(e){/* network error — cache ยังใช้ได้ */}
+    }
+    setSaving(false);
+    onDone();
+  }
+
   function handleKey(k){
+    if(saving)return;
     if(k==='del'){setCurrent(p=>p.slice(0,-1));return;}
     if(current.length>=6)return;
     const next=current+k;
@@ -1573,7 +1655,7 @@ function ChangePasswordScreen({emp,onDone}){
         if(step==='new'){setStep('confirm');setErr('');}
         else{
           if(next!==newPin){setErr('รหัสผ่านไม่ตรงกัน ลองใหม่');setConfirmPin('');triggerShake();}
-          else{const auth=loadAuth();auth[emp.id]={password:next,changed:true};saveAuth(auth);onDone();}
+          else{saveNewPassword(next);}
         }
       },120);
     }
@@ -1588,6 +1670,7 @@ function ChangePasswordScreen({emp,onDone}){
         <div style={{textAlign:'center',fontSize:'0.8rem',color:'var(--txt3)',marginBottom:20,fontFamily:"'Noto Sans Thai',sans-serif",lineHeight:1.6}}>
           {step==='new'?<>สวัสดีคุณ <strong>{emp.displayName}</strong><br/>กรุณาตั้งรหัสผ่านตัวเลข 6 หลักใหม่</>:<>กรุณากรอกรหัสผ่านอีกครั้ง<br/>เพื่อยืนยัน</>}
         </div>
+        {saving&&<div style={{textAlign:'center',padding:'10px',color:'var(--teal)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,marginBottom:8}}>⏳ กำลังบันทึกรหัสผ่าน...</div>}
         {err&&<div style={{background:'#fff3f3',border:'1px solid #ffc8c8',borderRadius:10,padding:'8px 12px',color:'#cc3333',fontSize:'0.8rem',textAlign:'center',marginBottom:12,fontFamily:"'Noto Sans Thai',sans-serif"}}>{err}</div>}
         <div style={{textAlign:'center',fontSize:'0.72rem',fontWeight:600,color:'var(--txt3)',letterSpacing:'1px',textTransform:'uppercase',marginBottom:14,fontFamily:"'Noto Sans Thai',sans-serif"}}>{step==='new'?'กรอกรหัสผ่านใหม่':'ยืนยันรหัสผ่าน'}</div>
         <div style={{display:'flex',gap:10,justifyContent:'center',marginBottom:20}}>
@@ -1600,10 +1683,14 @@ function ChangePasswordScreen({emp,onDone}){
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,maxWidth:260,margin:'0 auto'}}>
           {keys.map((k,i)=>(
             k==='empty'?<div key={i}/>:
-            <button key={i} onClick={()=>handleKey(k)} style={{height:52,borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt)',fontFamily:"'Space Mono',monospace",fontSize:'1.2rem',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'0.15s'}}>
+            <button key={i} onClick={()=>handleKey(k)} disabled={saving} style={{height:52,borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt)',fontFamily:"'Space Mono',monospace",fontSize:'1.2rem',fontWeight:700,cursor:saving?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'0.15s',opacity:saving?0.5:1}}>
               {k==='del'?<i className="ti ti-backspace"/>:k}
             </button>
           ))}
+        </div>
+        {/* Info note */}
+        <div style={{marginTop:16,padding:'8px 12px',borderRadius:10,background:'var(--teal-dim)',border:'1px solid var(--teal-border)',fontSize:11,color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",lineHeight:1.5,textAlign:'center'}}>
+          🔒 รหัสผ่านจะถูกเข้ารหัสก่อนบันทึก<br/>และซิงค์กับระบบอัตโนมัติ
         </div>
       </div>
     </div>
@@ -2148,6 +2235,8 @@ function PageSetup({cfg,setupUnlocked,onSave,onSync,onLock,onUnlock}){
 function StockScan(){
   const [loggedInEmp,setLoggedInEmp]=useState(null);
   const [needChangePw,setNeedChangePw]=useState(false);
+  // authData: { [empId]: { hash, changed, updatedAt } }
+  const [authData,setAuthData]=useState(()=>loadAuthCache());
   const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
   const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
   const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
@@ -2163,14 +2252,24 @@ function StockScan(){
 
   const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
 
+  // sync authData cache whenever it changes
+  useEffect(()=>{saveAuthCache(authData);},[authData]);
   useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
   useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
   useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
-  useEffect(()=>{if(loggedInEmp)syncData();},[loggedInEmp]);
+  useEffect(()=>{ syncData(); }, [cfg.url]);
 
-  // ── Auth guards (after all hooks) ──
-  if(!loggedInEmp) return <LoginScreen onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
-  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} onDone={()=>setNeedChangePw(false)}/>;
+// เผื่อไว้ให้ซิงค์อีกครั้งตอนผู้ใช้ล็อคอินเสร็จ
+useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
+
+  // callback from ChangePasswordScreen to update local authData
+  function handleAuthUpdate(empId, record){
+    setAuthData(prev=>({...prev,[empId]:record}));
+  }
+
+  // ── Auth guards ──
+  if(!loggedInEmp) return <LoginScreen authData={authData} isSyncing={isSyncing} onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
+  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} gasUrl={cfg.url} onAuthUpdate={handleAuthUpdate} onDone={()=>setNeedChangePw(false)}/>;
   function handleLogout(){if(!window.confirm('ต้องการออกจากระบบ?'))return;setLoggedInEmp(null);setNeedChangePw(false);setSetupUnlocked(false);setActivePage('home');}
 
   async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
@@ -2182,7 +2281,17 @@ function StockScan(){
   async function syncData(){
     if(!cfg.url){setSyncStatus('none');return;}if(isSyncing)return;
     setIsSyncing(true);setSyncStatus('syncing');let ok=false;
-    try{const d=await fetchViaFetch(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e1){try{const d=await fetchViaJsonp(cfg.url);applyResponseData(d);setSyncStatus('ok');ok=true;}catch(e2){}}
+    try{const d=await fetchViaFetch(cfg.url);applyResponseData(d);
+      // merge auth records from GAS if present
+      if(d.auth&&typeof d.auth==='object'){
+        setAuthData(prev=>{const merged={...prev,...d.auth};saveAuthCache(merged);return merged;});
+      }
+      setSyncStatus('ok');ok=true;
+    }catch(e1){try{const d=await fetchViaJsonp(cfg.url);applyResponseData(d);
+      if(d.auth&&typeof d.auth==='object'){
+        setAuthData(prev=>{const merged={...prev,...d.auth};saveAuthCache(merged);return merged;});
+      }
+      setSyncStatus('ok');ok=true;}catch(e2){}}
     if(!ok){setSyncStatus('error');showToast('ซิงค์ไม่ได้ — ตรวจ GAS URL หรือเน็ต','#FF4D4D');}
     setIsSyncing(false);
   }
