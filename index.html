@@ -35,43 +35,895 @@
     @keyframes empUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
     @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.8}}
 
-    /* Employee Overlay */
+    /* ═══════════════════════════════════════
+       CINEMATIC LOGIN ANIMATIONS
+    ═══════════════════════════════════════ */
+    @keyframes cin-bg-reveal {
+      0%   { transform: scale(1.18); opacity:0; }
+      100% { transform: scale(1);    opacity:1; }
+    }
+    @keyframes cin-layer-drift {
+      0%   { transform: translateY(0px)   scale(1); }
+      50%  { transform: translateY(-14px) scale(1.03); }
+      100% { transform: translateY(0px)   scale(1); }
+    }
+    @keyframes cin-orb-float {
+      0%,100% { transform: translate(0,0)    scale(1); }
+      33%     { transform: translate(12px,-18px) scale(1.08); }
+      66%     { transform: translate(-10px,8px)  scale(0.95); }
+    }
+    @keyframes cin-orb-float2 {
+      0%,100% { transform: translate(0,0)     scale(1); }
+      40%     { transform: translate(-16px,10px) scale(1.06); }
+      70%     { transform: translate(8px,-12px)  scale(0.97); }
+    }
+    @keyframes cin-scanline {
+      0%   { top:0%; opacity:0; }
+      5%   { opacity:1; }
+      95%  { opacity:0.5; }
+      100% { top:100%; opacity:0; }
+    }
+    @keyframes cin-grid-in {
+      from { opacity:0; transform:perspective(600px) rotateX(12deg) scale(0.94); }
+      to   { opacity:1; transform:perspective(600px) rotateX(0deg)  scale(1); }
+    }
+    @keyframes cin-card-rise {
+      0%   { opacity:0; transform:translateY(40px) scale(0.94); filter:blur(6px); }
+      60%  { filter:blur(0px); }
+      100% { opacity:1; transform:translateY(0)    scale(1);    filter:blur(0px); }
+    }
+    @keyframes cin-logo-pop {
+      0%   { opacity:0; transform:scale(0.6) rotate(-8deg); filter:blur(4px); }
+      60%  { transform:scale(1.08) rotate(2deg); }
+      100% { opacity:1; transform:scale(1) rotate(0deg); filter:blur(0); }
+    }
+    @keyframes cin-title-slide {
+      0%   { opacity:0; transform:translateX(-24px) skewX(4deg); letter-spacing:6px; }
+      100% { opacity:1; transform:translateX(0)      skewX(0);    letter-spacing:1.5px; }
+    }
+    @keyframes cin-subtitle-fade {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:0.7; transform:translateY(0); }
+    }
+    @keyframes cin-field-in {
+      from { opacity:0; transform:translateX(-16px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+    @keyframes cin-btn-glow {
+      0%,100% { box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+      50%     { box-shadow: 0 8px 32px rgba(255,255,255,0.35), 0 0 0 3px rgba(255,255,255,0.12); }
+    }
+    @keyframes cin-particle {
+      0%   { transform:translateY(100vh) rotate(0deg);   opacity:0; }
+      10%  { opacity:0.6; }
+      90%  { opacity:0.2; }
+      100% { transform:translateY(-10vh) rotate(720deg); opacity:0; }
+    }
+    @keyframes cin-shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes cin-hint-blink {
+      0%,100% { opacity:0.45; }
+      50%     { opacity:0.85; }
+    }
+    @keyframes cin-vignette-in {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    @keyframes cin-noise {
+      0%,100% { transform:translate(0,0); }
+      10%  { transform:translate(-1%,-1%); }
+      30%  { transform:translate(1%, 0%); }
+      50%  { transform:translate(0%, 1%); }
+      70%  { transform:translate(-1%, 0%); }
+      90%  { transform:translate(1%,-1%); }
+    }
+
+    /* Login wrapper */
+    .cin-wrap {
+      position:fixed; inset:0; z-index:1000;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      overflow:hidden;
+      font-family:'Prompt',sans-serif;
+    }
+
+    /* Animated background layers */
+    .cin-bg {
+      position:absolute; inset:0;
+      animation: cin-bg-reveal 1.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .cin-bg-grad {
+      position:absolute; inset:0;
+      background: linear-gradient(160deg,#072D3A 0%,#0C5060 28%,#0E7A82 55%,#14A89A 78%,#2DD4BF 100%);
+    }
+    .cin-noise-layer {
+      position:absolute; inset:-20%;
+      width:140%; height:140%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity:0.04;
+      animation: cin-noise 8s steps(2) infinite;
+    }
+    /* Depth orbs */
+    .cin-orb {
+      position:absolute; border-radius:50%;
+      filter:blur(60px); pointer-events:none;
+    }
+    .cin-orb-1 {
+      width:320px; height:320px;
+      top:-80px; right:-80px;
+      background:radial-gradient(circle, rgba(9,209,199,0.35) 0%, transparent 70%);
+      animation: cin-orb-float 9s ease-in-out infinite;
+    }
+    .cin-orb-2 {
+      width:260px; height:260px;
+      bottom:-60px; left:-60px;
+      background:radial-gradient(circle, rgba(70,223,177,0.28) 0%, transparent 70%);
+      animation: cin-orb-float2 11s ease-in-out infinite;
+    }
+    .cin-orb-3 {
+      width:180px; height:180px;
+      top:38%; left:30%;
+      background:radial-gradient(circle, rgba(21,145,155,0.22) 0%, transparent 70%);
+      animation: cin-orb-float 13s ease-in-out infinite 2s;
+    }
+    /* Parallax depth grid */
+    .cin-grid {
+      position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(9,209,199,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(9,209,199,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform-origin: center bottom;
+      animation: cin-grid-in 1.8s cubic-bezier(0.22,1,0.36,1) 0.2s both,
+                 cin-layer-drift 20s ease-in-out infinite 2s;
+    }
+    /* Scanline sweep */
+    .cin-scanline {
+      position:absolute; left:0; right:0; top:0; height:2px;
+      background:linear-gradient(90deg, transparent 0%, rgba(9,209,199,0.6) 40%, rgba(70,223,177,0.8) 50%, rgba(9,209,199,0.6) 60%, transparent 100%);
+      box-shadow: 0 0 12px rgba(9,209,199,0.5), 0 0 30px rgba(9,209,199,0.2);
+      animation: cin-scanline 3.2s cubic-bezier(0.4,0,0.6,1) 0.6s 1 forwards;
+      pointer-events:none; z-index:10;
+    }
+    /* Floating particles */
+    .cin-particles {
+      position:absolute; inset:0; pointer-events:none; overflow:hidden;
+    }
+    .cin-pt {
+      position:absolute; border-radius:50%;
+      background:rgba(9,209,199,0.5);
+      animation: cin-particle linear infinite;
+    }
+    /* Vignette */
+    .cin-vignette {
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(4,20,30,0.55) 100%);
+      animation: cin-vignette-in 1.6s ease both;
+      pointer-events:none;
+    }
+    /* Card */
+    .cin-card {
+      position:relative; z-index:5;
+      background:rgba(255,255,255,0.10);
+      backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+      border:1px solid rgba(255,255,255,0.22);
+      border-radius:28px;
+      padding:36px 28px 32px;
+      width:calc(100% - 40px); max-width:380px;
+      box-shadow:
+        0 32px 72px rgba(4,25,40,0.45),
+        0 2px 0 rgba(255,255,255,0.15) inset,
+        0 -1px 0 rgba(0,0,0,0.2) inset;
+      animation: cin-card-rise 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s both;
+    }
+    /* Inner card shimmer border */
+    .cin-card::before {
+      content:'';
+      position:absolute; inset:-1px;
+      border-radius:29px;
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.3) 0%,
+        rgba(9,209,199,0.25) 30%,
+        rgba(255,255,255,0.05) 60%,
+        rgba(70,223,177,0.2) 100%);
+      background-size:200% auto;
+      animation: cin-shimmer 4s linear infinite 1.8s;
+      z-index:-1;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      padding:1px;
+    }
+    .cin-logo-wrap {
+      animation: cin-logo-pop 0.8s cubic-bezier(0.34,1.56,0.64,1) 1.0s both;
+    }
+    .cin-title {
+      animation: cin-title-slide 0.7s cubic-bezier(0.22,1,0.36,1) 1.3s both;
+    }
+    .cin-subtitle {
+      animation: cin-subtitle-fade 0.6s ease 1.6s both;
+    }
+    .cin-field-1 {
+      animation: cin-field-in 0.55s cubic-bezier(0.22,1,0.36,1) 1.85s both;
+    }
+    .cin-field-2 {
+      animation: cin-field-in 0.55s cubic-bezier(0.22,1,0.36,1) 2.05s both;
+    }
+    .cin-btn-wrap {
+      animation: cin-field-in 0.55s cubic-bezier(0.22,1,0.36,1) 2.25s both;
+    }
+    .cin-hint {
+      animation: cin-hint-blink 2.8s ease-in-out 2.6s infinite;
+    }
+    .cin-login-btn {
+      animation: cin-btn-glow 3s ease-in-out 3s infinite;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       EMPLOYEE OVERLAY — CINEMATIC SYSTEM
+       Parallax depth · Volumetric light · Smooth easing
+    ═══════════════════════════════════════════════════ */
+
+    /* ── Employee overlay open/close transition ── */
+    @keyframes emp-overlay-in {
+      0%   { opacity:0; transform:translateX(-50%) translateY(100%) scale(0.97); filter:blur(6px); }
+      55%  { filter:blur(0); }
+      100% { opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); }
+    }
+    @keyframes emp-bg-reveal {
+      0%   { transform: scale(1.12); opacity:0; }
+      100% { transform: scale(1);    opacity:1; }
+    }
+    @keyframes emp-orb-drift-a {
+      0%,100% { transform: translate(0,0)       scale(1);    }
+      33%     { transform: translate(18px,-22px) scale(1.10); }
+      66%     { transform: translate(-12px,14px) scale(0.94); }
+    }
+    @keyframes emp-orb-drift-b {
+      0%,100% { transform: translate(0,0)       scale(1);    }
+      40%     { transform: translate(-20px,16px) scale(1.08); }
+      70%     { transform: translate(14px,-10px) scale(0.96); }
+    }
+    @keyframes emp-orb-drift-c {
+      0%,100% { transform: translate(0,0)       scale(1);    }
+      50%     { transform: translate(10px,-18px) scale(1.05); }
+    }
+    @keyframes emp-scanline-sweep {
+      0%   { top:0%;   opacity:0; }
+      4%   { opacity:1; }
+      96%  { opacity:0.4; }
+      100% { top:100%; opacity:0; }
+    }
+    @keyframes emp-grid-in {
+      from { opacity:0; transform:perspective(500px) rotateX(10deg) scale(0.96); }
+      to   { opacity:1; transform:perspective(500px) rotateX(0deg)  scale(1); }
+    }
+    @keyframes emp-grid-drift {
+      0%,100% { transform: translateY(0px)   scale(1); }
+      50%     { transform: translateY(-12px) scale(1.02); }
+    }
+    @keyframes emp-noise {
+      0%,100% { transform:translate(0,0); }
+      20%  { transform:translate(-1%,-1%); }
+      40%  { transform:translate(1%, 0.5%); }
+      60%  { transform:translate(0%, 1%); }
+      80%  { transform:translate(-0.5%, 0%); }
+    }
+    @keyframes emp-topbar-in {
+      0%   { opacity:0; transform:translateY(-18px); filter:blur(4px); }
+      100% { opacity:1; transform:translateY(0); filter:blur(0); }
+    }
+    @keyframes emp-particle {
+      0%   { transform:translateY(100vh) rotate(0deg);   opacity:0; }
+      8%   { opacity:0.5; }
+      92%  { opacity:0.15; }
+      100% { transform:translateY(-10vh) rotate(540deg); opacity:0; }
+    }
+    @keyframes emp-shimmer-border {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes emp-vignette-in {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    @keyframes emp-card-wave {
+      0%   { opacity:0; transform: translateY(24px) scale(0.93); filter:blur(4px); }
+      55%  { filter:blur(0); }
+      100% { opacity:1; transform: translateY(0) scale(1); filter:blur(0); }
+    }
+    @keyframes emp-counter-glow {
+      0%,100% { box-shadow: 0 0 0 0 rgba(9,209,199,0); }
+      50%     { box-shadow: 0 0 12px 3px rgba(9,209,199,0.25); }
+    }
+    @keyframes emp-search-glow {
+      0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+      50%     { box-shadow: 0 4px 18px rgba(9,209,199,0.18); }
+    }
+    @keyframes emp-brand-dot-pulse {
+      0%,100% { transform:scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.8); }
+      50%     { transform:scale(1.2); box-shadow: 0 0 0 4px rgba(255,255,255,0); }
+    }
+
+    /* Employee Overlay — main shell */
     .emp-overlay{
-      position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(100%);
-      width:100%;max-width:390px;height:100%;
-      background:var(--emp-grad);
-      display:flex;flex-direction:column;
+      position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(100%);
+      width:100%; max-width:390px; height:100%;
+      background:transparent;
+      display:flex; flex-direction:column;
       z-index:400;
-      transition:transform 0.4s cubic-bezier(0.2,1,0.3,1);
+      overflow:hidden;
+      transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
     }
     .emp-overlay.open{transform:translateX(-50%) translateY(0);}
-    .emp-topbar{background:rgba(255,255,255,0.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--emp-border);flex-shrink:0;padding:env(safe-area-inset-top,0) 0 0;}
+    .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+    .emp-overlay.open .emp-cin-topbar-wrap { animation: emp-topbar-in 0.55s cubic-bezier(0.22,1,0.36,1) 0.25s both; opacity:0; }
+
+    /* ── Cinematic background layers (inside overlay) ── */
+    .emp-cin-bg {
+      position:absolute; inset:0; z-index:0; pointer-events:none;
+      overflow:hidden;
+    }
+    .emp-cin-grad {
+      position:absolute; inset:0;
+      background: var(--emp-grad);
+    }
+    /* Subtle noise texture */
+    .emp-cin-noise {
+      position:absolute; inset:-20%; width:140%; height:140%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity:0.035;
+      animation: emp-noise 10s steps(2) infinite;
+    }
+    /* Parallax depth grid */
+    .emp-cin-grid {
+      position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 44px 44px;
+      transform-origin: center bottom;
+      animation: emp-grid-in 1.6s cubic-bezier(0.22,1,0.36,1) 0.15s both,
+                 emp-grid-drift 22s ease-in-out infinite 2s;
+    }
+    /* Depth orbs */
+    .emp-cin-orb {
+      position:absolute; border-radius:50%;
+      filter:blur(55px); pointer-events:none;
+    }
+    .emp-cin-orb-1 {
+      width:340px; height:340px; top:-100px; right:-90px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(9,209,199,0.22) 40%, transparent 70%);
+      animation: emp-orb-drift-a 10s ease-in-out infinite;
+    }
+    .emp-cin-orb-2 {
+      width:280px; height:280px; bottom:-70px; left:-70px;
+      background: radial-gradient(circle, rgba(70,223,177,0.20) 0%, rgba(9,209,199,0.12) 50%, transparent 70%);
+      animation: emp-orb-drift-b 13s ease-in-out infinite;
+    }
+    .emp-cin-orb-3 {
+      width:200px; height:200px; top:40%; left:25%;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 65%);
+      animation: emp-orb-drift-c 16s ease-in-out infinite 1.5s;
+    }
+    /* Vignette */
+    .emp-cin-vignette {
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 35%, rgba(5,30,45,0.42) 100%);
+      animation: emp-vignette-in 1.2s ease both;
+    }
+    /* Scanline sweep on open */
+    .emp-cin-scanline {
+      position:absolute; left:0; right:0; top:0; height:2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 40%, rgba(9,209,199,0.85) 50%, rgba(255,255,255,0.55) 60%, transparent 100%);
+      box-shadow: 0 0 14px rgba(9,209,199,0.6), 0 0 28px rgba(9,209,199,0.2);
+      animation: emp-scanline-sweep 2.8s cubic-bezier(0.4,0,0.6,1) 0.3s 1 forwards;
+      z-index:10;
+    }
+    /* Floating particles */
+    .emp-cin-particles {
+      position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    }
+    .emp-cin-pt {
+      position:absolute; border-radius:50%;
+      background: rgba(255,255,255,0.55);
+      animation: emp-particle linear infinite;
+    }
+    /* Top shimmer line */
+    .emp-overlay::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:3px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.45) 25%,
+        rgba(9,209,199,0.80) 50%,
+        rgba(255,255,255,0.45) 75%,
+        transparent 100%);
+      background-size:200% auto;
+      animation: emp-shimmer-border 3.5s linear infinite 0.8s;
+      z-index:20;
+    }
+    /* Topbar glass — upgraded depth */
+    .emp-cin-topbar-wrap { position:relative; z-index:10; flex-shrink:0; }
+    .emp-topbar{
+      background:rgba(255,255,255,0.18);
+      backdrop-filter:blur(22px) saturate(160%);
+      -webkit-backdrop-filter:blur(22px) saturate(160%);
+      border-bottom:1px solid rgba(255,255,255,0.28);
+      flex-shrink:0;
+      padding:env(safe-area-inset-top,0) 0 0;
+      box-shadow: 0 4px 24px rgba(5,30,45,0.12);
+    }
     .emp-topbar-inner{padding:14px 16px 10px;}
     .emp-tb-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
     .emp-brand{display:flex;align-items:center;gap:7px;}
-    .emp-brand-dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 2s infinite;box-shadow:0 0 8px #fff;}
+    .emp-brand-dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:emp-brand-dot-pulse 2.2s ease-in-out infinite;box-shadow:0 0 8px #fff;}
     .emp-brand-name{color:var(--emp-dark);font-family:'Prompt',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:2px;}
     .emp-close-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.5);border:1px solid var(--emp-border);color:var(--emp-dark);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .emp-search-wrap{position:relative;}
-    .emp-search-wrap input{width:100%;padding:10px 14px 10px 38px;background:var(--emp-glass);border:1px solid var(--emp-border);border-radius:12px;color:var(--emp-dark);font-family:'Noto Sans Thai',sans-serif;font-size:0.85rem;outline:none;}
+    .emp-search-wrap input{
+      width:100%;padding:10px 14px 10px 38px;
+      background:rgba(255,255,255,0.20);
+      border:1px solid rgba(255,255,255,0.35);
+      border-radius:12px;color:var(--emp-dark);
+      font-family:'Noto Sans Thai',sans-serif;font-size:0.85rem;outline:none;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      transition:border-color 0.2s ease, background 0.2s ease, box-shadow 0.3s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 2px 8px rgba(5,30,45,0.08);
+    }
+    .emp-search-wrap input:focus {
+      border-color:rgba(255,255,255,0.65);
+      background:rgba(255,255,255,0.28);
+      box-shadow: 0 0 0 3px rgba(9,209,199,0.18), 0 4px 16px rgba(9,209,199,0.12);
+    }
     .emp-si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--emp-muted);pointer-events:none;font-size:14px;}
-    .emp-list{flex:1;overflow-y:auto;padding:10px 14px 60px;scrollbar-width:none;}
-    .emp-list::-webkit-scrollbar{display:none;}
-    .emp-card{background:var(--emp-glass);border:1px solid var(--emp-border);border-radius:16px;margin-bottom:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;animation:empUp 0.3s ease both;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform 0.15s;}
-    .emp-card:active{transform:scale(0.98);}
-    .emp-avatar{width:52px;height:52px;border-radius:14px;overflow:hidden;border:2px solid #fff;flex-shrink:0;background:rgba(255,255,255,0.5);position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-    .emp-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 15%;display:block;}
+    
+    /* Filter Bar — enhanced depth */
+    .emp-fbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.08); }
+    .emp-fbar::-webkit-scrollbar { display: none; }
+    .emp-fb { padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.18); font-size: 0.75rem; font-weight: 600; color: var(--emp-dark); white-space: nowrap; cursor: pointer; transition: background 0.22s ease, border-color 0.22s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .emp-fb:active { transform: scale(0.93); }
+    .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); box-shadow: 0 4px 14px rgba(35,52,70,0.28), 0 0 0 2px rgba(9,209,199,0.20); }
+
+    /* Grid Layout */
+    .emp-grid-list { flex: 1; overflow-y: auto; padding: 14px 14px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; }
+    .emp-grid-list::-webkit-scrollbar { display: none; }
+    .emp-grid-card {
+      background: rgba(255,255,255,0.30);
+      border: 1px solid rgba(255,255,255,0.50);
+      border-radius: 18px;
+      box-shadow:
+        0 8px 24px rgba(5,30,45,0.10),
+        0 2px 0 rgba(255,255,255,0.40) inset,
+        0 -1px 0 rgba(0,0,0,0.06) inset;
+      animation: emp-card-wave 0.42s cubic-bezier(0.16,1,0.3,1) both;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      overflow: visible; padding: 14px 10px 12px;
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      position: relative;
+    }
+    /* Subtle inner highlight on each card */
+    .emp-grid-card::before {
+      content:'';
+      position:absolute; inset:0; border-radius:17px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.35) 0%, transparent 50%);
+      pointer-events:none;
+    }
+    
+    .emp-avatar{width:56px;height:56px;min-height:56px;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,0.7);flex-shrink:0;background:rgba(255,255,255,0.45);position:relative;box-shadow:0 6px 18px rgba(5,30,45,0.14),0 0 0 0 rgba(9,209,199,0);margin-bottom:8px;transition:box-shadow 0.3s cubic-bezier(0.22,1,0.36,1),transform 0.3s cubic-bezier(0.22,1,0.36,1);}
+    .emp-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
     .emp-avatar-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--emp-dark);background:linear-gradient(135deg,rgba(255,255,255,0.7),rgba(255,255,255,0.3));font-family:'Prompt',sans-serif;}
-    .emp-info{flex:1;min-width:0;}
-    .emp-name{font-family:'Prompt',sans-serif;font-size:0.88rem;font-weight:600;color:var(--emp-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .emp-pos{font-size:0.72rem;color:var(--emp-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .emp-id-badge{background:rgba(255,255,255,0.7);border:1px solid #fff;border-radius:8px;padding:3px 8px;font-size:0.62rem;font-weight:700;color:var(--emp-dark);flex-shrink:0;font-family:'Space Mono',monospace;}
-    .emp-select-chip{background:var(--emp-dark);color:#fff;border-radius:10px;padding:5px 12px;font-size:0.72rem;font-weight:600;flex-shrink:0;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;border:none;}
+    
+    .emp-name{font-family:'Prompt',sans-serif;font-size:0.75rem;font-weight:700;color:var(--emp-dark);line-height:1.3;margin-bottom:2px;width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .emp-pos{font-size:0.65rem;color:var(--emp-muted);margin-bottom:6px;width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+    .emp-id-badge{
+      background:rgba(255,255,255,0.60);
+      border:1px solid rgba(255,255,255,0.80);
+      border-radius:6px; padding:2px 6px;
+      font-size:0.6rem; font-weight:700; color:var(--emp-dark);
+      font-family:'Space Mono',monospace; margin-bottom:10px;
+      box-shadow: 0 1px 4px rgba(5,30,45,0.08);
+    }
+    
+    .emp-grid-acts { display: flex; gap: 8px; width: 100%; }
+    .emp-grid-acts button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.50); color: var(--emp-dark); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease, box-shadow 0.2s ease; box-shadow: 0 2px 6px rgba(5,30,45,0.06); backdrop-filter:blur(4px); }
+    .emp-grid-acts button:hover { background: rgba(255,255,255,0.72); box-shadow: 0 4px 12px rgba(9,209,199,0.20); }
+    .emp-grid-acts button:active { transform: scale(0.90); background: #fff; }
+    .emp-grid-acts button.disabled { opacity: 0.35; pointer-events: none; }
+    .emp-select-chip{
+      background: linear-gradient(135deg, var(--emp-dark) 0%, #0C5060 100%);
+      color:#fff; border-radius:10px; padding:7px;
+      font-size:0.75rem; font-weight:600; width:100%; cursor:pointer;
+      font-family:'Noto Sans Thai',sans-serif; border:none;
+      margin-top:8px;
+      box-shadow: 0 4px 12px rgba(5,30,45,0.22);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+    }
+    .emp-select-chip:hover { box-shadow: 0 6px 18px rgba(9,209,199,0.30); }
+    .emp-select-chip:active { transform: scale(0.94); }
+
     .emp-link-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;background:var(--teal-dim);border:1px solid var(--teal-border);color:var(--mid-teal);font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;}
+
+    /* ═══════════════════════════════════════════════════
+       CINEMATIC INNER-PAGE SYSTEM
+       Parallax depth · Smooth easing · Volumetric light
+    ═══════════════════════════════════════════════════ */
+
+    /* Page enter animations */
+    @keyframes pg-rise {
+      0%   { opacity:0; transform: translateY(30px) scale(0.97); filter:blur(5px); }
+      50%  { filter:blur(0); }
+      100% { opacity:1; transform: translateY(0) scale(1); filter:blur(0); }
+    }
+    @keyframes pg-slide-right {
+      0%   { opacity:0; transform: translateX(28px); }
+      100% { opacity:1; transform: translateX(0); }
+    }
+    @keyframes pg-slide-left {
+      0%   { opacity:0; transform: translateX(-28px); }
+      100% { opacity:1; transform: translateX(0); }
+    }
+    @keyframes cin-stagger-in {
+      0%   { opacity:0; transform: translateY(14px) scale(0.97); }
+      100% { opacity:1; transform: translateY(0) scale(1); }
+    }
+    @keyframes cin-float-slow {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-9px); }
+    }
+    @keyframes cin-glow-pulse {
+      0%,100% { box-shadow: 0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35); }
+      50%      { box-shadow: 0 0 0 5px var(--bg), 0 8px 32px rgba(9,209,199,0.65), 0 0 40px rgba(9,209,199,0.25); }
+    }
+    @keyframes cin-shimmer-card {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes cin-depth-bg {
+      0%,100% { transform: scale(1) translateY(0); }
+      50%      { transform: scale(1.015) translateY(-4px); }
+    }
+    @keyframes cin-orb-inner-1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      40%     { transform: translate(18px,-22px) scale(1.1); }
+      70%     { transform: translate(-12px,10px) scale(0.95); }
+    }
+    @keyframes cin-orb-inner-2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      35%     { transform: translate(-20px,14px) scale(1.07); }
+      65%     { transform: translate(10px,-16px) scale(0.97); }
+    }
+    @keyframes cin-topbar-in {
+      0%   { opacity:0; transform: translateY(-20px); filter: blur(4px); }
+      100% { opacity:1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes cin-hero-in {
+      0%   { opacity:0; transform: perspective(600px) rotateX(8deg) translateY(24px) scale(0.95); filter:blur(6px); }
+      55%  { filter:blur(0); }
+      100% { opacity:1; transform: perspective(600px) rotateX(0deg) translateY(0) scale(1); }
+    }
+    @keyframes cin-card-cascade {
+      0%   { opacity:0; transform: translateY(28px) scale(0.93); }
+      65%  { transform: translateY(-2px) scale(1.01); }
+      100% { opacity:1; transform: translateY(0) scale(1); }
+    }
+    @keyframes cin-stat-counter {
+      0%   { transform: scale(1.08); opacity:0.7; }
+      100% { transform: scale(1); opacity:1; }
+    }
+    @keyframes cin-bottom-nav-in {
+      0%   { opacity:0; transform: translateX(-50%) translateY(28px); filter: blur(4px); }
+      100% { opacity:1; transform: translateX(-50%) translateY(0); filter: blur(0); }
+    }
+    @keyframes cin-scan-area-pulse {
+      0%,100% { border-color: var(--teal-border); box-shadow: 0 0 0 0 rgba(9,209,199,0); }
+      50%     { border-color: var(--teal); box-shadow: 0 0 0 6px rgba(9,209,199,0.08); }
+    }
+    @keyframes cin-emp-card-hover {
+      0%   { transform: translateY(0) scale(1); box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+      100% { transform: translateY(-4px) scale(1.015); box-shadow: 0 12px 28px rgba(33,58,88,0.14); }
+    }
+    @keyframes cin-nav-dot-in {
+      0%   { transform: scaleX(0); opacity:0; }
+      100% { transform: scaleX(1); opacity:1; }
+    }
+    @keyframes cin-badge-bounce {
+      0%,100% { transform: scale(1); }
+      40%     { transform: scale(1.18); }
+      70%     { transform: scale(0.94); }
+    }
+    @keyframes cin-bg-ambient {
+      0%,100% { opacity:0.55; transform: scale(1); }
+      50%     { opacity:0.7; transform: scale(1.04); }
+    }
+
+    /* ─── Page wrapper ─── */
+    .page-cinematic {
+      animation: pg-rise 0.6s cubic-bezier(0.16,1,0.3,1) both;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── App background ambient layer ─── */
+    #root::before {
+      content:'';
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 10%, rgba(9,209,199,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(70,223,177,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 50% 50%, rgba(21,145,155,0.04) 0%, transparent 70%);
+      animation: cin-bg-ambient 18s ease-in-out infinite;
+    }
+
+    /* ─── TopBar cinematic ─── */
+    .cin-topbar-wrap {
+      animation: cin-topbar-in 0.6s cubic-bezier(0.22,1,0.36,1) 0s both;
+    }
+
+    /* ─── Hero card (PageHome big stats) ─── */
+    .cin-hero-card {
+      animation: cin-hero-in 0.65s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+      position:relative;
+      overflow:hidden;
+    }
+    .cin-hero-card::before {
+      content:'';
+      position:absolute;
+      top:-60%; left:-30%;
+      width:200%; height:200%;
+      background: radial-gradient(ellipse 45% 35% at 65% 40%, rgba(255,255,255,0.10) 0%, transparent 60%);
+      pointer-events:none;
+      animation: cin-depth-bg 14s ease-in-out infinite;
+    }
+    .cin-hero-card::after {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.08) 0%,
+        transparent 40%,
+        rgba(9,209,199,0.04) 100%);
+      pointer-events:none;
+    }
+
+    /* ─── Stat cards staggered cascade ─── */
+    .cin-stat-1 { animation: cin-card-cascade 0.55s cubic-bezier(0.16,1,0.3,1) 0.20s both; }
+    .cin-stat-2 { animation: cin-card-cascade 0.55s cubic-bezier(0.16,1,0.3,1) 0.32s both; }
+    .cin-stat-3 { animation: cin-card-cascade 0.55s cubic-bezier(0.16,1,0.3,1) 0.44s both; }
+    .cin-stat-4 { animation: cin-card-cascade 0.55s cubic-bezier(0.16,1,0.3,1) 0.56s both; }
+
+    /* ─── Content card depth effect ─── */
+    .cin-content-card {
+      position: relative;
+      transition: box-shadow 0.3s cubic-bezier(0.22,1,0.36,1), transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .cin-content-card::before {
+      content:'';
+      position:absolute;
+      inset:0; border-radius:inherit;
+      background: linear-gradient(160deg, rgba(255,255,255,0.6) 0%, transparent 55%);
+      pointer-events:none;
+      opacity:0.5;
+    }
+
+    /* ─── Section label (eyebrow) ─── */
+    .cin-eyebrow {
+      animation: cin-slide-right 0.4s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+      position:relative;
+    }
+    @keyframes cin-slide-right {
+      from { opacity:0; transform:translateX(-10px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+
+    /* ─── BottomNav cinematic ─── */
+    .cin-bottom-nav {
+      animation: cin-bottom-nav-in 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both;
+      position:relative;
+    }
+    .cin-bottom-nav::before {
+      content:'';
+      position:absolute; top:0; left:10%; right:10%; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(9,209,199,0.3), transparent);
+    }
+    /* Active nav indicator drop-in */
+    .cin-nav-indicator {
+      animation: cin-nav-dot-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    /* ─── Scan page elements ─── */
+    .cin-scan-area {
+      animation: pg-rise 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both,
+                 cin-scan-area-pulse 3s ease-in-out 1.5s infinite;
+      position:relative;
+    }
+    .cin-scan-area::after {
+      content:'';
+      position:absolute; inset:0; border-radius:inherit;
+      background: radial-gradient(ellipse 50% 50% at 50% 20%, rgba(9,209,199,0.06) 0%, transparent 70%);
+      pointer-events:none;
+    }
+
+    /* ─── Item action panel ─── */
+    .cin-item-card {
+      animation: cin-hero-in 0.5s cubic-bezier(0.16,1,0.3,1) 0.05s both;
+      position:relative; overflow:hidden;
+    }
+    .cin-item-card::before {
+      content:'';
+      position:absolute; top:-40%; right:-20%;
+      width:160%; height:160%;
+      background: radial-gradient(ellipse 40% 30% at 70% 35%, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events:none;
+      animation: cin-orb-inner-1 12s ease-in-out infinite;
+    }
+
+    /* ─── Employee overlay upgraded easing (already in new block above) ── */
+    /* Employee grid card hover with depth — ENHANCED */
+    .emp-grid-card {
+      transition: transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                  box-shadow 0.32s cubic-bezier(0.22,1,0.36,1),
+                  border-color 0.22s ease,
+                  background 0.22s ease;
+      will-change: transform;
+      cursor:pointer;
+    }
+    .emp-grid-card:hover {
+      transform: translateY(-6px) scale(1.025);
+      box-shadow:
+        0 20px 44px rgba(5,30,45,0.20),
+        0 2px 0 rgba(255,255,255,0.5) inset !important;
+      border-color: rgba(255,255,255,0.90) !important;
+      background: rgba(255,255,255,0.42) !important;
+    }
+    .emp-grid-card:active {
+      transform: scale(0.96) !important;
+      transition-duration: 0.08s !important;
+    }
+    /* Avatar teal glow on card hover */
+    .emp-grid-card:hover .emp-avatar {
+      box-shadow:
+        0 8px 24px rgba(9,209,199,0.40),
+        0 0 0 3px rgba(255,255,255,0.65) !important;
+      transform: translateY(-2px) scale(1.04);
+    }
+    /* Card cascade on open */
+    .emp-overlay.open .emp-grid-card {
+      animation: emp-card-wave 0.42s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    /* ─── Pin Modal depth ─── */
+    .cin-pin-overlay {
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+    }
+    .cin-pin-sheet {
+      animation: pg-rise 0.45s cubic-bezier(0.16,1,0.3,1) both;
+      position:relative;
+      overflow:hidden;
+    }
+    .cin-pin-sheet::before {
+      content:'';
+      position:absolute; top:0; left:10%; right:10%; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(9,209,199,0.35), transparent);
+    }
+
+    /* ─── Log rows depth entrance ─── */
+    .cin-log-row {
+      animation: cin-card-cascade 0.35s cubic-bezier(0.16,1,0.3,1) both;
+      transition: background 0.2s ease;
+    }
+    .cin-log-row:hover {
+      background: rgba(9,209,199,0.03);
+    }
+
+    /* ─── Buttons cinematic press ─── */
+    button:not([style*="transform"]) {
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+    }
+    button:active {
+      transform: scale(0.95) !important;
+      transition-duration: 0.05s !important;
+    }
+    /* Override React inline transition for nav buttons */
+    .cin-bottom-nav button:active {
+      transform: scale(0.88) !important;
+    }
+
+    /* ─── Input focus depth ─── */
+    input:focus {
+      transition: border-color 0.2s ease, box-shadow 0.3s cubic-bezier(0.22,1,0.36,1) !important;
+    }
+
+    /* ─── Scan button float ─── */
+    .cin-scan-fab {
+      animation: cin-float-slow 2.8s ease-in-out infinite, cin-glow-pulse 2.8s ease-in-out infinite !important;
+    }
+
+    /* ─── Toast pop ─── */
+    @keyframes cin-toast-pop {
+      0%   { opacity:0; transform:translateX(-50%) translateY(10px) scale(0.88); filter:blur(3px); }
+      60%  { filter:blur(0); }
+      100% { opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
+    }
+
+    /* ─── Page content wrapper depth parallax overlay ─── */
+    .cin-page-bg {
+      position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+    }
+    .cin-page-orb-a {
+      position:fixed;
+      width:360px; height:360px; border-radius:50%;
+      background: radial-gradient(circle, rgba(9,209,199,0.13) 0%, transparent 65%);
+      top:-100px; right:-100px;
+      animation: cin-orb-inner-1 14s ease-in-out infinite;
+      filter:blur(30px);
+      z-index:0; pointer-events:none;
+    }
+    .cin-page-orb-b {
+      position:fixed;
+      width:300px; height:300px; border-radius:50%;
+      background: radial-gradient(circle, rgba(70,223,177,0.10) 0%, transparent 65%);
+      bottom:-80px; left:-80px;
+      animation: cin-orb-inner-2 17s ease-in-out infinite;
+      filter:blur(28px);
+      z-index:0; pointer-events:none;
+    }
+
+    /* ─── Admin/Setup card depth ─── */
+    .cin-admin-card {
+      animation: pg-rise 0.48s cubic-bezier(0.16,1,0.3,1) 0.08s both;
+      position:relative; overflow:hidden;
+    }
+    .cin-admin-card::after {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(9,209,199,0.3), transparent);
+    }
+
+    /* ─── Section divider light line ─── */
+    .cin-divider-light {
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(9,209,199,0.25), transparent);
+      border:none; margin:0;
+    }
+
+    /* ─── Search result drop depth ─── */
+    .cin-search-drop {
+      animation: slideDown 0.22s cubic-bezier(0.16,1,0.3,1) both;
+      position:relative;
+    }
+    .cin-search-drop::before {
+      content:'';
+      position:absolute; top:0; left:8%; right:8%; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(9,209,199,0.25), transparent);
+    }
+
+    /* ─── Smooth scroll for inner lists ─── */
+    .emp-grid-list,
+    [style*="overflow-y: auto"],
+    [style*="overflowY:'auto'"] {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ─── Status dot glow ─── */
+    @keyframes cin-status-glow {
+      0%,100% { box-shadow: 0 0 0 0 currentColor; opacity:1; }
+      50%     { box-shadow: 0 0 6px 2px currentColor; opacity:0.85; }
+    }
   </style>
 </head>
 <body>
 <div id="root"></div>
+<!-- Ambient depth orbs for all inner pages -->
+<div class="cin-page-bg" aria-hidden="true">
+  <div class="cin-page-orb-a"></div>
+  <div class="cin-page-orb-b"></div>
+</div>
 <script type="text/plain" id="gas-template">// ═══════════════════════════════════════════════════
 // StockScan IDC-3 — Google Apps Script
 // ── ตั้งค่า LINE Messaging API ──────────────────────
@@ -118,53 +970,57 @@ function getLogs(sheet){const rows=sheet.getDataRange().getValues();if(rows.leng
 const { useState, useEffect, useCallback, useRef } = React;
 
 /* ── Employee Data ── */
-const EMP_IMG = {"OD1158037":"png","OD1158048":"png","OD1159070":"png","OD1159216":"png","OD1159220":"png","OD1159247":"png","OD1159279":"png","OD1160081":"png","OD1160082":"png","OD1160088":"png","OD1160351":"png","OD1160406":"png","OD1161069":"png","OD1161078":"png","OD1161079":"png","OD1161092":"png","OD1161125":"png","OD1161134":"png","OD1161280":"png","OD1161363":"png","OD1161392":"png","OD1162007":"png","OD1162045":"png","OD1162099":"png","OD1162130":"png","OD1162131":"png","OD1162151":"png","OD1162154":"png","OD1162203":"png","OD1162404":"png","OD1162769":"png","OD1165002":"png","OD1165005":"png","OD1165007":"png","OD1166001":"png","OD1167009":"png","OD1169007":"png"};
+const EMP_IMG = {"OD1158037":"png","OD1158048":"png","OD1159070":"png","OD1159216":"png","OD1159220":"png","OD1159247":"png","OD1159279":"png","OD1160081":"png","OD1160082":"png","OD1160088":"png","OD1160351":"png","OD1160406":"png","OD1161069":"png","OD1161078":"png","OD1161079":"png","OD1161092":"png","OD1161125":"png","OD1161134":"png","OD1161280":"png","OD1161363":"png","OD1161392":"png","OD1162007":"png","OD1162045":"png","OD1162099":"png","OD1162130":"png","OD1162131":"png","OD1162151":"png","OD1162154":"png","OD1162203":"png","OD1162404":"png","OD1162769":"png","OD1165002":"png","OD1165005":"png","OD1165007":"png","OD1166001":"png","OD1167009":"png","OD1169007":"png","20085":"png","671166":"png"};
+
 const EMP_RAW = [
-  {id:"OD1158037",name:"นายพฤตินัย ล่ำสูง (กอล์ฟ)",pos:"ผู้ช่วยผู้อำนวยการ",phone:"081 937 6638",email:"pruktinail@inet.co.th"},
-  {id:"OD1161092",name:"นายธีรวัฒน์ ถินคำเชิด (ธีร์)",pos:"รองผู้จัดการ",phone:"061 417 4979",email:"teerawat.th@inet.co.th"},
-  {id:"OD1159070",name:"นายขจรศักดิ์ ทับสน (พัท)",pos:"วิศวกรไฟฟ้า",phone:"063 217 3464",email:"kajornsak.th@inet.co.th"},
-  {id:"OD1159220",name:"นายกฤษณพงศ์ เขียวกลาง (ไกด์)",pos:"วิศวกรไฟฟ้า",phone:"",email:"kritsanapong.kh@inet.co.th"},
-  {id:"OD1159247",name:"นายอดิศร ผลรักษ์ (หนุ่ม)",pos:"วิศวกรไฟฟ้า",phone:"063 217 6173",email:"adison.ph@inet.co.th"},
-  {id:"OD1161125",name:"นายศุภชัย ช่วยสุข (แบงค์)",pos:"วิศวกรไฟฟ้า",phone:"063 268 8029",email:"supachai.ch@inet.co.th"},
-  {id:"OD1162007",name:"นายอาทิตย์ โชติปรีดาเศรษฐ์ (แบงค์)",pos:"วิศวกรไฟฟ้า",phone:"065 527 2090",email:"athit.ma@inet.co.th"},
-  {id:"OD1166001",name:"นายพุฒิพงษ์ แก่นจันทร์ (เบนซ์)",pos:"วิศวกรไฟฟ้า",phone:"063 219 1172",email:"puthipong.ka@inet.co.th"},
-  {id:"OD1160082",name:"นายปิติพงษ์ ราชพิลา (อ๊อฟ)",pos:"วิศวกรคอมพิวเตอร์",phone:"063 204 9800",email:"pitipong.ra@inet.co.th"},
-  {id:"OD1158048",name:"ว่าที่ร้อยตรีวีรศักดิ์ แปลลา (วี)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 262 0118",email:"werasakp@inet.co.th"},
-  {id:"OD1159216",name:"นายนิพล พรมน้ำ (ทู)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"",email:"nipon.pr@inet.co.th"},
-  {id:"OD1159279",name:"นายชัยชนะ บุญสุข (นิค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9765",email:"chaichana.bu@inet.co.th"},
-  {id:"OD1160081",name:"นายกฤษณะ เรืองโหรา (นุ๊ก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9799",email:"kritsana.ru@inet.co.th"},
-  {id:"OD1160088",name:"นายสุพจน์ ไทรไกรกระ (ตั้ม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 204 9801",email:"suphot.th@inet.co.th"},
-  {id:"OD1160351",name:"นางสาวจงกล แก้วมาลา (นิว)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 521 4469",email:"jongkon.ka@inet.co.th"},
-  {id:"OD1160406",name:"นายเอกรัตน์ ยอดด่านกลาง (แซม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 725 7455",email:"ekkarat.yo@inet.co.th"},
-  {id:"OD1161069",name:"นายวิชญ์ภาส สืบพงศ์ (หมอก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"061 410 3453",email:"witchaphat.su@inet.co.th"},
-  {id:"OD1161078",name:"นายพีรพัฒน์ โพธิ์จิตร (อั๋น)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"061 410 6213",email:"peerapat.ph@inet.co.th"},
-  {id:"OD1161079",name:"นายนัทธพงศ์ ชมภูเจริญ (แนน)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 268 6703",email:"nuttapong.ch@inet.co.th"},
-  {id:"OD1161134",name:"นายพิชิตพนธ์ สิมมา (นก)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"098 280 7256",email:"pichitpon.si@inet.co.th"},
-  {id:"OD1161280",name:"นางสาวณัฐชยา พรรณโณภาศ (คุกกี้)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 197 8503",email:"natchaya.pa@inet.co.th"},
-  {id:"OD1161363",name:"นายอภิสิทธิ์ จำมั่น (แมท)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 512 4657",email:"apisit.ju@inet.co.th"},
-  {id:"OD1161392",name:"นายชินวัฒน์ แสงบุญเรือง (แชมป์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 250 6903",email:"chinnawat.sa@inet.co.th"},
-  {id:"OD1162045",name:"นายธนพงษ์ แก้วปัดชา (ตุ่ม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 513 4096",email:"thanapong.ka@inet.co.th"},
-  {id:"OD1162099",name:"นายศักดิ์ชัย เกตกลางดอน (มนต์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 504 8320",email:"sakchai.ke@inet.co.th"},
-  {id:"OD1162130",name:"นายพศพล ย้อยจันทึก (เปิ้ล)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 512 4631",email:"possapol.yo@inet.co.th"},
-  {id:"OD1162131",name:"นายพิชิต แท่งทอง (แจ็ค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 507 5538",email:"pichit.ta@inet.co.th"},
-  {id:"OD1162154",name:"นายสมคิด เกษสุริยงค์ (คิด)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 1971",email:"somkid.ka@inet.co.th"},
-  {id:"OD1162203",name:"นางสาวกัญญาภัค กิจนาค (สตางค์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 2503",email:"kanyapak.ki@inet.co.th"},
-  {id:"OD1162769",name:"นายพงศธร ศรีสวัสดิ์โชคชัย (แบงค์)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"063 217 6123",email:"pongsatorn.sr@inet.co.th"},
-  {id:"OD1165005",name:"นายนภัส กาษร (ปอ)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"092 250 6379",email:"naphat.ka@inet.co.th"},
-  {id:"OD1165007",name:"นายสุวัฒน์ อุ่นสุข (บอส)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 937 7191",email:"suwat.oo@inet.co.th"},
-  {id:"OD1167009",name:"นายธนพร แก้วปัดชา (ตาม)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"065 527 2021",email:"thanaporn.ka@inet.co.th"},
-  {id:"OD1169007",name:"นายกิตตินันท์ มณีวงษ์ (ฟลุ๊ค)",pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์",phone:"093 124 1271",email:"kittinun.ma@inet.co.th"},
-  {id:"OD1162404",name:"นางสาวรัตติยากร เงินแก้ว (เอ้)",pos:"เจ้าหน้าที่ชุมมชนสัมพันธ์",phone:"065 523 1713",email:"rattiyakorn.ng@inet.co.th"},
-  {id:"OD1165002",name:"นางสาวชนนิกานต์ วงพิมล (กีฟ)",pos:"เจ้าหน้าที่ชุมชนสัมพันธ์",phone:"061 398 7469",email:"chonnikarn.wo@inet.co.th"},
-  {id:"OD1162151",name:"นายอิทธิพล พันธุ์ชื่น (มอส)",pos:"ช่างซ่อมบำรุงอาคาร",phone:"065 527 1964",email:"ittiphon.ph@inet.co.th"},
+  { id:"OD1158037", name:"นายพฤตินัย ล่ำสูง (กอล์ฟ)", nameEn:"Mr. Pruktinail Lamsoong", pos:"ผู้ช่วยผู้อำนวยการ", posEn:"Assistant Director", phone:"081 937 6638", email:"pruktinail@inet.co.th" },
+  { id:"OD1161092", name:"นายธีรวัฒน์ ถินคำเชิด (ธีร์)", nameEn:"Mr. Teerawat Thinkamcherd", pos:"รองผู้จัดการ", posEn:"Deputy Manager", phone:"061 417 4979", email:"teerawat.th@inet.co.th" },
+  { id:"OD1159070", name:"นายขจรศักดิ์ ทับสน (พัท)", nameEn:"Mr. Kajornsak Thupson", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"063 217 3464", email:"kajornsak.th@inet.co.th" },
+  { id:"OD1159220", name:"นายกฤษณพงศ์ เขียวกลาง(ไกด์)", nameEn:"Mr. Kritsanapong Khiaowklang", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"061 387 5338", email:"kritsanapong.kh@inet.co.th" },
+  { id:"OD1159247", name:"นายอดิศร ผลรักษ์ (หนุ่ม)", nameEn:"Mr. Adison Pholrak", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"063 217 6173", email:"adison.ph@inet.co.th" },
+  { id:"OD1161125", name:"นายศุภชัย ช่วยสุข (แบงค์)", nameEn:"Mr. Supachai Chouysok", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"063 268 8029", email:"supachai.ch@inet.co.th" },
+  { id:"OD1162007", name:"นายอาทิตย์ โชติปรีดาเศรษฐ์ (แบงค์)", nameEn:"Mr. Athit Chotpreedaset", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"065 527 2090", email:"athit.ma@inet.co.th" },
+  { id:"OD1166001", name:"นายพุฒิพงษ์ แก่นจันทร์ (เบนซ์)", nameEn:"Mr. Puthipong Kaenjan", pos:"วิศวกรไฟฟ้า", posEn:"Electrical Engineer", phone:"063 219 1172", email:"puthipong.ka@inet.co.th" },
+  { id:"OD1160082", name:"นายปิติพงษ์ ราชพิลา (อ๊อฟ)", nameEn:"Mr. Pitipong Rachpila", pos:"วิศวกรคอมพิวเตอร์", posEn:"Computer Engineer", phone:"063 204 9800", email:"pitipong.ra@inet.co.th" },
+  { id:"OD1158048", name:"ว่าที่ร้อยตรีวีรศักดิ์ แปลลา (วี)", nameEn:"Acting Sub Lt. Werasak Plaela", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"092 262 0118", email:"werasakp@inet.co.th" },
+  { id:"OD1159216", name:"นายนิพล พรมน้ำ (ทู)", nameEn:"Mr. Nipon Promnarm", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"092 261 4054", email:"nipon.pr@inet.co.th" },
+  { id:"OD1159279", name:"นายชัยชนะ บุญสุข (นิค)", nameEn:"Mr. Chaichana Bunsuk", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 204 9765", email:"chaichana.bu@inet.co.th" },
+  { id:"OD1160081", name:"นายกฤษณะ เรืองโหรา (นุ๊ก)", nameEn:"Mr. Kritsana Rueanghora", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 204 9799", email:"kritsana.ru@inet.co.th" },
+  { id:"OD1160088", name:"นายสุพจน์ ไทรไกรกระ (ตั้ม)", nameEn:"Mr. Suphot Thaikaikra", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 204 9801", email:"suphot.th@inet.co.th" },
+  { id:"OD1160351", name:"นางสาวจงกล แก้วมาลา (นิว)", nameEn:"Ms. Jongkon Kaewmala", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 521 4469", email:"jongkon.ka@inet.co.th" },
+  { id:"OD1160406", name:"นายเอกรัตน์ ยอดด่านกลาง (แซม)", nameEn:"Mr. Ekkarat Yoddanklang", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 725 7455", email:"ekkarat.yo@inet.co.th" },
+  { id:"OD1161069", name:"นายวิชญ์ภาส สืบพงศ์ (หมอก)", nameEn:"Mr. Witchaphat Suepphong", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"061 410 3453", email:"witchaphat.su@inet.co.th" },
+  { id:"OD1161078", name:"นายพีรพัฒน์ โพธิ์จิตร (อั๋น)", nameEn:"Mr. Peerapat Phochit", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"061 410 6213", email:"peerapat.ph@inet.co.th" },
+  { id:"OD1161079", name:"นายนัทธพงศ์ ชมภูเจริญ (แนน)", nameEn:"Mr. Nuttapong Chompucharoen", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 268 6703", email:"nuttapong.ch@inet.co.th" },
+  { id:"OD1161134", name:"นายพิชิตพนธ์ สิมมา (นก)", nameEn:"Mr. Pichitpon Simma", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"098 280 7256", email:"pichitpon.si@inet.co.th" },
+  { id:"OD1161280", name:"นางสาวณัฐชยา พรรณโณภาศ (คุกกี้)", nameEn:"Ms. Natchaya Pannopas", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 197 8503", email:"natchaya.pa@inet.co.th" },
+  { id:"OD1161363", name:"นายอภิสิทธิ์ จำมั่น (แมท)", nameEn:"Mr. Apisit Jummun", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 512 4657", email:"apisit.ju@inet.co.th" },
+  { id:"OD1161392", name:"นายชินวัฒน์ แสงบุญเรือง (แชมป์)", nameEn:"Mr. Chinnawat Saengbunrueang", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"092 250 6903", email:"chinnawat.sa@inet.co.th" },
+  { id:"OD1162045", name:"นายธนพงษ์ แก้วปัดชา (ตุ่ม)", nameEn:"Mr. Thanapong Kaewpatcha", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 513 4096", email:"thanapong.ka@inet.co.th" },
+  { id:"OD1162099", name:"นายศักดิ์ชัย เกตกลางดอน (มนต์)", nameEn:"Mr. Sakchai Ketklangdon", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 504 8320", email:"sakchai.ke@inet.co.th" },
+  { id:"OD1162130", name:"นายพศพล ย้อยจันทึก (เปิ้ล)", nameEn:"Mr. Possapol Yoichanthuek", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 512 4631", email:"possapol.yo@inet.co.th" },
+  { id:"OD1162131", name:"นายพิชิต แท่งทอง (แจ็ค)", nameEn:"Mr. Pichit Tangtong", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 507 5538", email:"pichit.ta@inet.co.th" },
+  { id:"OD1162154", name:"นายสมคิด เกษสุริยงค์ (คิด)", nameEn:"Mr. Somkid Katesuiyong", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 527 1971", email:"somkid.ka@inet.co.th" },
+  { id:"OD1162203", name:"นางสาวกัญญาภัค กิจนาค (สตางค์)", nameEn:"Ms. Kanyapak Kidnark", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 527 2503", email:"kanyapak.ki@inet.co.th" },
+  { id:"OD1162769", name:"นายพงศธร ศรีสวัสดิ์โชคชัย (แบงค์)", nameEn:"Mr. Pongsatorn Srisawatchokchai", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"063 217 6123", email:"pongsatorn.sr@inet.co.th" },
+  { id:"OD1165005", name:"นายนภัส กาษร (ปอ)", nameEn:"Mr. Naphat Kasorn", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"092 250 6379", email:"naphat.ka@inet.co.th" },
+  { id:"OD1165007", name:"นายสุวัฒน์ อุ่นสุข (บอส)", nameEn:"Mr. Suwat Oonsuk", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 937 7191", email:"suwat.oo@inet.co.th" },
+  { id:"OD1167009", name:"นายธนพร แก้วปัดชา (ตาม)", nameEn:"Mr. Thanaporn Kaewpadcha", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"065 527 2021", email:"thanaporn.ka@inet.co.th" },
+  { id:"OD1169007", name:"นายกิตตินันท์ มณีวงษ์ (ฟลุ๊ค)", nameEn:"Mr. Kittinun Maneewong", pos:"เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์", posEn:"Data Center Officer", phone:"093 124 1271", email:"kittinun.ma@inet.co.th" },
+  { id:"OD1162404", name:"นางสาวรัตติยากร เงินแก้ว (เอ้)", nameEn:"Ms. Rattiyakorn Nguenkaew", pos:"เจ้าหน้าที่ขุมชนสัมพันธ์", posEn:"Community Relations Officer", phone:"065 523 1713", email:"rattiyakorn.ng@inet.co.th" },
+  { id:"OD1165002", name:"นางสาวชนนิกานต์ วงพิมล (กีฟ)", nameEn:"Ms. Chonnikarn Wongphimol", pos:"เจ้าหน้าที่ขุมชนสัมพันธ์", posEn:"Community Relations Officer", phone:"061 398 7469", email:"chonnikarn.wo@inet.co.th" },
+  { id:"OD1162151", name:"นายอิทธิพล พันธุ์ชื่น (มอส)", nameEn:"Mr. Ittiphon Phunchuen", pos:"ช่างซ่อมบำรุงอาคาร", posEn:"Building Maintenance Technician", phone:"065 527 1964", email:"ittiphon.ph@inet.co.th" },
+ { id:"20085", name:"นางสาวดาราณีรัตน์ สิทธิพรม (อ้อม)", nameEn:"Ms. Daraneerat Sittiprom", pos:"เจ้าหน้าที่บริหารสำนักงาน", posEn:"Administrative Officer", phone:"063 204 9803", email:"daraneerat.si@inet.co.th" },
+  { id:"671166", name:"นางสาวสุภาภรณ์ วิจิตหงษ์ (ปลา)", nameEn:"Ms. Supaphorn Vijithong", pos:"เจ้าหน้าที่ความปลอดภัยวิชาชีพ", posEn:"ฝ่ายกฎหมาย", phone:"061 025 5514", email:"supaphorn.vi@inet.co.th" }
 ];
+
 const EMPLOYEES = EMP_RAW.map(e => {
-  const parts = e.name.replace(/\s*\(.*?\)\s*/g,'').replace(/^(นาย|นางสาว|นาง|ว่าที่ร้อยตรี)\s*/,'').trim().split(' ');
-  const enParts = (e.name||'').replace(/^(Mr\.|Ms\.|Mrs\.|Acting Sub Lt\.)\s*/i,'').trim().split(' ');
+  const parts = (e.nameEn||e.name).replace(/^(Mr\.|Ms\.|Mrs\.|Acting Sub Lt\.)\s*/i,'').trim().split(' ');
+  const thParts = e.name.replace(/\s*\(.*?\)\s*/g,'').replace(/^(นาย|นางสาว|นาง|ว่าที่ร้อยตรี)\s*/,'').trim().split(' ');
   return {
     ...e,
     img: EMP_IMG[e.id] ? `images/${e.id}.${EMP_IMG[e.id]}` : null,
-    displayName: e.name.replace(/\s*\(.*?\)\s*/g,'').replace(/^(นาย|นางสาว|นาง|ว่าที่ร้อยตรี)\s*/,'').trim(),
+    displayName: thParts.join(' '),
     initials: (parts[0]?.[0]||'?') + (parts[1]?.[0]||''),
   };
 });
@@ -198,12 +1054,43 @@ function EmpMiniAvatar({emp,size=32,radius=9}){
 /* ── EmpCardAvatar (for overlay) ── */
 function EmpCardAvatar({emp}){
   const [imgErr,setImgErr]=useState(false);
+  const [imgLoaded,setImgLoaded]=useState(false);
+  const showImg = emp.img && !imgErr;
   return(
     <div className="emp-avatar">
-      {emp.img&&!imgErr
-        ?<img src={emp.img} alt="" onError={()=>setImgErr(true)}/>
-        :null}
-      {(!emp.img||imgErr)&&<div className="emp-avatar-ph">{emp.initials}</div>}
+      <div className="emp-avatar-ph" style={{opacity:showImg&&imgLoaded?0:1,transition:'opacity 0.2s'}}>{emp.initials}</div>
+      {showImg&&(
+        <img src={emp.img} alt=""
+          onError={()=>setImgErr(true)}
+          onLoad={()=>setImgLoaded(true)}
+          style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block',opacity:imgLoaded?1:0,transition:'opacity 0.2s'}}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ── Employee Overlay Cinematic Particles ── */
+function EmpCinParticles(){
+  const pts=React.useMemo(()=>Array.from({length:14},(_,i)=>({
+    id:i,
+    left:Math.random()*100,
+    size:Math.random()*3.5+1.5,
+    dur:Math.random()*14+9,
+    delay:Math.random()*12,
+    opacity:Math.random()*0.35+0.15,
+  })),[]);
+  return(
+    <div className="emp-cin-particles">
+      {pts.map(p=>(
+        <div key={p.id} className="emp-cin-pt" style={{
+          left:`${p.left}%`,
+          width:p.size,height:p.size,
+          opacity:p.opacity,
+          animationDuration:`${p.dur}s`,
+          animationDelay:`${p.delay}s`,
+        }}/>
+      ))}
     </div>
   );
 }
@@ -211,21 +1098,54 @@ function EmpCardAvatar({emp}){
 /* ── EmployeeDirectory overlay ── */
 function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
   const [q,setQ]=useState('');
-  useEffect(()=>{if(!isOpen)setQ('');},[isOpen]);
+  const [filter,setFilter]=useState('all');
+  
+  const filters = [
+    { key: 'all', label: 'ทั้งหมด' },
+    { key: 'ผู้ช่วยผู้อำนวยการ', label: 'ผู้ช่วยผอ.' },
+    { key: 'รองผู้จัดการ', label: 'รองผู้จัดการ' },
+    { key: 'วิศวกรไฟฟ้า', label: 'วิศวกรไฟฟ้า' },
+    { key: 'วิศวกรคอมพิวเตอร์', label: 'วิศวกรคอมพิวเตอร์' },
+    { key: 'เจ้าหน้าที่ดูแลศูนย์ข้อมูลคอมพิวเตอร์', label: 'เจ้าหน้าที่ฯ' },
+    { key: 'เจ้าหน้าที่ขุมชนสัมพันธ์', label: 'CSR' },
+    { key: 'ช่างซ่อมบำรุงอาคาร', label: 'ช่างอาคาร' },
+    { key: 'เจ้าหน้าที่บริหารสำนักงาน', label: 'GA' },
+    { key: 'เจ้าหน้าที่ความปลอดภัยวิชาชีพ', label: 'เจ้าหน้าที่ความปลอดภัย' }
+  ];
+
+  useEffect(()=>{if(!isOpen){ setQ(''); setFilter('all'); }},[isOpen]);
+  
   const filtered=EMPLOYEES.filter(e=>{
-    if(!q)return true;
     const qq=q.toLowerCase();
-    return e.name.toLowerCase().includes(qq)||e.id.toLowerCase().includes(qq)||e.pos.includes(q)||e.displayName.includes(q);
+    const matchQ = !q||e.name.toLowerCase().includes(qq)||e.id.toLowerCase().includes(qq)||e.pos.includes(q)||e.displayName.includes(q);
+    const matchF = filter==='all' || e.pos.startsWith(filter) || e.pos === filter;
+    return matchQ && matchF;
   });
+  
   return(
     <div className={`emp-overlay${isOpen?' open':''}`}>
-      <div className="emp-topbar">
+      {/* ── Cinematic Background System ── */}
+      <div className="emp-cin-bg">
+        <div className="emp-cin-grad"/>
+        <div className="emp-cin-noise"/>
+        <div className="emp-cin-grid"/>
+        <div className="emp-cin-orb emp-cin-orb-1"/>
+        <div className="emp-cin-orb emp-cin-orb-2"/>
+        <div className="emp-cin-orb emp-cin-orb-3"/>
+        <EmpCinParticles/>
+        <div className="emp-cin-vignette"/>
+      </div>
+      {/* ── Scanline sweep on open ── */}
+      {isOpen&&<div className="emp-cin-scanline" key={isOpen}/>}
+      {/* ── Top Bar ── */}
+      <div className="emp-cin-topbar-wrap">
+        <div className="emp-topbar">
         <div className="emp-topbar-inner">
           <div className="emp-tb-row1">
             <div className="emp-brand">
               <div className="emp-brand-dot"/>
               <span className="emp-brand-name">INET</span>
-              <span style={{fontSize:'0.68rem',color:'var(--emp-muted)',fontFamily:'Prompt',marginLeft:4}}>IDC-3 · Employee Directory</span>
+              <span style={{fontSize:'0.68rem',color:'var(--emp-muted)',fontFamily:'Prompt',marginLeft:4}}>IDC-3 · Directory</span>
             </div>
             <button className="emp-close-btn" onClick={onClose}>✕</button>
           </div>
@@ -240,24 +1160,53 @@ function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อ ตำแหน่ง หรือรหัส…"/>
           </div>
         </div>
-      </div>
-      <div className="emp-list">
+        <div className="emp-fbar">
+          {filters.map(f => (
+            <button key={f.key} className={`emp-fb ${filter===f.key?'active':''}`} onClick={()=>setFilter(f.key)}>{f.label}</button>
+          ))}
+        </div>
+        </div>{/* /emp-topbar */}
+      </div>{/* /emp-cin-topbar-wrap */}
+      
+      <div className="emp-grid-list">
         {filtered.length===0
-          ?<div style={{textAlign:'center',padding:'40px 20px',color:'var(--emp-dark)',opacity:0.6,fontFamily:'Prompt'}}>ไม่พบพนักงาน</div>
+          ?<div style={{gridColumn:'1/-1',textAlign:'center',padding:'40px 20px',color:'var(--emp-dark)',opacity:0.6,fontFamily:'Prompt'}}>ไม่พบพนักงาน</div>
           :filtered.map((e,i)=>(
-            <div key={e.id} className="emp-card" style={{animationDelay:`${i*0.02}s`}}>
+            <div key={e.id} className="emp-grid-card" style={{animationDelay:`${i*0.028}s`}}>
               <EmpCardAvatar emp={e}/>
-              <div className="emp-info">
-                <div className="emp-name">{e.name}</div>
-                <div className="emp-pos">{e.pos}</div>
-              </div>
+              <div className="emp-name">{e.displayName}</div>
+              <div className="emp-pos">{e.pos}</div>
               <div className="emp-id-badge">{e.id}</div>
+              
+              <div className="emp-grid-acts">
+                <button className={!e.phone ? 'disabled' : ''} onClick={(ev)=>{ ev.stopPropagation(); if(e.phone) window.location.href='tel:'+e.phone.replace(/\s/g,''); }} title="โทร">
+                  <i className="ti ti-phone"></i>
+                </button>
+                <button className={!e.email ? 'disabled' : ''} onClick={(ev)=>{ ev.stopPropagation(); if(e.email) window.location.href='mailto:'+e.email; }} title="อีเมล">
+                  <i className="ti ti-mail"></i>
+                </button>
+              </div>
+              
               {selectMode&&(
-                <button className="emp-select-chip" onClick={()=>{onSelect&&onSelect(e);onClose();}}>เลือก</button>
+                <button className="emp-select-chip" onClick={()=>{onSelect&&onSelect(e);onClose();}}>เลือกพนักงาน</button>
               )}
             </div>
           ))
         }
+      </div>
+      {/* ── Cinematic Footer Bar ── */}
+      <div style={{
+        position:'absolute',bottom:0,left:0,right:0,
+        padding:'10px 20px',
+        display:'flex',alignItems:'center',justifyContent:'space-between',
+        background:'rgba(5,30,45,0.22)',
+        backdropFilter:'blur(10px)',
+        WebkitBackdropFilter:'blur(10px)',
+        borderTop:'1px solid rgba(255,255,255,0.12)',
+        zIndex:15,
+      }}>
+        <span style={{fontFamily:"'Space Mono',monospace",fontSize:'0.58rem',color:'rgba(255,255,255,0.35)',letterSpacing:'1.5px'}}>INET · IDC-3 DIRECTORY</span>
+        <span style={{fontFamily:"'Space Mono',monospace",fontSize:'0.58rem',color:'rgba(9,209,199,0.55)',letterSpacing:'1px'}}>{filtered.length} พนักงาน</span>
       </div>
     </div>
   );
@@ -358,20 +1307,304 @@ function LogRow({l,items,showTime,isLast}){
 
 /* ── TopBar ── */
 const STATUS_MAP={syncing:{color:'var(--txt3)',text:'กำลังซิงค์...'},ok:{color:'var(--teal)',text:'Connected ✓'},error:{color:'#FF4D4D',text:'ซิงค์ไม่ได้ ⚠'},none:{color:'var(--txt3)',text:'ยังไม่ได้เชื่อม Sheet'}};
-function TopBar({syncStatus,onSync,onOpenDirectory}){
+function TopBar({syncStatus,onSync,onOpenDirectory,loggedInEmp,onLogout}){
   const s=STATUS_MAP[syncStatus]||STATUS_MAP.none;
   return(
-    <div style={{padding:'20px 16px 0',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
-      <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
-        <div style={{background:'var(--navy)',color:'#fff',fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:13,padding:'5px 14px',borderRadius:100,letterSpacing:'0.3px',boxShadow:'0 2px 8px rgba(33,58,88,0.18)'}}>Stock</div>
-        <span style={{fontSize:11,color:'var(--txt3)',fontFamily:"'Space Mono',monospace",letterSpacing:'.5px'}}>IDC3</span>
-        <button className="emp-link-btn" onClick={onOpenDirectory}>
-          <i className="ti ti-users" style={{fontSize:12}}/>พนักงาน
-        </button>
+    <div className="cin-topbar-wrap" style={{padding:'16px 16px 0',display:'flex',flexDirection:'column',gap:8}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <div style={{background:'var(--navy)',color:'#fff',fontFamily:"'Outfit',sans-serif",fontWeight:800,fontSize:13,padding:'5px 14px',borderRadius:100,letterSpacing:'0.3px',boxShadow:'0 2px 8px rgba(33,58,88,0.18)'}}>Stock</div>
+          <span style={{fontSize:11,color:'var(--txt3)',fontFamily:"'Space Mono',monospace",letterSpacing:'.5px'}}>IDC3</span>
+          <button className="emp-link-btn" onClick={onOpenDirectory}>
+            <i className="ti ti-users" style={{fontSize:12}}/>พนักงาน
+          </button>
+        </div>
+        <div onClick={onSync} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'6px 12px',borderRadius:100,background:'var(--surface)',border:'1px solid var(--teal-border)',boxShadow:'var(--shadow-sm)',flexShrink:0}}>
+          <div style={{width:7,height:7,borderRadius:'50%',background:s.color,flexShrink:0}}/>
+          <span style={{fontSize:11,color:s.color,fontFamily:"'Space Mono',monospace"}}>{s.text}</span>
+        </div>
       </div>
-      <div onClick={onSync} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'6px 12px',borderRadius:100,background:'var(--surface)',border:'1px solid var(--teal-border)',boxShadow:'var(--shadow-sm)',flexShrink:0}}>
-        <div style={{width:7,height:7,borderRadius:'50%',background:s.color,flexShrink:0}}/>
-        <span style={{fontSize:11,color:s.color,fontFamily:"'Space Mono',monospace"}}>{s.text}</span>
+      {loggedInEmp&&(
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',background:'linear-gradient(135deg,var(--navy),var(--deep-teal))',borderRadius:14,padding:'9px 14px',boxShadow:'0 2px 8px rgba(33,58,88,0.14)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <EmpMiniAvatar emp={loggedInEmp} size={34} radius={10}/>
+            <div>
+              <div style={{fontSize:12,fontWeight:600,color:'#fff',lineHeight:1.3}}>{loggedInEmp.displayName}</div>
+              <div style={{fontSize:10,color:'rgba(255,255,255,0.5)',fontFamily:"'Space Mono',monospace",marginTop:1}}>{loggedInEmp.id}</div>
+            </div>
+          </div>
+          <button onClick={onLogout} style={{display:'flex',alignItems:'center',gap:5,padding:'6px 12px',borderRadius:100,border:'1.5px solid rgba(255,255,255,0.25)',background:'rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.85)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:11,fontWeight:600,cursor:'pointer',transition:'0.2s'}}>
+            <i className="ti ti-logout" style={{fontSize:12}}/>ออกจากระบบ
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Auth Helpers ── */
+function loadAuth(){try{return JSON.parse(localStorage.getItem('ss2_auth'))||{};}catch(e){return{};}}
+function saveAuth(data){localStorage.setItem('ss2_auth',JSON.stringify(data));}
+
+/* ── Cinematic Particles ── */
+function CinParticles(){
+  const pts=React.useMemo(()=>Array.from({length:18},(_,i)=>({
+    id:i,
+    left:Math.random()*100,
+    size:Math.random()*4+2,
+    dur:Math.random()*12+8,
+    delay:Math.random()*10,
+    opacity:Math.random()*0.4+0.2,
+  })),[]);
+  return(
+    <div className="cin-particles">
+      {pts.map(p=>(
+        <div key={p.id} className="cin-pt" style={{
+          left:`${p.left}%`,
+          width:p.size,height:p.size,
+          opacity:p.opacity,
+          animationDuration:`${p.dur}s`,
+          animationDelay:`${p.delay}s`,
+        }}/>
+      ))}
+    </div>
+  );
+}
+
+/* ── Login Screen ── */
+function LoginScreen({onLogin}){
+  const [username,setUsername]=useState('');
+  const [password,setPassword]=useState('');
+  const [err,setErr]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [doShakeNow,setDoShakeNow]=useState(false);
+  function triggerShake(){setDoShakeNow(true);setTimeout(()=>setDoShakeNow(false),500);}
+  function handleLogin(){
+    setErr('');
+    const emp=EMPLOYEES.find(e=>e.id===username.trim());
+    if(!emp){setErr('ไม่พบรหัสพนักงานนี้ในระบบ');triggerShake();return;}
+    const auth=loadAuth();
+    const storedPw=auth[emp.id]?.password;
+    const correctPw=storedPw||emp.id;
+    const isFirst=!storedPw;
+    if(password!==correctPw){setErr('รหัสผ่านไม่ถูกต้อง');triggerShake();return;}
+    setLoading(true);
+    setTimeout(()=>onLogin(emp,isFirst),400);
+  }
+  const inputBase={
+    width:'100%',padding:'13px 16px',
+    background:'rgba(255,255,255,0.10)',
+    border:'1px solid rgba(255,255,255,0.22)',
+    borderRadius:14,color:'#fff',
+    fontFamily:"'Space Mono','Noto Sans Thai',sans-serif",
+    fontSize:'1rem',outline:'none',letterSpacing:'1px',
+    transition:'border-color 0.2s, background 0.2s, box-shadow 0.2s',
+    boxShadow:'0 2px 8px rgba(0,0,0,0.12)',
+  };
+  const inputStyle={...inputBase,...(doShakeNow?{animation:'shake 0.4s ease'}:{})};
+  return(
+    <div className="cin-wrap">
+      {/* ── Background layers ── */}
+      <div className="cin-bg">
+        <div className="cin-bg-grad"/>
+        <div className="cin-noise-layer"/>
+        <div className="cin-grid"/>
+        <div className="cin-orb cin-orb-1"/>
+        <div className="cin-orb cin-orb-2"/>
+        <div className="cin-orb cin-orb-3"/>
+        <CinParticles/>
+        <div className="cin-vignette"/>
+      </div>
+      {/* ── Scanline sweep on load ── */}
+      <div className="cin-scanline"/>
+
+      {/* ── Login Card ── */}
+      <div className="cin-card">
+        {/* Header */}
+        <div style={{textAlign:'center',marginBottom:26}}>
+          <div className="cin-logo-wrap" style={{margin:'0 auto 14px',display:'inline-block'}}>
+            <div style={{
+              width:76,height:76,borderRadius:22,
+              background:'linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(9,209,199,0.18) 100%)',
+              border:'1.5px solid rgba(255,255,255,0.35)',
+              display:'flex',alignItems:'center',justifyContent:'center',
+              fontSize:34,
+              boxShadow:'0 12px 32px rgba(0,0,0,0.22), 0 2px 0 rgba(255,255,255,0.2) inset',
+            }}>📦</div>
+          </div>
+          <div className="cin-title" style={{
+            color:'#fff',fontSize:'1.75rem',fontWeight:800,
+            letterSpacing:'1.5px',textShadow:'0 2px 12px rgba(0,0,0,0.3)',
+            fontFamily:"'Outfit',sans-serif",
+          }}>INET-IDC3</div>
+          <div className="cin-subtitle" style={{
+            color:'rgba(255,255,255,0.65)',fontSize:'0.76rem',marginTop:5,
+            fontFamily:"'Noto Sans Thai',sans-serif",letterSpacing:'1px',
+          }}>Stock Management · IDC-3</div>
+        </div>
+
+        {/* Error */}
+        {err&&(
+          <div style={{
+            background:'rgba(255,77,77,0.15)',border:'1px solid rgba(255,100,100,0.35)',
+            borderRadius:12,padding:'10px 14px',color:'#fff',
+            fontSize:'0.82rem',fontFamily:"'Noto Sans Thai',sans-serif",
+            marginBottom:16,textAlign:'center',backdropFilter:'blur(4px)',
+            animation:'fadeUp 0.2s ease',
+          }}>⚠ {err}</div>
+        )}
+
+        {/* Username field */}
+        <div className="cin-field-1" style={{marginBottom:14}}>
+          <label style={{
+            color:'rgba(255,255,255,0.75)',fontSize:'0.72rem',fontWeight:600,
+            letterSpacing:'0.8px',display:'block',marginBottom:7,
+            fontFamily:"'Noto Sans Thai',sans-serif",textTransform:'uppercase',
+          }}>รหัสพนักงาน</label>
+          <input
+            style={inputStyle}
+            placeholder="เช่น OD1100000"
+            value={username}
+            onChange={e=>setUsername(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&handleLogin()}
+            autoCapitalize="off" autoCorrect="off"
+            onFocus={ev=>{ev.target.style.border='1px solid rgba(9,209,199,0.7)';ev.target.style.background='rgba(255,255,255,0.15)';ev.target.style.boxShadow='0 0 0 3px rgba(9,209,199,0.15)';}}
+            onBlur={ev=>{ev.target.style.border='1px solid rgba(255,255,255,0.22)';ev.target.style.background='rgba(255,255,255,0.10)';ev.target.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)';}}
+          />
+        </div>
+
+        {/* Password field */}
+        <div className="cin-field-2" style={{marginBottom:8}}>
+          <label style={{
+            color:'rgba(255,255,255,0.75)',fontSize:'0.72rem',fontWeight:600,
+            letterSpacing:'0.8px',display:'block',marginBottom:7,
+            fontFamily:"'Noto Sans Thai',sans-serif",textTransform:'uppercase',
+          }}>รหัสผ่าน</label>
+          <input
+            style={{...inputBase}}
+            type="password"
+            placeholder="ตัวเลข 6 หลัก"
+            value={password}
+            inputMode="numeric"
+            maxLength={20}
+            onChange={e=>setPassword(e.target.value)}
+            onKeyDown={e=>e.key==='Enter'&&handleLogin()}
+            onFocus={ev=>{ev.target.style.border='1px solid rgba(9,209,199,0.7)';ev.target.style.background='rgba(255,255,255,0.15)';ev.target.style.boxShadow='0 0 0 3px rgba(9,209,199,0.15)';}}
+            onBlur={ev=>{ev.target.style.border='1px solid rgba(255,255,255,0.22)';ev.target.style.background='rgba(255,255,255,0.10)';ev.target.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)';}}
+          />
+        </div>
+
+        {/* Submit button */}
+        <div className="cin-btn-wrap" style={{marginTop:18}}>
+          <button
+            className="cin-login-btn"
+            onClick={handleLogin}
+            disabled={loading}
+            style={{
+              width:'100%',padding:'15px',border:'none',borderRadius:14,
+              background: loading
+                ? 'rgba(255,255,255,0.5)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(220,248,246,0.98) 100%)',
+              color:'#0C5060',
+              fontFamily:"'Prompt',sans-serif",fontSize:'1rem',fontWeight:700,
+              cursor:loading?'not-allowed':'pointer',
+              letterSpacing:'0.5px',
+              opacity:loading?0.7:1,
+              transition:'transform 0.15s, opacity 0.2s',
+              position:'relative',overflow:'hidden',
+            }}
+            onMouseDown={e=>{if(!loading)e.currentTarget.style.transform='scale(0.97)';}}
+            onMouseUp={e=>{e.currentTarget.style.transform='scale(1)';}}
+            onTouchStart={e=>{if(!loading)e.currentTarget.style.transform='scale(0.97)';}}
+            onTouchEnd={e=>{e.currentTarget.style.transform='scale(1)';}}
+          >
+            {loading
+              ? <span style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+                  <span style={{display:'inline-block',width:14,height:14,border:'2px solid #0C5060',borderTopColor:'transparent',borderRadius:'50%',animation:'scanLine 0.7s linear infinite'}}/>
+                  กำลังเข้าสู่ระบบ...
+                </span>
+              : 'เข้าสู่ระบบ →'
+            }
+          </button>
+        </div>
+
+        {/* Hint */}
+        <div className="cin-hint" style={{
+          color:'rgba(255,255,255,0.45)',fontSize:'0.68rem',textAlign:'center',
+          marginTop:18,fontFamily:"'Noto Sans Thai',sans-serif",letterSpacing:'0.3px',
+        }}>ครั้งแรก: รหัสผ่านคือรหัสพนักงานของคุณ</div>
+      </div>
+
+      {/* Footer bar */}
+      <div style={{
+        position:'absolute',bottom:0,left:0,right:0,
+        padding:'12px 20px',
+        display:'flex',alignItems:'center',justifyContent:'space-between',
+        background:'rgba(0,0,0,0.18)',
+        backdropFilter:'blur(8px)',
+        borderTop:'1px solid rgba(255,255,255,0.08)',
+        animation:'cin-subtitle-fade 0.6s ease 2.5s both',
+        zIndex:6,
+      }}>
+        <span style={{fontFamily:"'Space Mono',monospace",fontSize:'0.6rem',color:'rgba(255,255,255,0.3)',letterSpacing:'1.5px'}}>INET · IDC-3 SYSTEM</span>
+        <span style={{fontFamily:"'Space Mono',monospace",fontSize:'0.6rem',color:'rgba(9,209,199,0.5)',letterSpacing:'1px'}}>v2.0</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── Change Password Screen ── */
+function ChangePasswordScreen({emp,onDone}){
+  const [step,setStep]=useState('new');
+  const [newPin,setNewPin]=useState('');
+  const [confirmPin,setConfirmPin]=useState('');
+  const [doShakeNow,setDoShakeNow]=useState(false);
+  const [err,setErr]=useState('');
+  const current=step==='new'?newPin:confirmPin;
+  const setCurrent=step==='new'?setNewPin:setConfirmPin;
+  function triggerShake(){setDoShakeNow(true);setTimeout(()=>setDoShakeNow(false),500);}
+  function handleKey(k){
+    if(k==='del'){setCurrent(p=>p.slice(0,-1));return;}
+    if(current.length>=6)return;
+    const next=current+k;
+    setCurrent(next);
+    if(next.length===6){
+      setTimeout(()=>{
+        if(step==='new'){setStep('confirm');setErr('');}
+        else{
+          if(next!==newPin){setErr('รหัสผ่านไม่ตรงกัน ลองใหม่');setConfirmPin('');triggerShake();}
+          else{const auth=loadAuth();auth[emp.id]={password:next,changed:true};saveAuth(auth);onDone();}
+        }
+      },120);
+    }
+  }
+  const dots=Array.from({length:6},(_,i)=>({filled:current.length>i}));
+  const keys=['1','2','3','4','5','6','7','8','9','empty','0','del'];
+  return(
+    <div style={{position:'fixed',inset:0,zIndex:999,background:'rgba(12,100,120,0.5)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Prompt',sans-serif"}}>
+      <div style={{background:'#fff',borderRadius:24,padding:'32px 24px',width:'calc(100% - 40px)',maxWidth:380,boxShadow:'0 24px 60px rgba(12,100,120,0.25)',animation:'empUp .4s cubic-bezier(0.16,1,0.3,1)'}}>
+        <div style={{width:60,height:60,borderRadius:18,background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:28,boxShadow:'0 6px 20px rgba(9,209,199,0.3)'}}>🔐</div>
+        <div style={{textAlign:'center',fontSize:'1.2rem',fontWeight:700,color:'var(--txt)',marginBottom:4}}>ตั้งรหัสผ่านใหม่</div>
+        <div style={{textAlign:'center',fontSize:'0.8rem',color:'var(--txt3)',marginBottom:20,fontFamily:"'Noto Sans Thai',sans-serif",lineHeight:1.6}}>
+          {step==='new'?<>สวัสดีคุณ <strong>{emp.displayName}</strong><br/>กรุณาตั้งรหัสผ่านตัวเลข 6 หลักใหม่</>:<>กรุณากรอกรหัสผ่านอีกครั้ง<br/>เพื่อยืนยัน</>}
+        </div>
+        {err&&<div style={{background:'#fff3f3',border:'1px solid #ffc8c8',borderRadius:10,padding:'8px 12px',color:'#cc3333',fontSize:'0.8rem',textAlign:'center',marginBottom:12,fontFamily:"'Noto Sans Thai',sans-serif"}}>{err}</div>}
+        <div style={{textAlign:'center',fontSize:'0.72rem',fontWeight:600,color:'var(--txt3)',letterSpacing:'1px',textTransform:'uppercase',marginBottom:14,fontFamily:"'Noto Sans Thai',sans-serif"}}>{step==='new'?'กรอกรหัสผ่านใหม่':'ยืนยันรหัสผ่าน'}</div>
+        <div style={{display:'flex',gap:10,justifyContent:'center',marginBottom:20}}>
+          {dots.map((d,i)=>(
+            <div key={i} style={{width:46,height:56,borderRadius:12,border:`2px solid ${d.filled?'var(--teal)':'var(--teal-border)'}`,background:d.filled?'var(--teal)':'var(--teal-dim)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.4rem',fontWeight:700,color:d.filled?'#fff':'var(--mid-teal)',transition:'0.15s',transform:d.filled?'scale(1.05)':'scale(1)',animation:doShakeNow?'shake 0.4s ease':undefined}}>
+              {d.filled?'●':''}
+            </div>
+          ))}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,maxWidth:260,margin:'0 auto'}}>
+          {keys.map((k,i)=>(
+            k==='empty'?<div key={i}/>:
+            <button key={i} onClick={()=>handleKey(k)} style={{height:52,borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt)',fontFamily:"'Space Mono',monospace",fontSize:'1.2rem',fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'0.15s'}}>
+              {k==='del'?<i className="ti ti-backspace"/>:k}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -389,11 +1622,11 @@ function NavBtn({active,icon,label,onClick}){
 }
 function BottomNav({activePage,onGoHome,onGoLog,onGoScan,onGoAdmin,onGoSetup}){
   return(
-    <div style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:390,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
+    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:390,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
       <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome}/>
       <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog}/>
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
-        <button onClick={onGoScan} style={{position:'absolute',bottom:8,width:52,height:52,borderRadius:'50%',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35)',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)'}}>
+        <button className="cin-scan-fab" onClick={onGoScan} style={{position:'absolute',bottom:8,width:52,height:52,borderRadius:'50%',background:'linear-gradient(135deg, var(--teal), var(--mid-teal))',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px var(--bg), 0 6px 20px rgba(9,209,199,0.35)',transition:'.2s cubic-bezier(0.34,1.56,0.64,1)'}}>
           <i className="ti ti-scan" style={{fontSize:22,color:'#fff'}}/>
         </button>
       </div>
@@ -416,12 +1649,12 @@ function PinModal({target,correctPin,onSuccess,onClose}){
   };
   const del=()=>{setBuf(p=>p.slice(0,-1));setError('');};
   return(
-    <div style={{position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end'}} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:390,margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)'}}>
+    <div className="cin-pin-overlay" style={{position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end'}} onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="cin-pin-sheet" style={{background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:390,margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)'}}>
         <div style={{width:36,height:4,background:'var(--teal-border)',borderRadius:100,margin:'0 auto 24px'}}/>
         <div style={{textAlign:'center',fontSize:28,marginBottom:8}}>🔒</div>
         <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,textAlign:'center',color:'var(--txt)',marginBottom:4}}>Admin Mode</div>
-        <div style={{fontSize:12,color:'var(--txt3)',textAlign:'center',marginBottom:20}}>กรอกรหัส PIN เพื่อเข้าสู่โหมด Admin</div>
+        <div style={{fontSize:12,color:'var(--txt3)',textAlign:'center',marginBottom:20}}>กรอกรหัส PIN เพื่อปลดล็อค</div>
         <div style={{display:'flex',gap:12,justifyContent:'center',marginBottom:20,animation:shake?'shake .3s ease':'none'}}>
           {Array.from({length:6},(_,i)=><div key={i} style={{width:14,height:14,borderRadius:'50%',border:`2px solid ${i<buf.length?'var(--teal)':'var(--teal-border)'}`,background:i<buf.length?'var(--teal)':'transparent',transition:'.2s',boxShadow:i<buf.length?'0 0 8px rgba(9,209,199,0.35)':'none'}}/>)}
         </div>
@@ -509,8 +1742,8 @@ function PageHome({items,logs,onGoScan}){
   const Card=({children})=><div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:'4px 16px',boxShadow:'var(--shadow-sm)'}}>{children}</div>;
   const Eyebrow=({children})=><div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'var(--txt3)',letterSpacing:'1.6px',textTransform:'uppercase',marginBottom:8,marginTop:20}}>{children}</div>;
   return(
-    <div style={{animation:'fadeUp .2s ease'}}>
-      <div style={{background:'linear-gradient(135deg, #0C6478 0%, #213A58 100%)',borderRadius:28,padding:22,marginTop:14,marginBottom:4,position:'relative',overflow:'hidden',boxShadow:'0 8px 32px rgba(33,58,88,0.22)'}}>
+    <div className="page-cinematic">
+      <div className="cin-hero-card" style={{background:'linear-gradient(135deg, #0C6478 0%, #213A58 100%)',borderRadius:28,padding:22,marginTop:14,marginBottom:4,position:'relative',overflow:'hidden',boxShadow:'0 8px 32px rgba(33,58,88,0.22)'}}>
         <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,borderRadius:'50%',background:'rgba(255,255,255,0.04)'}}/>
         <div style={{fontSize:10,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace",letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:6}}>สัปดาห์นี้</div>
         <div style={{display:'flex',alignItems:'baseline',gap:10}}>
@@ -525,12 +1758,12 @@ function PageHome({items,logs,onGoScan}){
         </button>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:12}}>
-        <StatCard icon="ti-package" value={items.length} label="รายการอุปกรณ์" accent="var(--teal)" dimBg="var(--teal-dim)" borderColor="var(--teal-border)"/>
-        <StatCard icon="ti-clipboard-list" value={tl.length} label="เบิกวันนี้" accent="var(--mint)" dimBg="var(--mint-dim)" borderColor="var(--mint-border)"/>
+        <div className="cin-stat-1"><StatCard icon="ti-package" value={items.length} label="รายการอุปกรณ์" accent="var(--teal)" dimBg="var(--teal-dim)" borderColor="var(--teal-border)"/></div>
+        <div className="cin-stat-2"><StatCard icon="ti-clipboard-list" value={tl.length} label="เบิกวันนี้" accent="var(--mint)" dimBg="var(--mint-dim)" borderColor="var(--mint-border)"/></div>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:10}}>
-        <StatCard icon="ti-qrcode" value={items.length} label="QR ที่ออกแล้ว" accent="var(--mid-teal)" dimBg="#E8F3F5" borderColor="#A0CDD5"/>
-        <StatCard icon="ti-alert-triangle" value={lo.length} label="สต๊อกใกล้หมด" accent={lo.length>0?'#CC6A00':'var(--mid-teal)'} dimBg={lo.length>0?'#FFF4EC':'#E8F3F5'} borderColor={lo.length>0?'#FFC899':'#A0CDD5'}/>
+        <div className="cin-stat-3"><StatCard icon="ti-qrcode" value={items.length} label="QR ที่ออกแล้ว" accent="var(--mid-teal)" dimBg="#E8F3F5" borderColor="#A0CDD5"/></div>
+        <div className="cin-stat-4"><StatCard icon="ti-alert-triangle" value={lo.length} label="สต๊อกใกล้หมด" accent={lo.length>0?'#CC6A00':'var(--mid-teal)'} dimBg={lo.length>0?'#FFF4EC':'#E8F3F5'} borderColor={lo.length>0?'#FFC899':'#A0CDD5'}/></div>
       </div>
       <Eyebrow>เบิกล่าสุด</Eyebrow>
       <Card>{recent.length?recent.map((l,i)=><LogRow key={i} l={l} items={items} showTime={false} isLast={i===recent.length-1}/>):<div style={{color:'var(--txt3)',fontSize:12,textAlign:'center',padding:16}}>ยังไม่มีรายการ</div>}</Card>
@@ -551,30 +1784,28 @@ function PageHome({items,logs,onGoScan}){
   );
 }
 
-/* ── ItemActionPanel (with EmployeePicker) ── */
-function ItemActionPanel({curItem,onConfirm,onCancel}){
+/* ── ItemActionPanel (with EmployeePicker & Lock on Restock) ── */
+function ItemActionPanel({curItem,onConfirm,onCancel,loggedInEmp,setupUnlocked,onUnlock}){
   const [mode,setMode]=useState('withdraw');
-  const [selEmp,setSelEmp]=useState(null);
   const [qty,setQty]=useState(1);
   const [note,setNote]=useState('');
   const isLow=curItem.stock<=curItem.min;
   const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
   const LS={fontSize:12,color:'var(--txt2)',display:'block',marginBottom:6,marginTop:14,fontWeight:500};
   const MC={
-    withdraw:{label:'เบิกอุปกรณ์',icon:'ti-arrow-up-right',color:'var(--teal)',grad:'linear-gradient(135deg,var(--teal),var(--mid-teal))',shadow:'0 6px 20px rgba(9,209,199,0.3)',userLabel:'ชื่อผู้เบิก',qtyLabel:'จำนวนที่เบิก',btnLabel:'ยืนยันการเบิก'},
-    return:{label:'คืนอุปกรณ์',icon:'ti-arrow-back-up',color:'#4A90D9',grad:'linear-gradient(135deg,#4A90D9,#2c6cb0)',shadow:'0 6px 20px rgba(74,144,217,0.3)',userLabel:'ชื่อผู้คืน',qtyLabel:'จำนวนที่คืน',btnLabel:'ยืนยันการคืน'},
-    restock:{label:'เติม Stock',icon:'ti-plus',color:'var(--mint)',grad:'linear-gradient(135deg,var(--mint),#29b889)',shadow:'0 6px 20px rgba(70,223,177,0.3)',userLabel:'ชื่อผู้เติม',qtyLabel:'จำนวนที่เพิ่ม',btnLabel:'ยืนยันการเติม Stock'},
+    withdraw:{label:'เบิกอุปกรณ์',icon:'ti-arrow-up-right',color:'var(--teal)',grad:'linear-gradient(135deg,var(--teal),var(--mid-teal))',shadow:'0 6px 20px rgba(9,209,199,0.3)',actionLabel:'ผู้เบิก',qtyLabel:'จำนวนที่เบิก',btnLabel:'ยืนยันการเบิก'},
+    return:{label:'คืนอุปกรณ์',icon:'ti-arrow-back-up',color:'#4A90D9',grad:'linear-gradient(135deg,#4A90D9,#2c6cb0)',shadow:'0 6px 20px rgba(74,144,217,0.3)',actionLabel:'ผู้คืน',qtyLabel:'จำนวนที่คืน',btnLabel:'ยืนยันการคืน'},
+    restock:{label:'เติม Stock',icon:'ti-plus',color:'var(--mint)',grad:'linear-gradient(135deg,var(--mint),#29b889)',shadow:'0 6px 20px rgba(70,223,177,0.3)',actionLabel:'ผู้เติม',qtyLabel:'จำนวนที่เพิ่ม',btnLabel:'ยืนยันการเติม Stock'},
   };
   const mc=MC[mode];
   const handleConfirm=()=>{
-    if(!selEmp){alert('กรุณาเลือกพนักงานก่อนยืนยัน');return;}
-    onConfirm(mode,selEmp,Number(qty),note);
-    setSelEmp(null);setQty(1);setNote('');
+    onConfirm(mode,loggedInEmp,Number(qty),note);
+    setQty(1);setNote('');
   };
   return(
-    <div style={{animation:'fadeUp .2s ease'}}>
+    <div className="page-cinematic">
       {/* Item card */}
-      <div style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:28,padding:20,margin:'14px 0 0',boxShadow:'var(--shadow-md)'}}>
+      <div className="cin-item-card" style={{background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:28,padding:20,margin:'14px 0 0',boxShadow:'var(--shadow-md)'}}>
         <div style={{fontSize:38,marginBottom:8}}>{curItem.icon}</div>
         <div style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:'var(--txt)'}}>{curItem.name}</div>
         <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'var(--txt3)',marginTop:2}}>{curItem.id}</div>
@@ -596,36 +1827,59 @@ function ItemActionPanel({curItem,onConfirm,onCancel}){
           </button>
         ))}
       </div>
-      {/* Form */}
-      <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:16,boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease'}}>
-        {/* ★ Employee Picker ★ */}
-        <EmployeePicker selected={selEmp} onSelect={setSelEmp} label={mc.userLabel}/>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-          <div><label style={LS}>{mc.qtyLabel}</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS}/></div>
-          <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{...IS,opacity:0.5}}/></div>
+      {/* Form / Lock Screen */}
+      {mode === 'restock' && !setupUnlocked ? (
+        <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:'32px 16px',textAlign:'center',boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease'}}>
+          <div style={{fontSize:42,marginBottom:12}}>🔒</div>
+          <div style={{fontSize:16,fontWeight:700,color:'var(--txt)',marginBottom:8}}>โหมดเติม Stock ถูกล็อค</div>
+          <div style={{fontSize:13,color:'var(--txt3)',marginBottom:20}}>กรุณากรอก PIN เพื่อเข้าใช้งานส่วนนี้</div>
+          <button onClick={onUnlock} style={{padding:'12px 24px',borderRadius:100,border:'none',background:'linear-gradient(135deg,var(--teal),var(--mid-teal))',color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,fontWeight:700,cursor:'pointer',boxShadow:'0 4px 12px rgba(9,209,199,0.3)',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6}}>
+            <i className="ti ti-lock-open" style={{fontSize:16}}/> กรอก PIN ปลดล็อค
+          </button>
         </div>
-        <label style={LS}>หมายเหตุ</label>
-        <input value={note} onChange={e=>setNote(e.target.value)} placeholder={mode==='restock'?'แหล่งที่มา / PO (ไม่บังคับ)':'แผนก / เหตุผล (ไม่บังคับ)'} style={IS}/>
-        <button onClick={handleConfirm} style={{width:'100%',padding:15,borderRadius:20,border:'none',background:mc.grad,color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,boxShadow:mc.shadow,marginTop:14}}>
-          <i className={`ti ${mc.icon}`} style={{fontSize:18}}/> {mc.btnLabel}
-        </button>
-      </div>
+      ) : (
+        <div style={{background:'var(--surface)',border:'1px solid var(--teal-border)',borderRadius:20,padding:16,boxShadow:'var(--shadow-sm)',animation:'slideDown .2s ease'}}>
+          <label style={LS}>{mc.actionLabel}</label>
+          <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',background:'var(--teal-dim)',border:'1.5px solid var(--teal-border)',borderRadius:14,boxShadow:'var(--shadow-sm)'}}>
+            <EmpMiniAvatar emp={loggedInEmp||{initials:'?',img:null}} size={40} radius={11}/>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:13,fontWeight:700,color:'var(--txt)',lineHeight:1.3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{loggedInEmp?.displayName||'—'}</div>
+              <div style={{fontSize:10,color:'var(--txt3)',fontFamily:"'Space Mono',monospace",marginTop:1}}>{loggedInEmp?.id||'—'}</div>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:4,padding:'3px 8px',borderRadius:100,background:'rgba(9,209,199,0.15)',border:'1px solid var(--teal-border)'}}>
+              <i className="ti ti-shield-check" style={{fontSize:11,color:'var(--mid-teal)'}}/>
+              <span style={{fontSize:10,fontWeight:700,color:'var(--mid-teal)'}}>ยืนยันแล้ว</span>
+            </div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <div><label style={LS}>{mc.qtyLabel}</label><input value={qty} onChange={e=>setQty(e.target.value)} type="number" min="1" style={IS}/></div>
+            <div><label style={LS}>หน่วย</label><input value={curItem.unit} readOnly style={{...IS,opacity:0.5}}/></div>
+          </div>
+          <label style={LS}>หมายเหตุ</label>
+          <input value={note} onChange={e=>setNote(e.target.value)} placeholder={mode==='restock'?'แหล่งที่มา / PO (ไม่บังคับ)':'แผนก / เหตุผล (ไม่บังคับ)'} style={IS}/>
+          <button onClick={handleConfirm} style={{width:'100%',padding:15,borderRadius:20,border:'none',background:mc.grad,color:'#fff',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,boxShadow:mc.shadow,marginTop:14}}>
+            <i className={`ti ${mc.icon}`} style={{fontSize:18}}/> {mc.btnLabel}
+          </button>
+        </div>
+      )}
       <button onClick={onCancel} style={{width:'100%',padding:13,borderRadius:20,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:15,fontWeight:600,cursor:'pointer',marginTop:8}}>ยกเลิก</button>
     </div>
   );
 }
 
 /* ── PageScan ── */
-function PageScan({items,curItem,onScan,onConfirm,onCancel,onOpenCamera}){
+function PageScan({items,curItem,onScan,onConfirm,onCancel,onOpenCamera,loggedInEmp,setupUnlocked,onUnlockRestock}){
   const [manualCode,setManualCode]=useState('');
   const [nameSearch,setNameSearch]=useState('');
   const [searchResults,setSearchResults]=useState([]);
   useEffect(()=>{if(!nameSearch.trim()){setSearchResults([]);return;}setSearchResults(items.filter(it=>fuzzyMatch(it.name,nameSearch)||fuzzyMatch(it.cat,nameSearch)));},[nameSearch,items]);
   const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)'};
-  if(curItem)return <ItemActionPanel curItem={curItem} onConfirm={onConfirm} onCancel={onCancel}/>;
+  
+  if(curItem)return <ItemActionPanel curItem={curItem} onConfirm={onConfirm} onCancel={onCancel} loggedInEmp={loggedInEmp} setupUnlocked={setupUnlocked} onUnlock={onUnlockRestock}/>;
+  
   return(
-    <div style={{animation:'fadeUp .2s ease'}}>
-      <div onClick={onOpenCamera} style={{margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:28,cursor:'pointer'}}>
+    <div className="page-cinematic">
+      <div className="cin-scan-area" onClick={onOpenCamera} style={{margin:'20px 0 16px',textAlign:'center',padding:'36px 20px',background:'var(--teal-dim)',border:'2px dashed var(--teal-border)',borderRadius:28,cursor:'pointer'}}>
         <i className="ti ti-camera" style={{fontSize:48,color:'var(--teal)',display:'block',marginBottom:10}}/>
         <div style={{fontFamily:"'Outfit',sans-serif",fontSize:22,fontWeight:800,color:'var(--navy)',letterSpacing:'-0.5px'}}>แตะเพื่อเปิดกล้อง</div>
         <div style={{fontSize:12,color:'var(--txt3)',marginTop:4}}>สแกน QR Code ด้วยกล้องโทรศัพท์</div>
@@ -697,7 +1951,7 @@ function PageLog({logs,items,onSync}){
   const IS={background:'var(--surface)',border:'1.5px solid var(--teal-border)',borderRadius:14,color:'var(--txt)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:14,padding:'13px 14px',width:'100%',outline:'none',boxShadow:'var(--shadow-sm)',marginBottom:10};
   const Pill=({children,color,bg,border})=><span style={{display:'inline-flex',alignItems:'center',gap:4,padding:'4px 10px',borderRadius:100,fontSize:11,fontWeight:600,background:bg,color,border:`1px solid ${border}`}}>{children}</span>;
   return(
-    <div style={{animation:'fadeUp .2s ease'}}>
+    <div className="page-cinematic">
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:14,marginBottom:10}}>
         <select value={fw} onChange={e=>setFw(e.target.value)} style={SS}><option value="all">ทุกช่วงเวลา</option><option value="today">วันนี้</option><option value="week">สัปดาห์นี้</option><option value="month">เดือนนี้</option></select>
         <button onClick={onSync} style={{padding:'10px 16px',borderRadius:14,border:'1.5px solid var(--teal-border)',background:'var(--surface)',color:'var(--txt2)',fontFamily:"'Noto Sans Thai',sans-serif",fontSize:13,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
@@ -798,7 +2052,7 @@ function AdminContent({items,onAddItem,onDelItem,onLock}){
 }
 function PageAdmin({items,setupUnlocked,onAddItem,onDelItem,onLock,onUnlock}){
   if(!setupUnlocked)return(
-    <div style={{padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease'}}>
+    <div className="page-cinematic" style={{padding:'40px 0',textAlign:'center'}}>
       <div style={{width:72,height:72,borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:32}}>🔐</div>
       <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:'var(--txt)',marginBottom:6}}>เพิ่มอุปกรณ์</div>
       <div style={{fontSize:13,color:'var(--txt3)',marginBottom:24}}>ต้องกรอก PIN เพื่อเข้าถึง</div>
@@ -807,7 +2061,7 @@ function PageAdmin({items,setupUnlocked,onAddItem,onDelItem,onLock,onUnlock}){
       </button>
     </div>
   );
-  return <div style={{animation:'fadeUp .2s ease'}}><AdminContent items={items} onAddItem={onAddItem} onDelItem={onDelItem} onLock={onLock}/></div>;
+  return <div className="page-cinematic"><AdminContent items={items} onAddItem={onAddItem} onDelItem={onDelItem} onLock={onLock}/></div>;
 }
 
 /* ── PageSetup ── */
@@ -878,7 +2132,7 @@ function SetupContent({cfg,onSave,onSync,onCopyGAS,onLock}){
 }
 function PageSetup({cfg,setupUnlocked,onSave,onSync,onLock,onUnlock}){
   if(!setupUnlocked)return(
-    <div style={{padding:'40px 0',textAlign:'center',animation:'fadeUp .2s ease'}}>
+    <div className="page-cinematic" style={{padding:'40px 0',textAlign:'center'}}>
       <div style={{width:72,height:72,borderRadius:'50%',background:'var(--teal-dim)',border:'2px solid var(--teal-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:32}}>⚙️</div>
       <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,color:'var(--txt)',marginBottom:6}}>ตั้งค่าระบบ</div>
       <div style={{fontSize:13,color:'var(--txt3)',marginBottom:24}}>ต้องกรอก PIN เพื่อเข้าถึง</div>
@@ -887,11 +2141,13 @@ function PageSetup({cfg,setupUnlocked,onSave,onSync,onLock,onUnlock}){
       </button>
     </div>
   );
-  return <div style={{animation:'fadeUp .2s ease'}}><SetupContent cfg={cfg} onSave={onSave} onSync={onSync} onLock={onLock}/></div>;
+  return <div className="page-cinematic"><SetupContent cfg={cfg} onSave={onSave} onSync={onSync} onLock={onLock}/></div>;
 }
 
 /* ── Main App ── */
 function StockScan(){
+  const [loggedInEmp,setLoggedInEmp]=useState(null);
+  const [needChangePw,setNeedChangePw]=useState(false);
   const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
   const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
   const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
@@ -905,12 +2161,17 @@ function StockScan(){
   const [showDirectory,setShowDirectory]=useState(false);
   const [toast,setToast]=useState(null);
 
+  const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
+
   useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
   useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
   useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
-  useEffect(()=>{syncData();},[]);
+  useEffect(()=>{if(loggedInEmp)syncData();},[loggedInEmp]);
 
-  const showToast=useCallback((msg,color)=>{setToast({msg,color:color||'#213A58'});setTimeout(()=>setToast(null),2800);},[]);
+  // ── Auth guards (after all hooks) ──
+  if(!loggedInEmp) return <LoginScreen onLogin={(emp,isFirst)=>{setLoggedInEmp(emp);setNeedChangePw(isFirst);}}/>;
+  if(needChangePw) return <ChangePasswordScreen emp={loggedInEmp} onDone={()=>setNeedChangePw(false)}/>;
+  function handleLogout(){if(!window.confirm('ต้องการออกจากระบบ?'))return;setLoggedInEmp(null);setNeedChangePw(false);setSetupUnlocked(false);setActivePage('home');}
 
   async function fetchViaFetch(url){const res=await fetch(url+(url.includes('?')?'&':'?')+'_t='+Date.now(),{method:'GET',redirect:'follow'});const text=await res.text();const clean=text.trim();if(clean.startsWith('{')||clean.startsWith('['))return JSON.parse(clean);const m=clean.match(/^[^(]+\((.+)\)\s*;?\s*$/s);if(m)return JSON.parse(m[1]);throw new Error('Unexpected response');}
   function fetchViaJsonp(url){return new Promise((resolve,reject)=>{const cbName='_gs_'+Date.now()+'_'+Math.floor(Math.random()*99999);const script=document.createElement('script');let settled=false;const finish=fn=>{if(settled)return;settled=true;clearTimeout(timer);delete window[cbName];if(script.parentNode)script.parentNode.removeChild(script);fn();};const timer=setTimeout(()=>finish(()=>reject(new Error('timeout'))),15000);window[cbName]=data=>finish(()=>resolve(data));script.src=url+(url.includes('?')?'&':'?')+'callback='+cbName+'&_t='+Date.now();script.onerror=()=>finish(()=>reject(new Error('blocked')));document.head.appendChild(script);});}
@@ -928,25 +2189,34 @@ function StockScan(){
 
   function requestAdminAccess(){setActivePage('admin');if(!setupUnlocked)setPinTarget('admin');}
   function requestSetupAccess(){setActivePage('setup');if(!setupUnlocked)setPinTarget('setup');}
-  function onPinSuccess(target){setSetupUnlocked(true);setPinTarget(null);showToast(target==='setup'?'✓ เข้าสู่หน้าตั้งค่าแล้ว':'✓ เข้าสู่โหมด Admin แล้ว');}
-  function lockAdmin(){setSetupUnlocked(false);showToast('🔒 ล็อค Admin แล้ว');setActivePage('home');}
+  function requestRestockAccess(){setPinTarget('restock');}
+  
+  function onPinSuccess(target){
+    setSetupUnlocked(true);
+    setPinTarget(null);
+    if(target==='restock') showToast('✓ ปลดล็อคโหมดเติม Stock แล้ว');
+    else if(target==='setup') showToast('✓ เข้าสู่หน้าตั้งค่าแล้ว');
+    else showToast('✓ เข้าสู่โหมด Admin แล้ว');
+  }
+  
+  function lockAdmin(){setSetupUnlocked(false);showToast('🔒 ล็อคการตั้งค่า/Admin แล้ว');setActivePage('home');}
   function scanItem(code){const it=items.find(x=>x.id===code);if(!it){showToast('ไม่เจอ QR นี้ในระบบ ❌','#FF4D4D');return;}setCurItem(it);setActivePage('scan');}
 
   async function confirmAction(mode,empObj,qty,note){
     if(!curItem)return;
-    if(!empObj){showToast('กรุณาเลือกพนักงานก่อน ⚠','#FFB700');return;}
     if(qty<1){showToast('จำนวนต้องมากกว่า 0','#FFB700');return;}
     if(mode==='withdraw'&&qty>curItem.stock){showToast('จำนวนเกินสต๊อก ❌','#FF4D4D');return;}
+    const emp=empObj||loggedInEmp;
     const ts=nowISO();const snap={...curItem};
     const modeLabel=mode==='withdraw'?'เบิก':mode==='return'?'คืน':'เติม Stock';
     const toastColor=mode==='withdraw'?'#213A58':mode==='return'?'#4A90D9':'var(--mid-teal)';
     setItems(prev=>prev.map(x=>{if(x.id!==snap.id)return x;if(mode==='withdraw')return{...x,stock:x.stock-qty};return{...x,stock:x.stock+qty};}));
-    setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:empObj.id,note:note||'',action:mode},...prev]);
+    setLogs(prev=>[{timestamp:ts,qr_id:snap.id,item_name:snap.name,cat:snap.cat,quantity:qty,unit:snap.unit,employee:emp.id,note:note||'',action:mode},...prev]);
     setCurItem(null);
     showToast(`กำลังบันทึก${modeLabel} "${snap.name}" ☁...`,toastColor);
     if(cfg.url){
       try{
-        await gasPost(cfg.url,{action:mode,timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:empObj.id,employee_name:empObj.name,employee_id:empObj.id,note:note||''});
+        await gasPost(cfg.url,{action:mode,timestamp:ts,qr_id:snap.id,item_name:snap.name,category:snap.cat,quantity:qty,unit:snap.unit,employee:emp.id,employee_name:emp.name,employee_id:emp.id,note:note||''});
         showToast(`${modeLabel} "${snap.name}" ${qty} ${snap.unit} สำเร็จ ✓`,toastColor);
         setTimeout(syncData,1000);
       }catch(e){showToast(`บันทึกในเครื่องแล้ว (ส่งไป Sheet ไม่ได้)`,'#FFB700');}
@@ -973,16 +2243,16 @@ function StockScan(){
 
   return(
     <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:88}}>
-      <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)}/>
+      <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)} loggedInEmp={loggedInEmp} onLogout={handleLogout}/>
       <div style={{padding:'0 14px'}}>
         {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')}/>}
-        {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmAction} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)}/>}
+        {activePage==='scan'&&<PageScan items={items} curItem={curItem} onScan={scanItem} onConfirm={confirmAction} onCancel={()=>setCurItem(null)} onOpenCamera={()=>setShowCamera(true)} loggedInEmp={loggedInEmp} setupUnlocked={setupUnlocked} onUnlockRestock={requestRestockAccess}/>}
         {activePage==='log'&&<PageLog logs={logs} items={items} onSync={syncData}/>}
         {activePage==='admin'&&<PageAdmin items={items} setupUnlocked={setupUnlocked} onAddItem={addItem} onDelItem={delItem} onLock={lockAdmin} onUnlock={requestAdminAccess}/>}
-        {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} onSave={saveSettings} onSync={syncData} onLock={()=>{setSetupUnlocked(false);showToast('🔒 ล็อค ตั้งค่า แล้ว');setActivePage('home');}} onUnlock={requestSetupAccess}/>}
+        {activePage==='setup'&&<PageSetup cfg={cfg} setupUnlocked={setupUnlocked} onSave={saveSettings} onSync={syncData} onLock={lockAdmin} onUnlock={requestSetupAccess}/>}
       </div>
       <BottomNav activePage={activePage} onGoHome={()=>setActivePage('home')} onGoLog={()=>setActivePage('log')} onGoScan={()=>setActivePage('scan')} onGoAdmin={requestAdminAccess} onGoSetup={requestSetupAccess}/>
-      {pinTarget&&<PinModal target={pinTarget} correctPin={SECURE_PIN} onSuccess={()=>onPinSuccess(pinTarget)} onClose={()=>{setPinTarget(null);if(!setupUnlocked)setActivePage('home');}}/>}
+      {pinTarget&&<PinModal target={pinTarget} correctPin={SECURE_PIN} onSuccess={()=>onPinSuccess(pinTarget)} onClose={()=>{setPinTarget(null);if(!setupUnlocked&&pinTarget!=='restock')setActivePage('home');}}/>}
       {showCamera&&<CameraOverlay onScan={code=>{setShowCamera(false);scanItem(code);}} onClose={()=>setShowCamera(false)}/>}
       {/* ★ Employee Directory Overlay ★ */}
       <EmployeeDirectory isOpen={showDirectory} onClose={()=>setShowDirectory(false)} selectMode={false}/>
@@ -992,6 +2262,55 @@ function StockScan(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<StockScan/>);
+
+/* ── Cinematic Engine ── */
+(function CinematicEngine(){
+  const EASE = 'cubic-bezier(0.16,1,0.3,1)';
+  let lastKey = '';
+  function retrig(el){ el.style.animationName='none'; void el.offsetHeight; el.style.animationName=''; }
+  function staggerIn(els, step, start){
+    els.forEach((el,i)=>{
+      if(el.dataset.cin) return;
+      el.dataset.cin='1';
+      el.style.opacity='0';
+      el.style.transform='translateY(22px) scale(0.94)';
+      setTimeout(()=>{
+        el.style.transition=`opacity 0.44s ${EASE}, transform 0.44s ${EASE}`;
+        el.style.opacity='1';
+        el.style.transform='translateY(0) scale(1)';
+      }, start + i*step);
+    });
+  }
+  const obs = new MutationObserver(()=>{
+    const root = document.getElementById('root');
+    if(!root) return;
+    const pages = root.querySelectorAll('.page-cinematic');
+    const key = pages.length + (pages[0] ? pages[0].children.length : 0) + root.querySelector('[class*="page-"]')?.className;
+    if(key !== lastKey){
+      lastKey = key;
+      pages.forEach(p => retrig(p));
+      setTimeout(()=>{
+        pages.forEach(p=>{
+          const directCards = Array.from(p.children).filter(el=>{
+            const s = el.getAttribute('style')||'';
+            return s.includes('borderRadius:28') || s.includes('borderRadius:20');
+          });
+          staggerIn(directCards, 70, 100);
+          p.querySelectorAll('.cin-stat-1,.cin-stat-2,.cin-stat-3,.cin-stat-4').forEach((card,ci)=>{
+            if(card.dataset.popped) return;
+            card.dataset.popped='1';
+            const num = card.querySelector('div');
+            if(num){ setTimeout(()=>{ num.style.transition='transform 0.38s cubic-bezier(0.34,1.56,0.64,1)'; num.style.transform='scale(1.28)'; setTimeout(()=>num.style.transform='scale(1)',190); }, 160+ci*110); }
+          });
+        });
+      }, 55);
+    }
+    const empGrid = root.querySelector('.emp-grid-list');
+    if(empGrid){ staggerIn(Array.from(empGrid.querySelectorAll('.emp-grid-card:not([data-cin])')), 32, 35); }
+  });
+  obs.observe(document.body, { childList:true, subtree:true });
+})();
+
 </script>
 </body>
 </html>
