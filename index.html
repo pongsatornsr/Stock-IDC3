@@ -1051,12 +1051,12 @@ function displayTs(s){try{return new Date(s).toLocaleString('th-TH',{year:'numer
 function normalizeItems(arr){if(!Array.isArray(arr))return[];return arr.map(it=>({id:String(it.id||it.ID||'').trim(),name:String(it.name||it.Name||'').trim(),cat:String(it.cat||it.category||it.Category||'').trim(),stock:Number(String(it.stock??it.Stock??0).replace(/[^0-9.]/g,''))||0,unit:String(it.unit||it.Unit||'อัน').trim(),min:Number(String(it.min??it.Min??0).replace(/[^0-9.]/g,''))||0,icon:String(it.icon||it.Icon||'📦').trim()})).filter(it=>it.id);}
 function normalizeLogs(arr){if(!Array.isArray(arr))return[];return arr.map(l=>({timestamp:String(l.timestamp||'').trim(),qr_id:String(l.qr_id||'').trim(),item_name:String(l.item_name||l.Item_Name||l.name||'').trim(),cat:String(l.cat||l.category||'').trim(),quantity:parseInt(String(l.quantity??l.Quantity??0))||0,unit:String(l.unit||l.Unit||'').trim(),employee:String(l.employee||l.Employee||'').trim(),note:String(l.note||l.Note||'').trim(),action:String(l.action||'withdraw').trim()}));}
 function uid(){return 'QR-'+Date.now().toString(36).toUpperCase().slice(-4)+Math.random().toString(36).substr(2,3).toUpperCase();}
-function nowISO(){return new Date().toISOString();}
+function nowISO(){const now=new Date();const thai=new Date(now.getTime()+7*60*60*1000);return thai.toISOString().replace('Z','+07:00');}
 function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;}}
 function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
 const SECURE_PIN="240739";
-const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbx21Q12dXKy-poXtyqrSmdWCqcIHkXXHSOOKoxja8Qo3ZmrYGP_O7CEm9zg-I3mhHBJ/exec";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbwCZFqt-GAC31V7HhhAGQYmXFkKMJ8Yx3lEmMfClb_cIj_XWFQYVfvSrmQOKNV7YkwR/exec/exec";
 
 /* ── EmpMiniAvatar ── */
 function EmpMiniAvatar({emp,size=32,radius=9}){
@@ -2239,7 +2239,7 @@ function StockScan(){
   const [authData,setAuthData]=useState(()=>loadAuthCache());
   const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
   const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
-  const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL;return c;});
+  const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(DEFAULT_GAS_URL)c.url=DEFAULT_GAS_URL;else if(!c.url)c.url='';return c;});
   const [activePage,setActivePage]=useState('home');
   const [curItem,setCurItem]=useState(null);
   const [setupUnlocked,setSetupUnlocked]=useState(false);
