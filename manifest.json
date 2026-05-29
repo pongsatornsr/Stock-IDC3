@@ -1,11 +1,44 @@
 {
-  "name": "StockScan - IDC3",
-  "short_name": "StockScan",
-  "icons": [
-    { "src": "images/android_192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "images/android_144x144.png", "sizes": "144x144", "type": "image/png" }
-  ],
+  "name": "STOCK IDC-3",
+  "short_name": "STOCK IDC-3",
+  "description": "INET IDC-3 Stock & Asset Portal",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#EEF5F7",
-  "theme_color": "#09D1C7"
+  "background_color": "#07111E",
+  "theme_color": "#09D1C7",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/android_48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/android_72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/android_96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/android_144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/android_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/android_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
