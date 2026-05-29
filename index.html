@@ -1283,7 +1283,7 @@ function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;
 function fuzzyMatch(text,query){if(!query)return true;const t=text.toLowerCase();return query.toLowerCase().trim().split(/\s+/).every(w=>t.includes(w));}
 
 const SECURE_PIN="240739";
-const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbwTT1Ur-1FCJL7G-aXRiYY_fKhJhzMm41Z3Gp4XkSfNiAYWH74LNK-iw0yHBzg_K3Q/exec";
+const DEFAULT_GAS_URL="https://script.google.com/macros/s/AKfycbwvm5qqnYuqnVmTjirjtJS3JxmQs7mPu9myt9J_y23Mrw8c-zbVKnZLsjDXLviBB9im/exec";
 
 /* ── EmpMiniAvatar ── */
 function EmpMiniAvatar({emp,size=32,radius=9}){
@@ -2470,23 +2470,23 @@ function StockScan({initialUser}){
   const [needChangePw,setNeedChangePw]=useState(false);
   // authData: { [empId]: { hash, changed, updatedAt } }
   const [authData,setAuthData]=useState(()=>loadAuthCache());
-  const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss2_items',[])));
-  const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss2_logs',[])));
-  const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss2_cfg',{});if(DEFAULT_GAS_URL)c.url=DEFAULT_GAS_URL;else if(!c.url)c.url='';return c;});
+  const [items,setItems]=useState(()=>normalizeItems(loadLocal('ss_items',[])));
+  const [logs,setLogs]=useState(()=>normalizeLogs(loadLocal('ss_logs',[])));
+  const [cfg,setCfg]=useState(()=>{const c=loadLocal('ss_cfg',{});if(!c.url)c.url=DEFAULT_GAS_URL||'';return c;});
   const [activePage,setActivePage]=useState('home');
   const [curItem,setCurItem]=useState(null);
   const [setupUnlocked,setSetupUnlocked]=useState(false);
   const [isSyncing,setIsSyncing]=useState(false);
   const [syncStatus,setSyncStatus]=useState('none');
   // authReady: ใช้แค่ backward compat — ใช้ authSynced แทนแล้ว
-  const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
+  const [authReady,setAuthReady]=useState(()=>!DEFAULT_GAS_URL&&!loadLocal('ss_cfg',{}).url);
   const [syncFailed,setSyncFailed]=useState(false);
   // authSynced: true เมื่อ sync GAS สำเร็จ หรือมี cache อยู่แล้ว (เครื่องเคยใช้งาน)
   // ถ้า initialUser มาจาก Portal ให้ถือว่า auth ผ่านแล้ว
   const [authSynced, setAuthSynced] = useState(()=>{
     if(initialUser)return true;
     const cached=loadAuthCache();
-    return Object.keys(cached).length>0 || (!DEFAULT_GAS_URL&&!loadLocal('ss2_cfg',{}).url);
+    return Object.keys(cached).length>0 || (!DEFAULT_GAS_URL&&!loadLocal('ss_cfg',{}).url);
   });
   const [pinTarget,setPinTarget]=useState(null);
   const [showCamera,setShowCamera]=useState(false);
@@ -2497,9 +2497,9 @@ function StockScan({initialUser}){
 
   // sync authData cache whenever it changes
   useEffect(()=>{saveAuthCache(authData);},[authData]);
-  useEffect(()=>{localStorage.setItem('ss2_items',JSON.stringify(items));},[items]);
-  useEffect(()=>{localStorage.setItem('ss2_logs',JSON.stringify(logs));},[logs]);
-  useEffect(()=>{localStorage.setItem('ss2_cfg',JSON.stringify(cfg));},[cfg]);
+  useEffect(()=>{localStorage.setItem('ss_items',JSON.stringify(items));},[items]);
+  useEffect(()=>{localStorage.setItem('ss_logs',JSON.stringify(logs));},[logs]);
+  useEffect(()=>{localStorage.setItem('ss_cfg',JSON.stringify(cfg));},[cfg]);
   useEffect(()=>{ syncData(); }, [cfg.url]);
 
 // เผื่อไว้ให้ซิงค์อีกครั้งตอนผู้ใช้ล็อคอินเสร็จ
@@ -2789,7 +2789,7 @@ const CONDITION_OPTIONS = [
 ];
 
 /* ── Config ── */
-const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyeGxLYwKSp0PzPVYh5FjZvkJBPEuH3jbLFCdzXZ5PGZYdo5Y9Ay43MEjQkWI1Ep_bV/exec";
+const AA_DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbykNGw8_if3_D2Y34X6S7iDT9N-UKOo_myBxJVKd70ZUaKoi4e94NerP3ODw2gC1ai0/exec";
 
 /* ── Helpers ── */
 function loadLocal(key,fb){try{return JSON.parse(localStorage.getItem(key))||fb;}catch(e){return fb;}}
@@ -3171,7 +3171,11 @@ function AssetAudit({initialUser}){
   const [loggedInEmp,setLoggedInEmp]=useState(()=>resolveInitialEmp(initialUser));
   const [authData,setAuthData]=useState(()=>loadAuthCache());
   const [items,setItems]=useState(()=>normalizeItems(loadLocal('aa_items',[])));
-  const [cfg]=useState(()=>{const c=loadLocal('aa_cfg',{});if(DEFAULT_GAS_URL)c.url=DEFAULT_GAS_URL;return c;});
+  const [cfg]=useState(()=>{
+  const c=loadLocal('aa_cfg',{});
+  if(!c.url)c.url=AA_DEFAULT_GAS_URL||'';
+  return c;
+});
   const [isSyncing,setIsSyncing]=useState(false);
   const [syncStatus,setSyncStatus]=useState('none');
   const [authSynced,setAuthSynced]=useState(()=>{if(initialUser)return true;const cached=loadAuthCache();return Object.keys(cached).length>0;});
@@ -3472,7 +3476,7 @@ window.__renderAssetAudit = (el, portalUser) => ReactDOM.createRoot(el).render(<
 })();
 
 // ── Auth helpers (same as StockScan) ──
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwTT1Ur-1FCJL7G-aXRiYY_fKhJhzMm41Z3Gp4XkSfNiAYWH74LNK-iw0yHBzg_K3Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvm5qqnYuqnVmTjirjtJS3JxmQs7mPu9myt9J_y23Mrw8c-zbVKnZLsjDXLviBB9im/exec";
 
 function plHashPin(pin) {
   let h = 2166136261;
