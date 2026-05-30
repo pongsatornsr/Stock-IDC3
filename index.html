@@ -18,6 +18,31 @@
 
   <style>
   /* ══ PORTAL ══ */
+#app-container,
+#root,
+.emp-overlay,
+.page-cinematic {
+  padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+  min-height: 100% !important;
+}
+
+/* ทำให้ gradient / พื้นหลังติดขอบล่างจริง ๆ */
+#app-overlay {
+  background: #EEF5F7;
+  padding-bottom: 0 !important;
+}
+
+/* สำหรับ StockScan และ Asset Audit ให้พื้นหลังฟ้า-เขียวติดขอบ */
+#root::before,
+.emp-cin-bg,
+.cin-page-bg {
+  bottom: 0 !important;
+}
+
+/* Bottom Nav ติดขอบ */
+.cin-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 12px) !important;
+}
   :root {
     --p-bg:#07111E; --p-surface:rgba(255,255,255,0.065); --p-surface2:rgba(255,255,255,0.12);
     --p-teal:#09D1C7; --p-mid:#15919B; --p-txt:#E8F4F6;
