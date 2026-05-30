@@ -36,7 +36,7 @@
   .p-orb-1{width:400px;height:400px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(9,209,199,0.22) 0%,transparent 65%);animation-duration:12s;}
   .p-orb-2{width:350px;height:350px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(70,223,177,0.18) 0%,transparent 65%);animation-duration:15s;animation-delay:-4s;}
   @keyframes pOrbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(20px,-25px) scale(1.07);}66%{transform:translate(-15px,12px) scale(0.95);}}
-  .p-header{padding:calc(env(safe-area-inset-top,20px) + 20px) 20px 16px;animation:pSlideDown 0.65s cubic-bezier(0.16,1,0.3,1) both;flex-shrink:0;}
+  .p-header{padding:54px 20px 16px;animation:pSlideDown 0.65s cubic-bezier(0.16,1,0.3,1) both;flex-shrink:0;}
   @keyframes pSlideDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:none;}}
   .p-company-logo{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:18px;backdrop-filter:blur(8px);}
   .p-inet-badge{background:linear-gradient(135deg,var(--p-teal),var(--p-mid));color:#fff;font-family:'Outfit',sans-serif;font-weight:900;font-size:15px;padding:6px 16px;border-radius:100px;letter-spacing:1.5px;box-shadow:0 4px 14px rgba(9,209,199,0.38);flex-shrink:0;}
@@ -72,8 +72,7 @@
   .ov-app-info{display:flex;align-items:center;gap:8px;flex:1;overflow:hidden;}
   .ov-app-icon-wrap{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;}
   .ov-app-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;min-height:0;width:100%;}
-  #app-root{width:100%;min-height:100%;}
+  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;min-height:0;}
   #portal-shell.behind{pointer-events:none;}
 
   /* ══ PORTAL LOGIN ══ */
@@ -1960,7 +1959,7 @@ function NavBtn({active,icon,label,onClick}){
 }
 function BottomNav({activePage,onGoHome,onGoLog,onGoScan,onGoAdmin,onGoSetup}){
   return(
-    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:0,right:0,width:'100%',background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px',paddingBottom:'calc(8px + env(safe-area-inset-bottom, 12px))',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
+    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:480,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px',paddingBottom:'calc(8px + env(safe-area-inset-bottom, 12px))',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
       <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome}/>
       <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog}/>
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
@@ -2666,7 +2665,7 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
   function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
 
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:88}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:88}}>
       <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)} loggedInEmp={loggedInEmp} onLogout={handleLogout}/>
       <div style={{padding:'0 14px'}}>
         {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')}/>}
@@ -3317,7 +3316,7 @@ function AssetAudit({initialUser}){
 
   /* ── Done screen ── */
   if(phase==='done')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic" style={{textAlign:'center',padding:'40px 0'}}>
@@ -3340,7 +3339,7 @@ function AssetAudit({initialUser}){
 
   /* ── Review screen ── */
   if(phase==='review')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
@@ -3386,7 +3385,7 @@ function AssetAudit({initialUser}){
 
   /* ── Main scan screen ── */
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
