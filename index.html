@@ -24,9 +24,9 @@
     --p-txt2:rgba(255,255,255,0.55); --p-txt3:rgba(255,255,255,0.32);
   }
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  html{height:100%;background:#07111E;}
+  html{height:100%;height:-webkit-fill-available;background:#07111E;}
   html,body{height:100%;overflow:hidden;background:#07111E;}
-  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100%;}
+  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100%;height:-webkit-fill-available;}
   #portal-shell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:1;}
   .p-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
   .p-bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(9,209,199,0.20) 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 90% 100%,rgba(70,223,177,0.14) 0%,transparent 55%),linear-gradient(180deg,#071520 0%,#07111E 50%,#060E1A 100%);}
@@ -63,7 +63,7 @@
   .p-divider{height:1px;flex:1;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(9,209,199,0.18),transparent);}
 
   /* ══ APP OVERLAY ══ */
-  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;height:100%;height:100dvh;width:100%;width:100vw;}
+  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;height:100%;height:100dvh;min-height:-webkit-fill-available;width:100%;width:100vw;}
   #app-overlay.open{transform:translateY(0);}
   .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:500;position:relative;}
   .ov-back-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.16s,transform 0.15s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
@@ -109,36 +109,8 @@
     border-top:1px solid rgba(255,255,255,0.08);z-index:6;
     animation:cin-subtitle-fade 0.6s ease 2.5s both;
   }
-
-  /* =============================================
-     GLOBAL EDGE FIX - ทุกหน้าติดขอบล่างสุด
-     ============================================= */
-  html, body, #portal-login, #portal-shell, #app-overlay, #app-container, #root, .emp-overlay {
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      overflow: hidden !important;
-  }
-
-  .p-bg-layer, .pl-bg, .pl-bg-grad, .pl-vignette, .p-bg-grad, 
-  #root::before, .emp-cin-bg, .emp-cin-grad, .cin-bg, .cin-page-bg {
-      position: fixed !important;
-      inset: 0 !important;
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-  }
-
-  #app-container {
-      padding-bottom: env(safe-area-inset-bottom, 20px) !important;
-  }
-
-  .pl-card, .pl-footer {
-      margin-bottom: env(safe-area-inset-bottom, 16px) !important;
-  }
-
-  .cin-bottom-nav, .emp-grid-list {
-      padding-bottom: calc(20px + env(safe-area-inset-bottom, 24px)) !important;
-  }
   </style>
+
   <!-- ══ STOCKSCAN APP STYLES ══ -->
 <style>
     :root {
@@ -487,6 +459,7 @@
       position:fixed; inset:0;
       width:100%; width:100vw;
       height:100%; height:100dvh;
+      min-height: -webkit-fill-available;
       background: linear-gradient(145deg,#4b928b 0%,#68b4aa 35%,#9bd8c6 70%,#ebd08d 100%);
       display:flex; flex-direction:column;
       z-index:900;
@@ -494,6 +467,7 @@
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
       transform:translateY(100%);
       pointer-events:none;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .emp-overlay.open{transform:translateY(0);pointer-events:all;}
     .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
@@ -629,7 +603,7 @@
     .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); box-shadow: 0 4px 14px rgba(35,52,70,0.28), 0 0 0 2px rgba(9,209,199,0.20); }
 
     /* Grid Layout */
-    .emp-grid-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 14px; padding-bottom: calc(60px + env(safe-area-inset-bottom, 16px)); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; -webkit-overflow-scrolling: touch; }
+    .emp-grid-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 14px; padding-bottom: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; -webkit-overflow-scrolling: touch; }
     .emp-grid-list::-webkit-scrollbar { display: none; }
     .emp-grid-card {
       background: rgba(255,255,255,0.75);
@@ -1492,7 +1466,7 @@ function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
       <div style={{
         position:'absolute',bottom:0,left:0,right:0,
         padding:'10px 20px',
-        paddingBottom:'calc(10px + env(safe-area-inset-bottom, 0px))',
+        paddingBottom:'10px',
         display:'flex',alignItems:'center',justifyContent:'space-between',
         background:'rgba(5,30,45,0.22)',
         backdropFilter:'blur(10px)',
