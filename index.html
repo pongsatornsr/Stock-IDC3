@@ -63,7 +63,7 @@
   .p-divider{height:1px;flex:1;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(9,209,199,0.18),transparent);}
 
   /* ══ APP OVERLAY ══ */
-  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;height:100%;height:100dvh;}
+  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;height:100%;height:100dvh;width:100%;width:100vw;}
   #app-overlay.open{transform:translateY(0);}
   .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:500;position:relative;}
   .ov-back-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.16s,transform 0.15s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
@@ -72,7 +72,7 @@
   .ov-app-info{display:flex;align-items:center;gap:8px;flex:1;overflow:hidden;}
   .ov-app-icon-wrap{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;}
   .ov-app-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;}
+  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;min-height:0;}
   #portal-shell.behind{pointer-events:none;}
 
   /* ══ PORTAL LOGIN ══ */
@@ -129,7 +129,7 @@
     *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
     html,body{height:100%;background:#07111E !important;}
     body{font-family:'Noto Sans Thai',sans-serif;font-size:14px;line-height:1.5;color:var(--txt);}
-    #root{width:100%;min-height:100vh;}
+    #root{width:100%;min-height:100%;}
     input,select,button{font-family:inherit;}
     input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 
@@ -462,7 +462,7 @@
       height:100dvh;
       background:transparent;
       display:flex; flex-direction:column;
-      z-index:600;
+      z-index:900;
       overflow:hidden;
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
       transform:translateY(100%);
@@ -1153,6 +1153,8 @@
     <div id="app-root"></div>
   </div>
 </div>
+<!-- EMP OVERLAY PORTAL — ต้องอยู่นอก app-container เพื่อให้ position:fixed ทำงานถูกต้อง -->
+<div id="emp-overlay-portal"></div>
 
 <script type="text/plain" id="gas-template">// ═══════════════════════════════════════════════════
 // StockScan IDC-3 — Google Apps Script
@@ -1363,6 +1365,7 @@ function EmpCinParticles(){
 function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
   const [q,setQ]=useState('');
   const [filter,setFilter]=useState('all');
+  const portalEl = React.useMemo(()=>document.getElementById('emp-overlay-portal'),[]);
   
   const filters = [
     { key: 'all', label: 'ทั้งหมด' },
@@ -1385,8 +1388,8 @@ function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
     const matchF = filter==='all' || e.pos.startsWith(filter) || e.pos === filter;
     return matchQ && matchF;
   });
-  
-  return(
+
+  const content = (
     <div className={`emp-overlay${isOpen?' open':''}`}>
       {/* ── Cinematic Background System ── */}
       <div className="emp-cin-bg">
@@ -1462,6 +1465,7 @@ function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
       <div style={{
         position:'absolute',bottom:0,left:0,right:0,
         padding:'10px 20px',
+        paddingBottom:'calc(10px + env(safe-area-inset-bottom, 0px))',
         display:'flex',alignItems:'center',justifyContent:'space-between',
         background:'rgba(5,30,45,0.22)',
         backdropFilter:'blur(10px)',
@@ -1474,6 +1478,9 @@ function EmployeeDirectory({isOpen,onClose,onSelect,selectMode=false}){
       </div>
     </div>
   );
+
+  if(!portalEl) return content;
+  return ReactDOM.createPortal(content, portalEl);
 }
 
 /* ── EmployeePicker (inline in form) ── */
@@ -1953,7 +1960,7 @@ function NavBtn({active,icon,label,onClick}){
 }
 function BottomNav({activePage,onGoHome,onGoLog,onGoScan,onGoAdmin,onGoSetup}){
   return(
-    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:390,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
+    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:480,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px',paddingBottom:'calc(8px + env(safe-area-inset-bottom, 12px))',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
       <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome}/>
       <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog}/>
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
@@ -2659,7 +2666,7 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
   function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
 
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:88}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:88}}>
       <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)} loggedInEmp={loggedInEmp} onLogout={handleLogout}/>
       <div style={{padding:'0 14px'}}>
         {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')}/>}
@@ -3310,7 +3317,7 @@ function AssetAudit({initialUser}){
 
   /* ── Done screen ── */
   if(phase==='done')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic" style={{textAlign:'center',padding:'40px 0'}}>
@@ -3333,7 +3340,7 @@ function AssetAudit({initialUser}){
 
   /* ── Review screen ── */
   if(phase==='review')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
@@ -3379,7 +3386,7 @@ function AssetAudit({initialUser}){
 
   /* ── Main scan screen ── */
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:480,margin:'0 auto',minHeight:'100%',width:'100%',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
