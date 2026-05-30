@@ -24,9 +24,9 @@
     --p-txt2:rgba(255,255,255,0.55); --p-txt3:rgba(255,255,255,0.32);
   }
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  html,body{height:100%;overflow:hidden;background:var(--p-bg);}
-  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);}
-  #portal-shell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:1;padding-bottom:env(safe-area-inset-bottom,0px);}
+  html,body{height:100%;overflow:hidden;background:#07111E;}
+  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;}
+  #portal-shell{position:fixed;inset:0;max-width:390px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;z-index:1;padding-bottom:env(safe-area-inset-bottom,0px);}
   .p-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
   .p-bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(9,209,199,0.20) 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 90% 100%,rgba(70,223,177,0.14) 0%,transparent 55%),linear-gradient(180deg,#071520 0%,#07111E 50%,#060E1A 100%);}
   .p-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(9,209,199,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(9,209,199,0.04) 1px,transparent 1px);background-size:48px 48px;animation:pGridDrift 30s ease-in-out infinite;}
@@ -62,9 +62,10 @@
   .p-divider{height:1px;flex:1;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(9,209,199,0.18),transparent);}
 
   /* ══ APP OVERLAY ══ */
-  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;}
+  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;max-width:390px;left:50%;margin-left:-195px;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;}
+  @media(max-width:390px){#app-overlay{left:0;margin-left:0;}}
   #app-overlay.open{transform:translateY(0);}
-  .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:500;position:relative;}
+  .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:10;}
   .ov-back-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.16s,transform 0.15s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
   .ov-back-btn:active{transform:scale(0.90);}
   .ov-back-btn:hover{background:rgba(255,255,255,0.16);}
@@ -126,7 +127,7 @@
       --emp-dark:#233446;--emp-muted:#4a6572;
     }
     *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-    html,body{height:100%;background:var(--bg);}
+    html,body{height:100%;background:#07111E !important;}
     body{font-family:'Noto Sans Thai',sans-serif;font-size:14px;line-height:1.5;color:var(--txt);}
     #root{width:100%;min-height:100vh;}
     input,select,button{font-family:inherit;}
@@ -455,16 +456,16 @@
 
     /* Employee Overlay — main shell */
     .emp-overlay{
-      position:fixed; top:0; left:0;
-      width:100%; height:100%;
+      position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(100%);
+      width:100%; max-width:390px; height:100%;
       background:transparent;
       display:flex; flex-direction:column;
       z-index:400;
       overflow:hidden;
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
-      transform:translateY(100%);
+      pointer-events:none;
     }
-    .emp-overlay.open{transform:translateY(0);}
+    .emp-overlay.open{transform:translateX(-50%) translateY(0);pointer-events:all;}
     .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
     .emp-overlay.open .emp-cin-topbar-wrap { animation: emp-topbar-in 0.55s cubic-bezier(0.22,1,0.36,1) 0.25s both; opacity:0; }
 
@@ -483,6 +484,7 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
       opacity:0.035;
       animation: emp-noise 10s steps(2) infinite;
+      pointer-events:none;
     }
     /* Parallax depth grid */
     .emp-cin-grid {
@@ -491,9 +493,8 @@
         linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
       background-size: 44px 44px;
-      transform-origin: center bottom;
-      animation: emp-grid-in 1.6s cubic-bezier(0.22,1,0.36,1) 0.15s both,
-                 emp-grid-drift 22s ease-in-out infinite 2s;
+      pointer-events:none;
+      opacity:0.6;
     }
     /* Depth orbs */
     .emp-cin-orb {
@@ -520,6 +521,7 @@
       position:absolute; inset:0;
       background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 35%, rgba(5,30,45,0.42) 100%);
       animation: emp-vignette-in 1.2s ease both;
+      pointer-events:none;
     }
     /* Scanline sweep on open */
     .emp-cin-scanline {
@@ -528,6 +530,7 @@
       box-shadow: 0 0 14px rgba(9,209,199,0.6), 0 0 28px rgba(9,209,199,0.2);
       animation: emp-scanline-sweep 2.8s cubic-bezier(0.4,0,0.6,1) 0.3s 1 forwards;
       z-index:10;
+      pointer-events:none;
     }
     /* Floating particles */
     .emp-cin-particles {
@@ -555,9 +558,7 @@
     /* Topbar glass — upgraded depth */
     .emp-cin-topbar-wrap { position:relative; z-index:10; flex-shrink:0; }
     .emp-topbar{
-      background:rgba(255,255,255,0.18);
-      backdrop-filter:blur(22px) saturate(160%);
-      -webkit-backdrop-filter:blur(22px) saturate(160%);
+      background:rgba(255,255,255,0.88);
       border-bottom:1px solid rgba(255,255,255,0.28);
       flex-shrink:0;
       padding:env(safe-area-inset-top,0) 0 0;
@@ -588,29 +589,27 @@
     .emp-si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--emp-muted);pointer-events:none;font-size:14px;}
     
     /* Filter Bar — enhanced depth */
-    .emp-fbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.08); }
+    .emp-fbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.25); }
     .emp-fbar::-webkit-scrollbar { display: none; }
-    .emp-fb { padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.18); font-size: 0.75rem; font-weight: 600; color: var(--emp-dark); white-space: nowrap; cursor: pointer; transition: background 0.22s ease, border-color 0.22s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .emp-fb { padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.55); font-size: 0.75rem; font-weight: 600; color: var(--emp-dark); white-space: nowrap; cursor: pointer; transition: background 0.18s ease, transform 0.15s ease; }
     .emp-fb:active { transform: scale(0.93); }
-    .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); box-shadow: 0 4px 14px rgba(35,52,70,0.28), 0 0 0 2px rgba(9,209,199,0.20); }
+    .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); }
 
     /* Grid Layout */
     .emp-grid-list { flex: 1; overflow-y: auto; padding: 14px 14px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; }
     .emp-grid-list::-webkit-scrollbar { display: none; }
     .emp-grid-card {
-      background: rgba(255,255,255,0.30);
+      background: rgba(255,255,255,0.75);
       border: 1px solid rgba(255,255,255,0.50);
       border-radius: 18px;
       box-shadow:
-        0 8px 24px rgba(5,30,45,0.10),
-        0 2px 0 rgba(255,255,255,0.40) inset,
-        0 -1px 0 rgba(0,0,0,0.06) inset;
+        0 4px 12px rgba(5,30,45,0.10),
+        0 2px 0 rgba(255,255,255,0.40) inset;
       animation: emp-card-wave 0.42s cubic-bezier(0.16,1,0.3,1) both;
       display: flex; flex-direction: column; align-items: center; text-align: center;
       overflow: visible; padding: 14px 10px 12px;
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
       position: relative;
+      will-change: transform;
     }
     /* Subtle inner highlight on each card */
     .emp-grid-card::before {
@@ -636,8 +635,8 @@
     }
     
     .emp-grid-acts { display: flex; gap: 8px; width: 100%; }
-    .emp-grid-acts button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.50); color: var(--emp-dark); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease, box-shadow 0.2s ease; box-shadow: 0 2px 6px rgba(5,30,45,0.06); backdrop-filter:blur(4px); }
-    .emp-grid-acts button:hover { background: rgba(255,255,255,0.72); box-shadow: 0 4px 12px rgba(9,209,199,0.20); }
+    .emp-grid-acts button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.80); color: var(--emp-dark); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease; box-shadow: 0 2px 6px rgba(5,30,45,0.06); }
+    .emp-grid-acts button:hover { background: rgba(255,255,255,0.95); }
     .emp-grid-acts button:active { transform: scale(0.90); background: #fff; }
     .emp-grid-acts button.disabled { opacity: 0.35; pointer-events: none; }
     .emp-select-chip{
@@ -1307,12 +1306,21 @@ function EmpMiniAvatar({emp,size=32,radius=9}){
 function EmpCardAvatar({emp}){
   const [imgErr,setImgErr]=useState(false);
   const [imgLoaded,setImgLoaded]=useState(false);
-  const showImg = emp.img && !imgErr;
+  const [visible,setVisible]=useState(false);
+  const ref=React.useRef(null);
+  useEffect(()=>{
+    if(!emp.img) return;
+    const el=ref.current; if(!el) return;
+    const io=new IntersectionObserver(([e])=>{ if(e.isIntersecting){ setVisible(true); io.disconnect(); } },{rootMargin:'120px'});
+    io.observe(el);
+    return()=>io.disconnect();
+  },[emp.img]);
+  const showImg = emp.img && !imgErr && visible;
   return(
-    <div className="emp-avatar">
+    <div className="emp-avatar" ref={ref}>
       <div className="emp-avatar-ph" style={{opacity:showImg&&imgLoaded?0:1,transition:'opacity 0.2s'}}>{emp.initials}</div>
       {showImg&&(
-        <img loading="lazy" src={emp.img} alt=""
+        <img loading="eager" src={emp.img} alt=""
           onError={()=>setImgErr(true)}
           onLoad={()=>setImgLoaded(true)}
           style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block',opacity:imgLoaded?1:0,transition:'opacity 0.2s'}}
@@ -1324,7 +1332,7 @@ function EmpCardAvatar({emp}){
 
 /* ── Employee Overlay Cinematic Particles ── */
 function EmpCinParticles(){
-  const pts=React.useMemo(()=>Array.from({length:14},(_,i)=>({
+  const pts=React.useMemo(()=>Array.from({length:6},(_,i)=>({
     id:i,
     left:Math.random()*100,
     size:Math.random()*3.5+1.5,
@@ -1941,7 +1949,7 @@ function NavBtn({active,icon,label,onClick}){
 }
 function BottomNav({activePage,onGoHome,onGoLog,onGoScan,onGoAdmin,onGoSetup}){
   return(
-    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:'100%',background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
+    <div className="cin-bottom-nav" style={{position:'fixed',bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',maxWidth:390,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px) saturate(180%)',borderTop:'1px solid var(--teal-border)',display:'flex',zIndex:50,padding:'8px 4px 20px',boxShadow:'0 -4px 24px rgba(33,58,88,0.06)'}}>
       <NavBtn active={activePage==='home'} icon="ti-layout-dashboard" label="ภาพรวม" onClick={onGoHome}/>
       <NavBtn active={activePage==='log'}  icon="ti-list"             label="Log"    onClick={onGoLog}/>
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
@@ -1969,7 +1977,7 @@ function PinModal({target,correctPin,onSuccess,onClose}){
   const del=()=>{setBuf(p=>p.slice(0,-1));setError('');};
   return(
     <div className="cin-pin-overlay" style={{position:'fixed',inset:0,zIndex:200,background:'rgba(33,58,88,0.4)',backdropFilter:'blur(8px)',display:'flex',alignItems:'flex-end'}} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="cin-pin-sheet" style={{background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:'100%',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)'}}>
+      <div className="cin-pin-sheet" style={{background:'var(--surface)',borderRadius:'28px 28px 0 0',padding:'28px 20px 40px',width:'100%',maxWidth:390,margin:'0 auto',borderTop:'1px solid var(--teal-border)',boxShadow:'0 -8px 40px rgba(33,58,88,0.14)'}}>
         <div style={{width:36,height:4,background:'var(--teal-border)',borderRadius:100,margin:'0 auto 24px'}}/>
         <div style={{textAlign:'center',fontSize:28,marginBottom:8}}>🔒</div>
         <div style={{fontFamily:"'Outfit',sans-serif",fontSize:20,fontWeight:800,textAlign:'center',color:'var(--txt)',marginBottom:4}}>Admin Mode</div>
@@ -2022,7 +2030,7 @@ function CameraOverlay({onScan,onClose}){
   },[]);
   return(
     <div style={{position:'fixed',inset:0,zIndex:100,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-      <video ref={videoRef} autoPlay playsInline muted style={{width:'100%',maxWidth:'100%',height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
+      <video ref={videoRef} autoPlay playsInline muted style={{width:'100%',maxWidth:390,height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
       <canvas ref={canvasRef} style={{display:'none'}}/>
       <button onClick={onClose} style={{position:'absolute',top:48,right:16,zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'50%',width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,cursor:'pointer',backdropFilter:'blur(10px)'}}>
         <i className="ti ti-x"/>
@@ -2647,7 +2655,7 @@ useEffect(()=>{ if(loggedInEmp) syncData(); }, [loggedInEmp]);
   function saveSettings(url){const newCfg={...cfg,url};setCfg(newCfg);setTimeout(syncData,200);}
 
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'100%',minHeight:'100vh',overflowX:'hidden',paddingBottom:88}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:88}}>
       <TopBar syncStatus={syncStatus} onSync={syncData} onOpenDirectory={()=>setShowDirectory(true)} loggedInEmp={loggedInEmp} onLogout={handleLogout}/>
       <div style={{padding:'0 14px'}}>
         {activePage==='home'&&<PageHome items={items} logs={logs} onGoScan={()=>setActivePage('scan')}/>}
@@ -2711,7 +2719,22 @@ window.__renderStockScan = (el, portalUser) => ReactDOM.createRoot(el).render(<S
       }, 55);
     }
     const empGrid = root.querySelector('.emp-grid-list');
-    if(empGrid){ staggerIn(Array.from(empGrid.querySelectorAll('.emp-grid-card:not([data-cin])')), 32, 35); }
+    if(empGrid){
+      const cards = Array.from(empGrid.querySelectorAll('.emp-grid-card:not([data-cin])'));
+      // Only animate first 8 visible cards, show rest immediately
+      cards.forEach((el,i)=>{
+        el.dataset.cin='1';
+        if(i < 8){
+          el.style.opacity='0';
+          el.style.transform='translateY(18px) scale(0.95)';
+          setTimeout(()=>{
+            el.style.transition=`opacity 0.35s ${EASE}, transform 0.35s ${EASE}`;
+            el.style.opacity='1';
+            el.style.transform='translateY(0) scale(1)';
+          }, 30 + i*28);
+        }
+      });
+    }
   });
   obs.observe(document.body, { childList:true, subtree:true });
 })();
@@ -2915,7 +2938,7 @@ function AA_CameraOverlay({onScan,onClose}){
   },[]);
   return(
     <div style={{position:'fixed',inset:0,zIndex:100,background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-      <video ref={videoRef} autoPlay playsInline muted style={{width:'100%',maxWidth:'100%',height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
+      <video ref={videoRef} autoPlay playsInline muted style={{width:'100%',maxWidth:390,height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
       <canvas ref={canvasRef} style={{display:'none'}}/>
       <button onClick={onClose} style={{position:'absolute',top:48,right:16,zIndex:20,background:'rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.3)',color:'#fff',borderRadius:'50%',width:44,height:44,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,cursor:'pointer',backdropFilter:'blur(10px)'}}>
         <i className="ti ti-x"/>
@@ -3298,7 +3321,7 @@ function AssetAudit({initialUser}){
 
   /* ── Done screen ── */
   if(phase==='done')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'100%',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic" style={{textAlign:'center',padding:'40px 0'}}>
@@ -3321,7 +3344,7 @@ function AssetAudit({initialUser}){
 
   /* ── Review screen ── */
   if(phase==='review')return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'100%',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
@@ -3367,7 +3390,7 @@ function AssetAudit({initialUser}){
 
   /* ── Main scan screen ── */
   return(
-    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:'100%',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
+    <div style={{fontFamily:"'Noto Sans Thai',sans-serif",background:'var(--bg)',color:'var(--txt)',maxWidth:390,margin:'0 auto',minHeight:'100vh',overflowX:'hidden',paddingBottom:40}}>
       <AA_TopBar loggedInEmp={loggedInEmp} onLogout={handleLogout} syncStatus={syncStatus} onSync={syncData}/>
       <div style={{padding:'0 14px'}}>
         <div className="page-cinematic">
