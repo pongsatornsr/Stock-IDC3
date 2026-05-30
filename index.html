@@ -456,11 +456,10 @@
 
     /* Employee Overlay — main shell */
     .emp-overlay{
-      position:fixed; top:0; left:0;
-      width:100%;
-      height:100%;
-      height:100dvh;
-      background:transparent;
+      position:fixed; inset:0;
+      width:100%; width:100vw;
+      height:100%; height:100dvh;
+      background: linear-gradient(145deg,#4b928b 0%,#68b4aa 35%,#9bd8c6 70%,#ebd08d 100%);
       display:flex; flex-direction:column;
       z-index:900;
       overflow:hidden;
