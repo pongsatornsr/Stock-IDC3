@@ -18,31 +18,6 @@
 
   <style>
   /* ══ PORTAL ══ */
-#app-container,
-#root,
-.emp-overlay,
-.page-cinematic {
-  padding-bottom: env(safe-area-inset-bottom, 20px) !important;
-  min-height: 100% !important;
-}
-
-/* ทำให้ gradient / พื้นหลังติดขอบล่างจริง ๆ */
-#app-overlay {
-  background: #EEF5F7;
-  padding-bottom: 0 !important;
-}
-
-/* สำหรับ StockScan และ Asset Audit ให้พื้นหลังฟ้า-เขียวติดขอบ */
-#root::before,
-.emp-cin-bg,
-.cin-page-bg {
-  bottom: 0 !important;
-}
-
-/* Bottom Nav ติดขอบ */
-.cin-bottom-nav {
-  padding-bottom: env(safe-area-inset-bottom, 12px) !important;
-}
   :root {
     --p-bg:#07111E; --p-surface:rgba(255,255,255,0.065); --p-surface2:rgba(255,255,255,0.12);
     --p-teal:#09D1C7; --p-mid:#15919B; --p-txt:#E8F4F6;
@@ -135,7 +110,37 @@
     animation:cin-subtitle-fade 0.6s ease 2.5s both;
   }
   </style>
+/* ===== FIX ขอบล่างติดสุด (แก้ช่องว่างวงแดง) ===== */
+#app-container,
+#root,
+.emp-overlay,
+.page-cinematic {
+    padding-bottom: env(safe-area-inset-bottom, 24px) !important;
+    min-height: calc(100% - env(safe-area-inset-top, 0px)) !important;
+}
 
+#app-overlay {
+    background: #EEF5F7;
+    padding-bottom: 0 !important;
+}
+
+/* ทำให้พื้นหลังฟ้า-เขียวติดขอบล่าง */
+#root::before,
+.emp-cin-bg,
+.cin-page-bg,
+.emp-cin-grad {
+    bottom: 0 !important;
+}
+
+/* Bottom Navigation ติดขอบ */
+.cin-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom, 16px) !important;
+}
+
+/* Asset Audit เฉพาะ */
+.emp-grid-list {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px)) !important;
+}
   <!-- ══ STOCKSCAN APP STYLES ══ -->
 <style>
     :root {
