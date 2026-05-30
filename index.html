@@ -108,39 +108,35 @@
     background:rgba(0,0,0,0.18);backdrop-filter:blur(8px);
     border-top:1px solid rgba(255,255,255,0.08);z-index:6;
     animation:cin-subtitle-fade 0.6s ease 2.5s both;
-  }
+  /* =============================================
+   GLOBAL EDGE FIX - ทุกหน้าติดขอบล่างสุด
+   ============================================= */
+html, body, #portal-login, #portal-shell, #app-overlay, #app-container, #root, .emp-overlay {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+}
+
+.p-bg-layer, .pl-bg, .pl-bg-grad, .pl-vignette, .p-bg-grad, 
+#root::before, .emp-cin-bg, .emp-cin-grad, .cin-bg, .cin-page-bg {
+    position: fixed !important;
+    inset: 0 !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+}
+
+#app-container {
+    padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+}
+
+.pl-card, .pl-footer {
+    margin-bottom: env(safe-area-inset-bottom, 16px) !important;
+}
+
+.cin-bottom-nav, .emp-grid-list {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 24px)) !important;
+}}
   </style>
-/* ===== FIX ขอบล่างติดสุด (แก้ช่องว่างวงแดง) ===== */
-#app-container,
-#root,
-.emp-overlay,
-.page-cinematic {
-    padding-bottom: env(safe-area-inset-bottom, 24px) !important;
-    min-height: calc(100% - env(safe-area-inset-top, 0px)) !important;
-}
-
-#app-overlay {
-    background: #EEF5F7;
-    padding-bottom: 0 !important;
-}
-
-/* ทำให้พื้นหลังฟ้า-เขียวติดขอบล่าง */
-#root::before,
-.emp-cin-bg,
-.cin-page-bg,
-.emp-cin-grad {
-    bottom: 0 !important;
-}
-
-/* Bottom Navigation ติดขอบ */
-.cin-bottom-nav {
-    padding-bottom: env(safe-area-inset-bottom, 16px) !important;
-}
-
-/* Asset Audit เฉพาะ */
-.emp-grid-list {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px)) !important;
-}
   <!-- ══ STOCKSCAN APP STYLES ══ -->
 <style>
     :root {
