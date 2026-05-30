@@ -108,34 +108,36 @@
     background:rgba(0,0,0,0.18);backdrop-filter:blur(8px);
     border-top:1px solid rgba(255,255,255,0.08);z-index:6;
     animation:cin-subtitle-fade 0.6s ease 2.5s both;
+  }
+
   /* =============================================
-   GLOBAL EDGE FIX - ทุกหน้าติดขอบล่างสุด
-   ============================================= */
-html, body, #portal-login, #portal-shell, #app-overlay, #app-container, #root, .emp-overlay {
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-    overflow: hidden !important;
-}
+     GLOBAL EDGE FIX - ทุกหน้าติดขอบล่างสุด
+     ============================================= */
+  html, body, #portal-login, #portal-shell, #app-overlay, #app-container, #root, .emp-overlay {
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      overflow: hidden !important;
+  }
 
-.p-bg-layer, .pl-bg, .pl-bg-grad, .pl-vignette, .p-bg-grad, 
-#root::before, .emp-cin-bg, .emp-cin-grad, .cin-bg, .cin-page-bg {
-    position: fixed !important;
-    inset: 0 !important;
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-}
+  .p-bg-layer, .pl-bg, .pl-bg-grad, .pl-vignette, .p-bg-grad, 
+  #root::before, .emp-cin-bg, .emp-cin-grad, .cin-bg, .cin-page-bg {
+      position: fixed !important;
+      inset: 0 !important;
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+  }
 
-#app-container {
-    padding-bottom: env(safe-area-inset-bottom, 20px) !important;
-}
+  #app-container {
+      padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+  }
 
-.pl-card, .pl-footer {
-    margin-bottom: env(safe-area-inset-bottom, 16px) !important;
-}
+  .pl-card, .pl-footer {
+      margin-bottom: env(safe-area-inset-bottom, 16px) !important;
+  }
 
-.cin-bottom-nav, .emp-grid-list {
-    padding-bottom: calc(20px + env(safe-area-inset-bottom, 24px)) !important;
-}}
+  .cin-bottom-nav, .emp-grid-list {
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 24px)) !important;
+  }
   </style>
   <!-- ══ STOCKSCAN APP STYLES ══ -->
 <style>
