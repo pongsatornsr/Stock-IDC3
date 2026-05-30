@@ -72,7 +72,7 @@
   .ov-app-info{display:flex;align-items:center;gap:8px;flex:1;overflow:hidden;}
   .ov-app-icon-wrap{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;}
   .ov-app-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;overflow:hidden;}
+  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;}
   #portal-shell.behind{pointer-events:none;}
 
   /* ══ PORTAL LOGIN ══ */
@@ -456,17 +456,18 @@
 
     /* Employee Overlay — main shell */
     .emp-overlay{
-      position:absolute; top:0; left:50%; transform:translateX(-50%) translateY(100%);
-      width:100%; max-width:390px;
+      position:absolute; top:0; left:0;
+      width:100%;
       height:100%;
       background:transparent;
       display:flex; flex-direction:column;
       z-index:600;
       overflow:hidden;
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
+      transform:translateY(100%);
       pointer-events:none;
     }
-    .emp-overlay.open{transform:translateX(-50%) translateY(0);pointer-events:all;}
+    .emp-overlay.open{transform:translateY(0);pointer-events:all;}
     .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
     .emp-overlay.open .emp-cin-topbar-wrap { opacity:1; }
 
