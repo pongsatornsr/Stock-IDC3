@@ -24,9 +24,9 @@
     --p-txt2:rgba(255,255,255,0.55); --p-txt3:rgba(255,255,255,0.32);
   }
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  html{height:100%;height:-webkit-fill-available;background:#07111E;}
-  html,body{height:100%;overflow:hidden;background:#07111E;}
-  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100%;height:-webkit-fill-available;}
+  html{height:100dvh;height:-webkit-fill-available;background:#07111E;}
+  html,body{height:100dvh;overflow:hidden;background:#07111E;}
+  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100dvh;height:-webkit-fill-available;}
   #portal-shell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:1;}
   .p-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
   .p-bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(9,209,199,0.20) 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 90% 100%,rgba(70,223,177,0.14) 0%,transparent 55%),linear-gradient(180deg,#071520 0%,#07111E 50%,#060E1A 100%);}
@@ -200,7 +200,7 @@
       50%     { box-shadow: 0 8px 32px rgba(255,255,255,0.35), 0 0 0 3px rgba(255,255,255,0.12); }
     }
     @keyframes cin-particle {
-      0%   { transform:translateY(100vh) rotate(0deg);   opacity:0; }
+      0%   { transform:translateY(100dvh) rotate(0deg);   opacity:0; }
       10%  { opacity:0.6; }
       90%  { opacity:0.2; }
       100% { transform:translateY(-10vh) rotate(720deg); opacity:0; }
@@ -423,7 +423,7 @@
       100% { opacity:1; transform:translateY(0); filter:blur(0); }
     }
     @keyframes emp-particle {
-      0%   { transform:translateY(100vh) rotate(0deg);   opacity:0; }
+      0%   { transform:translateY(100dvh) rotate(0deg);   opacity:0; }
       8%   { opacity:0.5; }
       92%  { opacity:0.15; }
       100% { transform:translateY(-10vh) rotate(540deg); opacity:0; }
@@ -3021,7 +3021,7 @@ function QRLabelModal({item, onClose}){
   function handlePrint(){
     const w=window.open('','_blank','width=340,height=480');
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR - ${item.id}</title>
-    <style>body{margin:0;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f5;}
+    <style>body{margin:0;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100dvh;background:#f5f5f5;}
     .label{background:#fff;border-radius:16px;padding:20px;text-align:center;width:260px;box-shadow:0 4px 24px rgba(0,0,0,0.12);}
     .label img{width:180px;height:180px;border-radius:8px;}
     .label .id{font-family:monospace;font-size:13px;color:#555;margin:8px 0 4px;letter-spacing:1px;}
@@ -3706,28 +3706,6 @@ window.closeApp = closeApp;
 // ── Kick off GAS sync on load ──
 portalSyncAuth();
 </script>
-<div id="__dbg" style="position:fixed;bottom:0;left:0;right:0;z-index:99999;background:rgba(0,0,0,0.85);color:#0f0;font-family:monospace;font-size:11px;padding:8px 10px;line-height:1.7;pointer-events:none;"></div>
-<div id="__dbg2" style="position:fixed;top:0;left:0;width:1px;overflow:hidden;">
-  <div id="__vh" style="height:100vh"></div>
-  <div id="__dvh" style="height:100dvh"></div>
-  <div id="__wfa" style="height:-webkit-fill-available"></div>
-  <div id="__sbt" style="height:env(safe-area-inset-bottom,0px)"></div>
-</div>
-<script>
-(function(){
-  function h(id){return document.getElementById(id).offsetHeight;}
-  function show(){
-    document.getElementById('__dbg').innerHTML=
-      'innerH: '+window.innerHeight+'px<br>'+
-      '100vh: '+h('__vh')+'px<br>'+
-      '100dvh: '+h('__dvh')+'px<br>'+
-      'fill-avail: '+h('__wfa')+'px<br>'+
-      'safe-bot: '+h('__sbt')+'px<br>'+
-      'diff(vh-inner): '+(h('__vh')-window.innerHeight)+'px';
-  }
-  show();
-  window.addEventListener('resize',show);
-})();
-</script>
+
 </body>
 </html>
