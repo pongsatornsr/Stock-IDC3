@@ -25,7 +25,7 @@
   }
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   html{height:100%;background:#07111E;}
-  html,body{min-height:100%;overflow:hidden;background:#07111E;}
+  html,body{height:100%;overflow:hidden;background:#07111E;}
   body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100%;}
   #portal-shell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:1;}
   .p-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
@@ -63,7 +63,7 @@
   .p-divider{height:1px;flex:1;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(9,209,199,0.18),transparent);}
 
   /* ══ APP OVERLAY ══ */
-  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;}
+  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;height:100%;height:100dvh;}
   #app-overlay.open{transform:translateY(0);}
   .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:500;position:relative;}
   .ov-back-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.16s,transform 0.15s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
@@ -72,7 +72,7 @@
   .ov-app-info{display:flex;align-items:center;gap:8px;flex:1;overflow:hidden;}
   .ov-app-icon-wrap{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;}
   .ov-app-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;}
+  #app-container{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;overflow:hidden;}
   #portal-shell.behind{pointer-events:none;}
 
   /* ══ PORTAL LOGIN ══ */
@@ -456,19 +456,19 @@
 
     /* Employee Overlay — main shell */
     .emp-overlay{
-      position:fixed; top:0; left:0;
-      width:100%; height:100%;
+      position:absolute; top:0; left:50%; transform:translateX(-50%) translateY(100%);
+      width:100%; max-width:390px;
+      height:100%;
       background:transparent;
       display:flex; flex-direction:column;
-      z-index:400;
+      z-index:600;
       overflow:hidden;
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
-      transform:translateY(100%);
       pointer-events:none;
     }
-    .emp-overlay.open{transform:translateY(0);pointer-events:all;}
+    .emp-overlay.open{transform:translateX(-50%) translateY(0);pointer-events:all;}
     .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
-    .emp-overlay.open .emp-cin-topbar-wrap { animation: emp-topbar-in 0.55s cubic-bezier(0.22,1,0.36,1) 0.25s both; opacity:0; }
+    .emp-overlay.open .emp-cin-topbar-wrap { opacity:1; }
 
     /* ── Cinematic background layers (inside overlay) ── */
     .emp-cin-bg {
@@ -559,14 +559,14 @@
       z-index:20;
     }
     /* Topbar glass — upgraded depth */
-    .emp-cin-topbar-wrap { position:relative; z-index:10; flex-shrink:0; }
+    .emp-cin-topbar-wrap { position:relative; z-index:10; flex-shrink:0; opacity:1; }
     .emp-topbar{
       background:rgba(255,255,255,0.18);
       backdrop-filter:blur(22px) saturate(160%);
       -webkit-backdrop-filter:blur(22px) saturate(160%);
       border-bottom:1px solid rgba(255,255,255,0.28);
       flex-shrink:0;
-      padding:env(safe-area-inset-top,0) 0 0;
+      padding-top:env(safe-area-inset-top, 0px);
       box-shadow: 0 4px 24px rgba(5,30,45,0.12);
     }
     .emp-topbar-inner{padding:14px 16px 10px;}
@@ -601,7 +601,7 @@
     .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); box-shadow: 0 4px 14px rgba(35,52,70,0.28), 0 0 0 2px rgba(9,209,199,0.20); }
 
     /* Grid Layout */
-    .emp-grid-list { flex: 1; overflow-y: auto; padding: 14px 14px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; }
+    .emp-grid-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 14px; padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px)); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
     .emp-grid-list::-webkit-scrollbar { display: none; }
     .emp-grid-card {
       background: rgba(255,255,255,0.75);
