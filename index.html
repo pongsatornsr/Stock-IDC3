@@ -24,9 +24,10 @@
     --p-txt2:rgba(255,255,255,0.55); --p-txt3:rgba(255,255,255,0.32);
   }
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  html,body{height:100%;overflow:hidden;background:#07111E;}
-  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;}
-  #portal-shell{position:fixed;inset:0;max-width:390px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;z-index:1;padding-bottom:env(safe-area-inset-bottom,0px);}
+  html{height:100%;background:#07111E;}
+  html,body{min-height:100%;overflow:hidden;background:#07111E;}
+  body{font-family:'Noto Sans Thai',sans-serif;color:var(--p-txt);background:#07111E;height:100%;}
+  #portal-shell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:1;}
   .p-bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
   .p-bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(9,209,199,0.20) 0%,transparent 55%),radial-gradient(ellipse 70% 50% at 90% 100%,rgba(70,223,177,0.14) 0%,transparent 55%),linear-gradient(180deg,#071520 0%,#07111E 50%,#060E1A 100%);}
   .p-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(9,209,199,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(9,209,199,0.04) 1px,transparent 1px);background-size:48px 48px;animation:pGridDrift 30s ease-in-out infinite;}
@@ -62,10 +63,9 @@
   .p-divider{height:1px;flex:1;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(9,209,199,0.18),transparent);}
 
   /* ══ APP OVERLAY ══ */
-  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;max-width:390px;left:50%;margin-left:-195px;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;}
-  @media(max-width:390px){#app-overlay{left:0;margin-left:0;}}
+  #app-overlay{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);background:#EEF5F7;overflow:hidden;}
   #app-overlay.open{transform:translateY(0);}
-  .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:10;}
+  .ov-topbar{background:rgba(10,22,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:14px 14px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:500;position:relative;}
   .ov-back-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:#fff;font-family:'Noto Sans Thai',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.16s,transform 0.15s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0;}
   .ov-back-btn:active{transform:scale(0.90);}
   .ov-back-btn:hover{background:rgba(255,255,255,0.16);}
@@ -456,16 +456,17 @@
 
     /* Employee Overlay — main shell */
     .emp-overlay{
-      position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(100%);
-      width:100%; max-width:390px; height:100%;
+      position:fixed; top:0; left:0;
+      width:100%; height:100%;
       background:transparent;
       display:flex; flex-direction:column;
       z-index:400;
       overflow:hidden;
       transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
+      transform:translateY(100%);
       pointer-events:none;
     }
-    .emp-overlay.open{transform:translateX(-50%) translateY(0);pointer-events:all;}
+    .emp-overlay.open{transform:translateY(0);pointer-events:all;}
     .emp-overlay.open .emp-cin-bg { animation: emp-bg-reveal 0.9s cubic-bezier(0.22,1,0.36,1) both; }
     .emp-overlay.open .emp-cin-topbar-wrap { animation: emp-topbar-in 0.55s cubic-bezier(0.22,1,0.36,1) 0.25s both; opacity:0; }
 
@@ -493,8 +494,10 @@
         linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
       background-size: 44px 44px;
+      transform-origin: center bottom;
+      animation: emp-grid-in 1.6s cubic-bezier(0.22,1,0.36,1) 0.15s both,
+                 emp-grid-drift 22s ease-in-out infinite 2s;
       pointer-events:none;
-      opacity:0.6;
     }
     /* Depth orbs */
     .emp-cin-orb {
@@ -558,7 +561,9 @@
     /* Topbar glass — upgraded depth */
     .emp-cin-topbar-wrap { position:relative; z-index:10; flex-shrink:0; }
     .emp-topbar{
-      background:rgba(255,255,255,0.88);
+      background:rgba(255,255,255,0.18);
+      backdrop-filter:blur(22px) saturate(160%);
+      -webkit-backdrop-filter:blur(22px) saturate(160%);
       border-bottom:1px solid rgba(255,255,255,0.28);
       flex-shrink:0;
       padding:env(safe-area-inset-top,0) 0 0;
@@ -589,11 +594,11 @@
     .emp-si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--emp-muted);pointer-events:none;font-size:14px;}
     
     /* Filter Bar — enhanced depth */
-    .emp-fbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.25); }
+    .emp-fbar { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.08); }
     .emp-fbar::-webkit-scrollbar { display: none; }
-    .emp-fb { padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.55); font-size: 0.75rem; font-weight: 600; color: var(--emp-dark); white-space: nowrap; cursor: pointer; transition: background 0.18s ease, transform 0.15s ease; }
+    .emp-fb { padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.30); background: rgba(255,255,255,0.18); font-size: 0.75rem; font-weight: 600; color: var(--emp-dark); white-space: nowrap; cursor: pointer; transition: background 0.22s ease, border-color 0.22s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     .emp-fb:active { transform: scale(0.93); }
-    .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); }
+    .emp-fb.active { background: var(--emp-dark); color: #fff; border-color: var(--emp-dark); box-shadow: 0 4px 14px rgba(35,52,70,0.28), 0 0 0 2px rgba(9,209,199,0.20); }
 
     /* Grid Layout */
     .emp-grid-list { flex: 1; overflow-y: auto; padding: 14px 14px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; align-items: start; scrollbar-width: none; position:relative; z-index:5; }
@@ -602,9 +607,7 @@
       background: rgba(255,255,255,0.75);
       border: 1px solid rgba(255,255,255,0.50);
       border-radius: 18px;
-      box-shadow:
-        0 4px 12px rgba(5,30,45,0.10),
-        0 2px 0 rgba(255,255,255,0.40) inset;
+      box-shadow: 0 4px 12px rgba(5,30,45,0.10), 0 2px 0 rgba(255,255,255,0.40) inset;
       animation: emp-card-wave 0.42s cubic-bezier(0.16,1,0.3,1) both;
       display: flex; flex-direction: column; align-items: center; text-align: center;
       overflow: visible; padding: 14px 10px 12px;
@@ -635,8 +638,8 @@
     }
     
     .emp-grid-acts { display: flex; gap: 8px; width: 100%; }
-    .emp-grid-acts button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.80); color: var(--emp-dark); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease; box-shadow: 0 2px 6px rgba(5,30,45,0.06); }
-    .emp-grid-acts button:hover { background: rgba(255,255,255,0.95); }
+    .emp-grid-acts button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.50); color: var(--emp-dark); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease, box-shadow 0.2s ease; box-shadow: 0 2px 6px rgba(5,30,45,0.06); backdrop-filter:blur(4px); }
+    .emp-grid-acts button:hover { background: rgba(255,255,255,0.72); box-shadow: 0 4px 12px rgba(9,209,199,0.20); }
     .emp-grid-acts button:active { transform: scale(0.90); background: #fff; }
     .emp-grid-acts button.disabled { opacity: 0.35; pointer-events: none; }
     .emp-select-chip{
@@ -1332,7 +1335,7 @@ function EmpCardAvatar({emp}){
 
 /* ── Employee Overlay Cinematic Particles ── */
 function EmpCinParticles(){
-  const pts=React.useMemo(()=>Array.from({length:6},(_,i)=>({
+  const pts=React.useMemo(()=>Array.from({length:14},(_,i)=>({
     id:i,
     left:Math.random()*100,
     size:Math.random()*3.5+1.5,
@@ -2719,22 +2722,7 @@ window.__renderStockScan = (el, portalUser) => ReactDOM.createRoot(el).render(<S
       }, 55);
     }
     const empGrid = root.querySelector('.emp-grid-list');
-    if(empGrid){
-      const cards = Array.from(empGrid.querySelectorAll('.emp-grid-card:not([data-cin])'));
-      // Only animate first 8 visible cards, show rest immediately
-      cards.forEach((el,i)=>{
-        el.dataset.cin='1';
-        if(i < 8){
-          el.style.opacity='0';
-          el.style.transform='translateY(18px) scale(0.95)';
-          setTimeout(()=>{
-            el.style.transition=`opacity 0.35s ${EASE}, transform 0.35s ${EASE}`;
-            el.style.opacity='1';
-            el.style.transform='translateY(0) scale(1)';
-          }, 30 + i*28);
-        }
-      });
-    }
+    if(empGrid){ staggerIn(Array.from(empGrid.querySelectorAll('.emp-grid-card:not([data-cin])')), 32, 35); }
   });
   obs.observe(document.body, { childList:true, subtree:true });
 })();
